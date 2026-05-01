@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+<defs>
+<radialGradient id="g" cx="50%" cy="42%" r="70%">
+<stop offset="0%" stop-color="#39ff78" stop-opacity="0.95"/>
+<stop offset="42%" stop-color="#001d10" stop-opacity="0.55"/>
+<stop offset="100%" stop-color="#020008" stop-opacity="1"/>
+</radialGradient>
+<filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1200" height="900" fill="url(#g)"/>
+<g opacity=".22">
+<polygon points="1052,457 1088,461 1061,493" fill="#39ff78"/>
+<polygon points="987,440 1012,468 995,465" fill="#39ff78"/>
+<polygon points="56,151 78,177 75,173" fill="#39ff78"/>
+<polygon points="248,540 270,565 265,562" fill="#39ff78"/>
+<polygon points="904,235 934,245 917,265" fill="#39ff78"/>
+<polygon points="443,557 474,583 465,588" fill="#39ff78"/>
+<polygon points="414,517 429,528 417,532" fill="#39ff78"/>
+<polygon points="767,223 780,246 794,236" fill="#39ff78"/>
+<polygon points="1169,633 1199,654 1188,663" fill="#39ff78"/>
+<polygon points="813,366 844,374 842,397" fill="#39ff78"/>
+<polygon points="837,502 869,509 846,534" fill="#39ff78"/>
+<polygon points="633,349 647,371 643,363" fill="#39ff78"/>
+<polygon points="759,323 796,350 780,360" fill="#39ff78"/>
+<polygon points="801,757 813,758 802,769" fill="#39ff78"/>
+<polygon points="739,629 772,658 759,662" fill="#39ff78"/>
+<polygon points="533,227 567,245 556,261" fill="#39ff78"/>
+<polygon points="948,343 958,369 969,353" fill="#39ff78"/>
+<polygon points="298,294 336,303 312,332" fill="#39ff78"/>
+<polygon points="308,564 318,592 326,574" fill="#39ff78"/>
+<polygon points="73,307 91,325 93,325" fill="#39ff78"/>
+<polygon points="615,155 651,185 634,191" fill="#39ff78"/>
+<polygon points="232,751 247,759 232,766" fill="#39ff78"/>
+<polygon points="103,68 138,88 103,103" fill="#39ff78"/>
+<polygon points="470,426 492,430 482,448" fill="#39ff78"/>
+<polygon points="713,507 734,520 723,528" fill="#39ff78"/>
+<polygon points="65,800 86,818 78,821" fill="#39ff78"/>
+<polygon points="602,645 622,671 624,665" fill="#39ff78"/>
+<polygon points="773,779 807,794 781,813" fill="#39ff78"/>
+<polygon points="599,163 611,191 615,175" fill="#39ff78"/>
+<polygon points="131,695 148,708 154,712" fill="#39ff78"/>
+<polygon points="60,322 85,327 88,347" fill="#39ff78"/>
+<polygon points="1089,58 1126,83 1104,95" fill="#39ff78"/>
+<polygon points="441,755 464,772 455,778" fill="#39ff78"/>
+<polygon points="672,32 697,37 697,57" fill="#39ff78"/>
+<polygon points="680,339 712,339 683,371" fill="#39ff78"/>
+<polygon points="255,137 274,151 268,156" fill="#39ff78"/>
+<polygon points="419,208 449,216 423,238" fill="#39ff78"/>
+<polygon points="1135,339 1148,346 1149,352" fill="#39ff78"/>
+<polygon points="517,427 547,431 518,457" fill="#39ff78"/>
+<polygon points="1086,71 1110,73 1101,95" fill="#39ff78"/>
+<polygon points="1180,757 1211,761 1184,788" fill="#39ff78"/>
+<polygon points="183,817 219,822 202,853" fill="#39ff78"/>
+</g>
+<circle cx="680" cy="360" r="250" fill="none" stroke="#39ff78" stroke-width="8" opacity=".75" filter="url(#glow)"/>
+<circle cx="680" cy="360" r="190" fill="none" stroke="#ffffff" stroke-width="2" opacity=".2"/>
+<g filter="url(#glow)">
+<ellipse cx="660" cy="640" rx="310" ry="44" fill="#001d10" opacity=".25"/>
+<path d="M606 170 C522 220 490 330 512 430 C534 540 594 610 672 610 C750 610 810 540 832 430 C854 330 822 220 738 170 C698 146 646 146 606 170Z" fill="#e8e8ee" opacity=".86"/>
+<path d="M625 420 C645 446 698 446 718 420" fill="none" stroke="#16101e" stroke-width="8" opacity=".65"/>
+<circle cx="615" cy="350" r="14" fill="#39ff78"/>
+<circle cx="725" cy="350" r="14" fill="#39ff78"/>
+<path d="M665 238 L610 370 L668 336 L630 480 L754 294 L690 330 L725 238 Z" fill="#39ff78" opacity=".9"/>
+<path d="M392 690 C452 560 530 512 670 512 C810 512 888 560 948 690 L948 900 L392 900Z" fill="#151019" opacity=".95"/>
+<path d="M470 610 C560 700 710 742 870 606" fill="none" stroke="#39ff78" stroke-width="10" opacity=".55"/>
+</g>
+</svg>
