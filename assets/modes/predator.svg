@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900">
+<defs>
+<radialGradient id="g" cx="50%" cy="42%" r="70%">
+<stop offset="0%" stop-color="#ff315c" stop-opacity="0.95"/>
+<stop offset="42%" stop-color="#240008" stop-opacity="0.55"/>
+<stop offset="100%" stop-color="#020008" stop-opacity="1"/>
+</radialGradient>
+<filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1200" height="900" fill="url(#g)"/>
+<g opacity=".22">
+<polygon points="168,258 184,267 191,274" fill="#ff315c"/>
+<polygon points="967,101 985,107 977,119" fill="#ff315c"/>
+<polygon points="697,80 718,96 702,101" fill="#ff315c"/>
+<polygon points="148,540 170,547 176,562" fill="#ff315c"/>
+<polygon points="1156,35 1187,58 1168,66" fill="#ff315c"/>
+<polygon points="163,68 188,86 192,93" fill="#ff315c"/>
+<polygon points="47,171 77,172 57,201" fill="#ff315c"/>
+<polygon points="998,273 1023,286 1013,298" fill="#ff315c"/>
+<polygon points="779,636 813,650 803,670" fill="#ff315c"/>
+<polygon points="284,673 303,690 284,692" fill="#ff315c"/>
+<polygon points="615,714 627,726 638,726" fill="#ff315c"/>
+<polygon points="637,148 667,153 652,178" fill="#ff315c"/>
+<polygon points="1105,317 1116,335 1110,328" fill="#ff315c"/>
+<polygon points="259,702 289,727 260,732" fill="#ff315c"/>
+<polygon points="94,266 116,277 99,288" fill="#ff315c"/>
+<polygon points="672,724 695,733 694,747" fill="#ff315c"/>
+<polygon points="60,523 97,530 87,560" fill="#ff315c"/>
+<polygon points="1009,654 1046,680 1025,691" fill="#ff315c"/>
+<polygon points="346,57 379,76 372,90" fill="#ff315c"/>
+<polygon points="447,239 459,261 473,251" fill="#ff315c"/>
+<polygon points="821,591 834,618 851,604" fill="#ff315c"/>
+<polygon points="76,695 90,701 101,709" fill="#ff315c"/>
+<polygon points="1157,505 1184,518 1173,532" fill="#ff315c"/>
+<polygon points="104,290 135,307 122,321" fill="#ff315c"/>
+<polygon points="119,261 138,280 140,280" fill="#ff315c"/>
+<polygon points="416,142 438,166 446,164" fill="#ff315c"/>
+<polygon points="691,323 729,339 721,361" fill="#ff315c"/>
+<polygon points="498,157 511,168 509,170" fill="#ff315c"/>
+<polygon points="1001,294 1017,303 1007,310" fill="#ff315c"/>
+<polygon points="730,31 746,59 755,47" fill="#ff315c"/>
+<polygon points="971,158 988,171 1001,175" fill="#ff315c"/>
+<polygon points="567,602 597,623 567,632" fill="#ff315c"/>
+<polygon points="978,451 1015,451 1005,488" fill="#ff315c"/>
+<polygon points="386,738 408,747 389,760" fill="#ff315c"/>
+<polygon points="165,545 176,549 183,556" fill="#ff315c"/>
+<polygon points="303,543 333,565 332,573" fill="#ff315c"/>
+<polygon points="960,333 973,362 970,346" fill="#ff315c"/>
+<polygon points="837,225 873,255 862,261" fill="#ff315c"/>
+<polygon points="901,756 915,769 904,770" fill="#ff315c"/>
+<polygon points="599,326 609,344 625,336" fill="#ff315c"/>
+<polygon points="968,446 994,468 970,472" fill="#ff315c"/>
+<polygon points="1057,86 1093,97 1070,122" fill="#ff315c"/>
+</g>
+<circle cx="680" cy="360" r="250" fill="none" stroke="#ff315c" stroke-width="8" opacity=".75" filter="url(#glow)"/>
+<circle cx="680" cy="360" r="190" fill="none" stroke="#ffffff" stroke-width="2" opacity=".2"/>
+<g filter="url(#glow)">
+<ellipse cx="660" cy="640" rx="310" ry="44" fill="#240008" opacity=".25"/>
+<path d="M606 170 C522 220 490 330 512 430 C534 540 594 610 672 610 C750 610 810 540 832 430 C854 330 822 220 738 170 C698 146 646 146 606 170Z" fill="#e8e8ee" opacity=".86"/>
+<path d="M625 420 C645 446 698 446 718 420" fill="none" stroke="#16101e" stroke-width="8" opacity=".65"/>
+<circle cx="615" cy="350" r="14" fill="#ff315c"/>
+<circle cx="725" cy="350" r="14" fill="#ff315c"/>
+<path d="M665 238 L610 370 L668 336 L630 480 L754 294 L690 330 L725 238 Z" fill="#ff315c" opacity=".9"/>
+<path d="M392 690 C452 560 530 512 670 512 C810 512 888 560 948 690 L948 900 L392 900Z" fill="#151019" opacity=".95"/>
+<path d="M470 610 C560 700 710 742 870 606" fill="none" stroke="#ff315c" stroke-width="10" opacity=".55"/>
+</g>
+</svg>
