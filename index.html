@@ -36,6 +36,14 @@
     .address{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(0,0,0,.25);border:1px solid rgba(190,121,255,.18);border-radius:18px;padding:14px;margin-top:12px}.address div{min-width:0}.address small{display:block;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:1px}.address code{display:block;margin-top:5px;color:#fff;word-break:break-all}.copy{border:1px solid var(--line);background:rgba(255,255,255,.05);color:#fff;border-radius:12px;padding:10px 12px;cursor:pointer;flex:0 0 auto}.link-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.terms{color:var(--muted);line-height:1.7;font-size:14px}.terms b{color:#fff}.footer{padding:36px 0 50px;color:#9888bd;text-align:center}.mobile-connect{display:none}
     @media(max-width:980px){.nav-links{display:none}.mobile-connect{display:inline-flex}.hero,.grid2{grid-template-columns:1fr}.hero{padding-top:34px}.hero-meta,.stats,.cards{grid-template-columns:1fr}.mode-grid{grid-template-columns:1fr 1fr}.buy-row{grid-template-columns:1fr}.time-row{grid-template-columns:repeat(2,1fr)}h1{letter-spacing:-1.8px}.wrap{width:min(100% - 22px,1240px)}}
     @media(max-width:560px){.mode-grid,.action-grid,.link-grid{grid-template-columns:1fr}.brand-name{font-size:18px}.nav-inner{height:70px}.panel-head{display:block}.status-pill{display:inline-flex;margin-top:12px}.hero-actions .btn{width:100%}.section-title{display:block}}
+
+    .mode{cursor:pointer;text-align:left;color:#fff;transition:.18s ease;font-family:inherit}.mode:hover,.mode.active{transform:translateY(-2px);border-color:rgba(240,83,255,.72);box-shadow:0 0 32px rgba(155,77,255,.22);background:linear-gradient(180deg,rgba(74,25,119,.55),rgba(255,255,255,.045))}.mode:focus{outline:3px solid rgba(240,83,255,.22);outline-offset:3px}
+    .mode-detail{margin-top:18px;border:1px solid rgba(190,121,255,.28);background:linear-gradient(180deg,rgba(22,8,42,.92),rgba(6,0,12,.72));border-radius:28px;padding:0;overflow:hidden;box-shadow:0 18px 70px rgba(0,0,0,.35)}
+    .mode-detail-top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding:24px;border-bottom:1px solid rgba(190,121,255,.18);background:radial-gradient(circle at top right,rgba(240,83,255,.18),transparent 35%)}
+    .mode-detail-top h3{margin:0;font-size:32px;letter-spacing:-.8px}.mode-detail-top p{margin:8px 0 0;color:var(--muted);line-height:1.6}.tax-chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:flex-end}.tax-chip{border:1px solid rgba(190,121,255,.28);background:rgba(255,255,255,.055);border-radius:16px;padding:11px 13px;min-width:112px;text-align:center}.tax-chip small{display:block;color:var(--muted);text-transform:uppercase;font-size:10px;letter-spacing:1px}.tax-chip b{display:block;margin-top:5px;font-size:20px;color:#fff}
+    .mode-detail-body{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:24px}.detail-block{border:1px solid rgba(190,121,255,.16);background:rgba(255,255,255,.035);border-radius:20px;padding:18px}.detail-block h4{margin:0 0 12px;font-size:16px;color:#e7d7ff;text-transform:uppercase;letter-spacing:1.3px}.detail-block ul{margin:0;padding-left:18px;color:var(--muted);line-height:1.8}.detail-block p{margin:0;color:var(--muted);line-height:1.7}.meaning{font-size:20px!important;color:#fff!important;font-weight:900;letter-spacing:.2px}.mode-note{margin-top:14px;color:var(--muted);font-size:13px;line-height:1.6}
+    @media(max-width:760px){.mode-detail-top,.mode-detail-body{display:block}.tax-chips{justify-content:flex-start;margin-top:16px}.detail-block{margin-top:14px}}
+
   </style>
 </head>
 <body>
@@ -109,24 +117,52 @@
           <div class="action-grid"><button class="btn white" id="claimBtn">Claim Available</button><button class="btn danger" id="refundBtn">Refund if Failed</button></div>
           <p class="notice">Presale claims are self-service: 50% becomes claimable after successful finalization, and the remaining 50% unlocks 7 days later using the same claim button.</p>
           <div class="stats">
-            <div class="stat"><small>Your Contribution</small><strong id="userContrib">0 BNB</strong></div>
-            <div class="stat"><small>Claimable</small><strong id="claimableText">0 SZR</strong></div>
-            <div class="stat"><small>Tokens Bought</small><strong id="tokensBoughtText">0 SZR</strong></div>
-            <div class="stat"><small>Status</small><strong id="chainStatus">Ready</strong></div>
+            <div class="s    <section id="modes" class="section">
+      <div class="section-title">
+        <div>
+          <h2>The 7 Modes</h2>
+          <p>Click any mode to open its full taxes, function and meaning. SCHIZORA rotates through 7 random daily modes; Parasite Mode activates separately when tracked tokens collapse.</p>
+        </div>
+      </div>
+
+      <div class="mode-grid" role="tablist" aria-label="SCHIZORA modes">
+        <button class="mode active" data-mode="calm" type="button"><b>Calm</b><span>Stability</span><p>Buy 2% / Sell 2%</p></button>
+        <button class="mode" data-mode="burn" type="button"><b>Burn</b><span>Scarcity</span><p>Buy 5% / Sell 8%</p></button>
+        <button class="mode" data-mode="reward" type="button"><b>Reward</b><span>Loyalty</span><p>Buy 5% / Sell 8%</p></button>
+        <button class="mode" data-mode="chaos" type="button"><b>Chaos</b><span>Unpredictable</span><p>Buy 3%-7% / Sell 6%-10%</p></button>
+        <button class="mode" data-mode="mirror" type="button"><b>Mirror</b><span>Adaptive</span><p>Buy 4%-6% / Sell 6%-10%</p></button>
+        <button class="mode" data-mode="silent" type="button"><b>Silent</b><span>Stealth</span><p>Buy 1% / Sell 3%</p></button>
+        <button class="mode" data-mode="predator" type="button"><b>Predator</b><span>Pressure</span><p>Buy 5% / Sell 12%</p></button>
+        <button class="mode parasite" data-mode="parasite" type="button"><b>Parasite ☣️</b><span>Special Mode</span><p>Buy 5% / Sell 10%</p></button>
+      </div>
+
+      <div class="mode-detail" id="modeDetail">
+        <div class="mode-detail-top">
+          <div>
+            <h3 id="modeTitle">Calm Mode</h3>
+            <p id="modeSubtitle">Silence. Stability. Patience.</p>
           </div>
-          <div class="toast" id="toast"></div>
+          <div class="tax-chips">
+            <div class="tax-chip"><small>Buy Tax</small><b id="modeBuy">2%</b></div>
+            <div class="tax-chip"><small>Sell Tax</small><b id="modeSell">2%</b></div>
+            <div class="tax-chip"><small>Duration</small><b id="modeDuration">24h</b></div>
+          </div>
+        </div>
+        <div class="mode-detail-body">
+          <div class="detail-block">
+            <h4>Function</h4>
+            <ul id="modeFunction"></ul>
+          </div>
+          <div class="detail-block">
+            <h4>Meaning</h4>
+            <p class="meaning" id="modeMeaning">Silence. Stability. Patience.</p>
+            <p class="mode-note" id="modeNote">Each daily mode stays active for 24 hours. The next mode is unknown in advance.</p>
+          </div>
         </div>
       </div>
     </section>
 
-    <section id="tokenomics" class="section">
-      <div class="section-title"><div><h2>Tokenomics</h2><p>Fixed supply. No minting after launch. Presale allocation is already funded into the presale contract.</p></div></div>
-      <div class="cards">
-        <div class="card"><h3>Total Supply</h3><p><b>666,666,666 SZR</b><br/>Fixed forever.</p></div>
-        <div class="card"><h3>Presale</h3><p><b>166,666,666 SZR</b><br/>For early buyers.</p></div>
-        <div class="card"><h3>Liquidity Pool</h3><p><b>233,333,333 SZR</b><br/>For DEX liquidity and market depth.</p></div>
-        <div class="card"><h3>Treasury / Ecosystem</h3><p><b>100,000,000 SZR</b><br/>Growth, listings, marketing, buybacks and development.</p></div>
-        <div class="card"><h3>Rewards / Utilities</h3><p><b>66,666,666 SZR</b><br/>Future staking, rewards, events and tools.</p></div>
+wards / Utilities</h3><p><b>66,666,666 SZR</b><br/>Future staking, rewards, events and tools.</p></div>
         <div class="card"><h3>Burn Reserve</h3><p><b>33,333,335 SZR</b><br/>Strategic burns and scarcity mechanics.</p></div>
       </div>
     </section>
@@ -283,6 +319,111 @@
       $("dd").textContent=String(d).padStart(2,"0"); $("hh").textContent=String(h).padStart(2,"0"); $("mm").textContent=String(m).padStart(2,"0"); $("ss").textContent=String(s).padStart(2,"0");
       $("countMain").textContent = `${String(d).padStart(2,"0")}d ${String(h).padStart(2,"0")}h ${String(m).padStart(2,"0")}m ${String(s).padStart(2,"0")}s`;
     }
+
+    const MODE_DETAILS = {
+      calm: {
+        title: "Calm Mode",
+        subtitle: "Stability and easier entries.",
+        buy: "2%",
+        sell: "2%",
+        duration: "24h",
+        functionItems: ["Lowers market pressure", "Creates easier entries", "Supports a stable trading environment", "Acts as a recovery phase after aggressive modes"],
+        meaning: "Silence. Stability. Patience.",
+        note: "Calm Mode is the breathing phase of SCHIZORA."
+      },
+      burn: {
+        title: "Burn Mode",
+        subtitle: "Scarcity and deflation pressure.",
+        buy: "5%",
+        sell: "8%",
+        duration: "24h",
+        functionItems: ["Larger share redirected to burn wallet", "Circulating supply is reduced faster", "Creates a deflation-focused day", "Strengthens the scarcity narrative"],
+        meaning: "SCHIZORA consumes itself.",
+        note: "Burn Mode is built around supply tightening and scarcity."
+      },
+      reward: {
+        title: "Reward Mode",
+        subtitle: "Holder support and ecosystem value.",
+        buy: "5%",
+        sell: "8%",
+        duration: "24h",
+        functionItems: ["Higher treasury/reward allocation", "Supports future holder rewards", "Strengthens ecosystem growth", "Encourages longer-term holding behavior"],
+        meaning: "Loyal holders benefit.",
+        note: "Reward Mode is designed to make loyalty valuable."
+      },
+      chaos: {
+        title: "Chaos Mode",
+        subtitle: "Dynamic taxes and unpredictable attention.",
+        buy: "3%–7%",
+        sell: "6%–10%",
+        duration: "24h",
+        functionItems: ["Taxes fluctuate inside limits", "Creates unpredictable trading conditions", "Builds high attention and hype", "Makes each Chaos day feel different"],
+        meaning: "No certainty. Pure chaos.",
+        note: "Chaos Mode is the most unpredictable daily personality."
+      },
+      mirror: {
+        title: "Mirror Mode",
+        subtitle: "Adaptive taxes based on crowd behavior.",
+        buy: "4%–6%",
+        sell: "6%–10%",
+        duration: "24h",
+        functionItems: ["Reflects market behavior", "If buys dominate, sell tax can be lowered", "If sells dominate, sell tax rises", "Makes SCHIZORA feel reactive and aware"],
+        meaning: "The market speaks. SCHIZORA responds.",
+        note: "Mirror Mode changes based on buy/sell pressure."
+      },
+      silent: {
+        title: "Silent Mode",
+        subtitle: "Low-noise accumulation phase.",
+        buy: "1%",
+        sell: "3%",
+        duration: "24h",
+        functionItems: ["Creates a low-noise day", "Supports accumulation-style behavior", "Encourages stealth growth", "Offers the lowest friction entry mode"],
+        meaning: "Quiet movement.",
+        note: "Silent Mode is the quiet movement before mutation."
+      },
+      predator: {
+        title: "Predator Mode",
+        subtitle: "Pressure against weak exits.",
+        buy: "5%",
+        sell: "12%",
+        duration: "24h",
+        functionItems: ["Punishes panic sellers", "Protects chart pressure", "Boosts treasury and burn effects", "Turns weak hands into ecosystem fuel"],
+        meaning: "Weak hands feed the system.",
+        note: "Predator Mode is the most aggressive sell-pressure mode."
+      },
+      parasite: {
+        title: "Parasite Mode ☣️",
+        subtitle: "Special mode triggered by external token collapse.",
+        buy: "5%",
+        sell: "10%",
+        duration: "2h",
+        functionItems: ["Activates when watched tokens trigger collapse signals", "Collapse signals include -12% in 1h, -25% in 24h, liquidity drain, rug or panic signs", "Supports automatic SZR buyback logic", "Can partially burn bought tokens and strengthen treasury", "Does not buy the collapsing token"],
+        meaning: "Others fall. SCHIZORA feeds.",
+        note: "Parasite Mode is separate from the 7 daily rotation and uses outside weakness to strengthen SCHIZORA."
+      }
+    };
+
+    function setModeDetail(key){
+      const data = MODE_DETAILS[key] || MODE_DETAILS.calm;
+      $("modeTitle").textContent = data.title;
+      $("modeSubtitle").textContent = data.subtitle;
+      $("modeBuy").textContent = data.buy;
+      $("modeSell").textContent = data.sell;
+      $("modeDuration").textContent = data.duration;
+      $("modeMeaning").textContent = data.meaning;
+      $("modeNote").textContent = data.note;
+      $("modeFunction").innerHTML = data.functionItems.map(item => `<li>${item}</li>`).join("");
+      document.querySelectorAll(".mode").forEach(btn => btn.classList.toggle("active", btn.dataset.mode === key));
+    }
+
+    document.querySelectorAll(".mode").forEach(btn => {
+      btn.addEventListener("click", () => {
+        setModeDetail(btn.dataset.mode);
+        document.getElementById("modeDetail").scrollIntoView({behavior:"smooth", block:"nearest"});
+      });
+    });
+    setModeDetail("calm");
+
     document.querySelectorAll(".quick button").forEach(b=>b.addEventListener("click",()=>$("bnbAmount").value=b.dataset.amount));
     document.querySelectorAll(".copy").forEach(b=>b.addEventListener("click",async()=>{await navigator.clipboard.writeText(b.dataset.copy); b.textContent="Copied"; setTimeout(()=>b.textContent="Copy",1200)}));
     $("connectBtnTop").onclick = connectWallet; $("connectBtnMobile").onclick = connectWallet; $("buyBtn").onclick = buy; $("claimBtn").onclick = claim; $("refundBtn").onclick = refund;
