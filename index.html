@@ -1,272 +1,567 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SCHIZORA ($SZR) — Official Presale</title>
-<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SCHIZORA ($SZR) — Official Presale</title>
+  <meta name="description" content="SCHIZORA ($SZR) official presale. Seven Minds. One Token." />
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
 
-<style>
-*{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:#07000d;color:#fff}
-a{text-decoration:none;color:inherit}
-.header{position:sticky;top:0;z-index:10;background:#090012;border-bottom:1px solid #3b145c}
-.nav{max-width:1300px;margin:auto;padding:18px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px}
-.logo{font-size:30px;font-weight:900;letter-spacing:8px}
-.logo span{display:block;font-size:13px;color:#c8a5e8;letter-spacing:6px;margin-top:6px}
-.links{display:flex;gap:24px;font-weight:900;letter-spacing:2px}
-.links a{color:#e7d6ff}
-.btn{background:linear-gradient(135deg,#8b22ff,#c23cff);padding:14px 22px;border-radius:16px;border:0;color:white;font-weight:900;cursor:pointer}
-.wrap{max-width:1300px;margin:auto;padding:40px 24px}
-.hero{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center;min-height:620px}
-.hero h1{font-size:72px;line-height:.95;margin:0 0 22px}
-.hero p{font-size:21px;line-height:1.6;color:#d9c7ee}
-.hero-img{background:#050008;border:1px solid #55207a;border-radius:28px;padding:14px;box-shadow:0 0 60px rgba(160,60,255,.25)}
-.hero-img img{width:100%;max-height:620px;object-fit:contain;border-radius:20px;display:block}
-.badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
-.badge{padding:10px 14px;border:1px solid #55207a;border-radius:999px;color:#e4cdf6;background:#160022}
-.section{padding:50px 0}
-.section h2{font-size:42px;margin:0 0 24px}
-.presale{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-.card{background:#12001f;border:1px solid #4b176f;border-radius:24px;padding:24px}
-.count{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.box{text-align:center;background:#08000f;border:1px solid #4b176f;border-radius:18px;padding:16px}
-.box b{display:block;font-size:34px;color:#d56bff}
-.progress{height:16px;background:#08000f;border-radius:999px;overflow:hidden;border:1px solid #4b176f;margin:18px 0}
-.progress div{height:100%;width:0;background:linear-gradient(90deg,#7b22ff,#e04dff)}
-input{width:100%;padding:16px;border-radius:14px;background:#07000d;border:1px solid #4b176f;color:white;font-size:18px;margin:12px 0}
-.modes{display:grid;grid-template-columns:340px 1fr;gap:24px}
-.mode-list{display:flex;flex-direction:column;gap:12px}
-.mode-btn{display:grid;grid-template-columns:84px 1fr;gap:14px;align-items:center;background:#12001f;border:1px solid #4b176f;border-radius:18px;padding:12px;cursor:pointer}
-.mode-btn.active,.mode-btn:hover{border-color:#b846ff;box-shadow:0 0 25px rgba(180,70,255,.28)}
-.mode-btn img{width:84px;height:84px;object-fit:cover;border-radius:14px;background:#000}
-.mode-btn h3{margin:0;color:#fff;font-size:18px}
-.mode-btn p{margin:5px 0 0;color:#cdb4e8;font-size:14px}
-.mode-main{display:grid;grid-template-columns:1fr 1fr;gap:24px}
-.mode-image{background:#050008;border:1px solid #4b176f;border-radius:24px;min-height:560px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.mode-image img{width:100%;height:100%;object-fit:contain;display:block}
-.mode-info h3{font-size:44px;margin:0}
-.mode-info .meaning{color:#d56bff;font-size:22px;margin:12px 0 20px}
-.taxgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
-.tax{text-align:center;background:#19002a;border:1px solid #4b176f;border-radius:18px;padding:18px}
-.tax small{color:#ccb0e8;font-weight:900;letter-spacing:2px}
-.tax b{display:block;font-size:34px;color:#d56bff;margin-top:10px}
-ul{line-height:1.8}
-.contract{word-break:break-all;background:#08000f;border:1px solid #4b176f;border-radius:16px;padding:15px;margin:10px 0}
-.footer{text-align:center;color:#bfa8d8;padding:40px}
-@media(max-width:950px){.hero,.presale,.modes,.mode-main{grid-template-columns:1fr}.links{display:none}.hero h1{font-size:46px}.count,.taxgrid{grid-template-columns:1fr}}
-</style>
+  <style>
+    :root{
+      --bg:#030006;
+      --panel:rgba(18,0,32,.74);
+      --panel2:rgba(37,0,66,.62);
+      --line:rgba(210,110,255,.28);
+      --hot:#d946ef;
+      --violet:#8b5cf6;
+      --cyan:#67e8f9;
+      --green:#5cff9d;
+      --text:#fff;
+      --muted:#d6c4ee;
+      --danger:#ff4fd8;
+    }
+
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter, Arial, Helvetica, sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(139,92,246,.38), transparent 30%),
+        radial-gradient(circle at 84% 2%, rgba(217,70,239,.24), transparent 32%),
+        radial-gradient(circle at 55% 80%, rgba(103,232,249,.10), transparent 28%),
+        linear-gradient(180deg,#030006 0%,#090012 44%,#020004 100%);
+      overflow-x:hidden;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:0;
+      background:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size:54px 54px;
+      mask-image:radial-gradient(circle at center, black, transparent 80%);
+    }
+
+    body::after{
+      content:"";
+      position:fixed;
+      inset:-40%;
+      pointer-events:none;
+      z-index:0;
+      background:conic-gradient(from 90deg, transparent, rgba(168,85,247,.08), transparent, rgba(103,232,249,.06), transparent);
+      animation:spin 26s linear infinite;
+    }
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+    @keyframes pulse{0%,100%{opacity:.58}50%{opacity:1}}
+    @keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(110%)}}
+
+    a{color:inherit;text-decoration:none}
+    button,input{font-family:inherit}
+    .wrap{width:min(1340px, calc(100% - 42px));margin:0 auto;position:relative;z-index:2}
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:50;
+      border-bottom:1px solid var(--line);
+      background:rgba(4,0,9,.78);
+      backdrop-filter:blur(18px);
+    }
+
+    .nav{
+      min-height:92px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+    }
+
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand-logo{
+      width:60px;height:60px;border-radius:19px;
+      display:grid;place-items:center;
+      background:linear-gradient(135deg,#1d0633,#8b22ff 55%,#e84cff);
+      box-shadow:0 0 38px rgba(217,70,239,.45), inset 0 0 18px rgba(255,255,255,.12);
+      font-size:33px;font-weight:1000;letter-spacing:-2px;
+      border:1px solid rgba(255,255,255,.18);
+    }
+    .brand h1{margin:0;font-size:28px;letter-spacing:8px;line-height:1}
+    .brand span{display:block;margin-top:8px;color:#cdb3ee;font-size:12px;letter-spacing:6px}
+
+    .navlinks{display:flex;align-items:center;gap:22px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:1.6px;color:#e9d9ff}
+    .navlinks a{opacity:.9}
+    .navlinks a:hover{opacity:1;color:white;text-shadow:0 0 18px var(--hot)}
+
+    .btn{
+      border:0;
+      color:white;
+      cursor:pointer;
+      min-height:48px;
+      padding:14px 22px;
+      border-radius:16px;
+      font-weight:1000;
+      letter-spacing:.5px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:9px;
+      background:linear-gradient(135deg,#7c21ff,#d946ef);
+      box-shadow:0 0 34px rgba(217,70,239,.36);
+      transition:.18s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{transform:translateY(-2px);box-shadow:0 0 52px rgba(217,70,239,.68)}
+    .btn.ghost{
+      background:rgba(255,255,255,.055);
+      border:1px solid var(--line);
+      box-shadow:none;
+    }
+    .btn.ghost:hover{background:rgba(139,92,246,.18)}
+
+    .hero{
+      min-height:calc(100vh - 92px);
+      display:grid;
+      grid-template-columns:1.02fr .98fr;
+      gap:42px;
+      align-items:center;
+      padding:74px 0 56px;
+    }
+
+    .tag{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:11px 17px;border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.055);
+      color:#e9d9ff;font-weight:900;letter-spacing:.5px;
+    }
+    .live-dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 18px var(--green);animation:pulse 1.6s infinite}
+
+    .hero-title{
+      margin:28px 0 18px;
+      font-size:clamp(52px,7.5vw,112px);
+      line-height:.88;
+      letter-spacing:-5px;
+      text-transform:uppercase;
+      text-shadow:0 0 42px rgba(217,70,239,.18);
+    }
+    .hero-title .grad{
+      background:linear-gradient(90deg,#fff,#ddb5ff 46%,#a855f7 72%,#67e8f9);
+      color:transparent;
+      -webkit-background-clip:text;background-clip:text;
+    }
+    .hero-text{
+      max-width:720px;
+      color:var(--muted);
+      font-size:20px;
+      line-height:1.75;
+    }
+
+    .hero-actions{display:flex;flex-wrap:wrap;gap:13px;margin-top:28px}
+    .mini-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+    .pill{
+      padding:10px 14px;border-radius:999px;
+      background:rgba(255,255,255,.052);
+      border:1px solid rgba(210,110,255,.22);
+      color:#e5d3f8;
+      font-weight:850;
+      font-size:14px;
+    }
+
+    .hero-card{
+      position:relative;
+      padding:16px;
+      border-radius:34px;
+      background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
+      border:1px solid var(--line);
+      box-shadow:0 0 90px rgba(139,92,246,.26);
+      animation:float 6s ease-in-out infinite;
+      overflow:hidden;
+    }
+    .hero-card::before{
+      content:"";
+      position:absolute;inset:-2px;
+      background:linear-gradient(135deg,rgba(217,70,239,.5),transparent 38%,rgba(103,232,249,.25),transparent);
+      filter:blur(18px);opacity:.65;z-index:-1;
+    }
+    .hero-card::after{
+      content:"";
+      position:absolute;left:0;right:0;height:35%;
+      background:linear-gradient(180deg,transparent,rgba(255,255,255,.08),transparent);
+      animation:scan 4.4s linear infinite;
+      pointer-events:none;
+    }
+    .hero-card img{
+      width:100%;
+      max-height:660px;
+      display:block;
+      object-fit:contain;
+      border-radius:25px;
+      background:#030006;
+    }
+
+    .section{padding:74px 0}
+    .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:22px;margin-bottom:26px}
+    .section-head h2{margin:0;font-size:44px;letter-spacing:-1px;text-transform:uppercase}
+    .section-head p{margin:0;color:var(--muted)}
+
+    .glass{
+      border:1px solid var(--line);
+      border-radius:28px;
+      background:var(--panel);
+      box-shadow:0 24px 80px rgba(0,0,0,.32), inset 0 0 35px rgba(255,255,255,.025);
+      backdrop-filter:blur(18px);
+    }
+
+    .presale-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:24px}
+    .card{padding:26px}
+    .card h3{margin:0 0 13px;font-size:26px}
+    .muted{color:var(--muted);line-height:1.6}
+
+    .countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:22px 0}
+    .timebox{
+      text-align:center;padding:18px 8px;
+      border-radius:20px;background:rgba(0,0,0,.35);
+      border:1px solid rgba(210,110,255,.22);
+    }
+    .timebox b{display:block;font-size:34px;color:#f0a6ff}
+    .timebox span{display:block;margin-top:6px;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#cdb3ee}
+
+    .progress-bg{height:18px;border-radius:999px;background:rgba(0,0,0,.5);border:1px solid rgba(210,110,255,.22);overflow:hidden;margin:18px 0 12px}
+    .progress-bar{height:100%;width:0%;background:linear-gradient(90deg,#7c21ff,#e252ff,#67e8f9);box-shadow:0 0 34px rgba(217,70,239,.65)}
+
+    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
+    .stat{border:1px solid rgba(210,110,255,.18);background:rgba(0,0,0,.24);border-radius:18px;padding:15px}
+    .stat small{display:block;color:#cdb3ee;text-transform:uppercase;letter-spacing:1px}
+    .stat strong{display:block;margin-top:8px;font-size:20px}
+
+    input{
+      width:100%;
+      padding:17px;
+      border-radius:17px;
+      border:1px solid rgba(210,110,255,.28);
+      background:rgba(0,0,0,.42);
+      color:white;
+      outline:none;
+      font-size:18px;
+      margin:12px 0;
+    }
+    .status{color:var(--muted);line-height:1.55;word-break:break-word}
+
+    .modes-layout{display:grid;grid-template-columns:365px 1fr;gap:24px}
+    .mode-list{display:flex;flex-direction:column;gap:12px}
+    .mode-btn{
+      display:grid;grid-template-columns:88px 1fr;gap:15px;align-items:center;
+      padding:13px;border-radius:22px;
+      background:rgba(255,255,255,.045);
+      border:1px solid rgba(210,110,255,.22);
+      cursor:pointer;transition:.18s ease;
+    }
+    .mode-btn:hover,.mode-btn.active{
+      transform:translateX(4px);
+      border-color:rgba(236,120,255,.9);
+      box-shadow:0 0 32px rgba(217,70,239,.24);
+      background:rgba(139,92,246,.13);
+    }
+    .mode-thumb{width:88px;height:88px;object-fit:cover;border-radius:16px;background:#030006;border:1px solid rgba(255,255,255,.1)}
+    .mode-btn h4{margin:0;font-size:18px;text-transform:uppercase}
+    .mode-btn span{display:block;margin-top:6px;color:#cdb3ee;font-size:14px}
+
+    .mode-panel{display:grid;grid-template-columns:1fr .95fr;gap:24px;padding:24px}
+    .mode-image{
+      min-height:640px;border-radius:26px;overflow:hidden;background:#030006;
+      border:1px solid rgba(210,110,255,.24);
+      display:flex;align-items:center;justify-content:center;
+      box-shadow:inset 0 0 55px rgba(139,92,246,.08),0 0 60px rgba(217,70,239,.14);
+    }
+    .mode-image img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 0 22px rgba(217,70,239,.32))}
+
+    .mode-info h3{font-size:48px;margin:0 0 8px;text-transform:uppercase}
+    .meaning{font-size:22px;color:#f0a6ff;margin-bottom:20px}
+    .tax-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}
+    .tax{padding:18px 8px;text-align:center;border-radius:19px;background:rgba(0,0,0,.25);border:1px solid rgba(210,110,255,.2)}
+    .tax small{display:block;color:#cdb3ee;text-transform:uppercase;letter-spacing:2px;font-weight:900}
+    .tax strong{display:block;margin-top:10px;font-size:35px;color:#f0a6ff}
+    .mode-box{margin-top:16px;padding:21px;border-radius:22px;background:rgba(0,0,0,.24);border:1px solid rgba(210,110,255,.18)}
+    .mode-box h4{margin:0 0 12px;color:#e252ff;text-transform:uppercase;letter-spacing:3px}
+    .mode-box li{margin:10px 0;color:#eee2f8;line-height:1.55}
+
+    .tokenomics{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .info{padding:22px;border-radius:22px;background:rgba(255,255,255,.045);border:1px solid rgba(210,110,255,.2)}
+    .info small{display:block;color:#cdb3ee;text-transform:uppercase;letter-spacing:2px}
+    .info strong{display:block;margin-top:8px;font-size:24px}
+
+    .contract{padding:16px;border-radius:16px;background:rgba(0,0,0,.28);border:1px solid rgba(210,110,255,.18);margin:12px 0;word-break:break-all}
+    footer{text-align:center;color:#baa5d0;padding:46px 0}
+
+    @media(max-width:1050px){
+      .hero,.presale-grid,.modes-layout,.mode-panel{grid-template-columns:1fr}
+      .navlinks{display:none}
+      .stat-grid,.tokenomics{grid-template-columns:repeat(2,1fr)}
+      .mode-image{min-height:480px}
+    }
+    @media(max-width:640px){
+      .wrap{width:min(100% - 28px,1340px)}
+      .nav{min-height:auto;padding:14px 0}
+      .brand h1{font-size:22px;letter-spacing:5px}.brand span{letter-spacing:3px}
+      .hero{padding:44px 0}.hero-title{font-size:42px;letter-spacing:-2px}
+      .countdown,.stat-grid,.tax-grid,.tokenomics{grid-template-columns:1fr}
+      .mode-btn{grid-template-columns:76px 1fr}.mode-thumb{width:76px;height:76px}
+    }
+  </style>
 </head>
 
 <body>
+<header class="topbar">
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <div class="brand-logo">Z</div>
+      <div>
+        <h1>SCHIZORA</h1>
+        <span>SEVEN MINDS. ONE TOKEN.</span>
+      </div>
+    </a>
 
-<header class="header">
-  <div class="nav">
-    <div class="logo">SCHIZORA<span>SEVEN MINDS. ONE TOKEN.</span></div>
-    <div class="links">
-      <a href="#presale">PRESALE</a>
-      <a href="#modes">MODES</a>
-      <a href="#tokenomics">TOKENOMICS</a>
-      <a href="#contracts">CONTRACTS</a>
-      <a href="#terms">TERMS</a>
-      <a href="SCHIZORA_Master_Whitepaper.pdf" target="_blank">WHITEPAPER</a>
-    </div>
-    <button class="btn" onclick="connectWallet()" id="walletBtn">Connect Wallet</button>
+    <nav class="navlinks">
+      <a href="#presale">Presale</a>
+      <a href="#modes">Modes</a>
+      <a href="#tokenomics">Tokenomics</a>
+      <a href="#contracts">Contracts</a>
+      <a href="#terms">Terms</a>
+      <a href="SCHIZORA_Master_Whitepaper.pdf" target="_blank">Whitepaper</a>
+    </nav>
+
+    <button class="btn" id="walletBtn" onclick="connectWallet()">Connect Wallet</button>
   </div>
 </header>
 
-<main class="wrap">
+<main>
+  <section class="wrap hero" id="top">
+    <div>
+      <div class="tag"><span class="live-dot"></span> Official Presale • BNB Chain • May 4, 2026 — 16:00 UTC</div>
+      <h2 class="hero-title"><span class="grad">Seven Minds.</span><br>One Token.</h2>
+      <p class="hero-text">SCHIZORA ($SZR) is a behavioral token built around rotating personalities, dynamic market pressure, burn logic, rewards, and a community-first identity.</p>
 
-<section class="hero">
-  <div>
-    <div class="badge">Official Presale • BNB Chain • May 4, 2026 — 16:00 UTC</div>
-    <h1>SEVEN MINDS.<br>ONE TOKEN.</h1>
-    <p>SCHIZORA ($SZR) is a behavioral token built around rotating personalities, dynamic market pressure, burn logic, rewards, and a community-first identity.</p>
-    <p>
-      <a class="btn" href="#presale">Enter Presale</a>
-      <a class="btn" href="#modes">Explore Modes</a>
-      <a class="btn" href="SCHIZORA_Master_Whitepaper.pdf" target="_blank">Whitepaper</a>
-    </p>
-    <div class="badges">
-      <div class="badge">Softcap 5 BNB</div>
-      <div class="badge">Hardcap 20 BNB</div>
-      <div class="badge">Min 0.05 BNB</div>
-      <div class="badge">Max 0.50 BNB</div>
-      <div class="badge">50% Claim + 50% After 7 Days</div>
-    </div>
-  </div>
-
-  <div class="hero-img">
-    <img id="heroImage" alt="SCHIZORA">
-  </div>
-</section>
-
-<section id="presale" class="section">
-  <h2>Presale</h2>
-  <div class="presale">
-    <div class="card">
-      <h3 id="phaseLabel">Countdown</h3>
-      <div class="count">
-        <div class="box"><b id="days">00</b><span>Days</span></div>
-        <div class="box"><b id="hours">00</b><span>Hours</span></div>
-        <div class="box"><b id="minutes">00</b><span>Minutes</span></div>
-        <div class="box"><b id="seconds">00</b><span>Seconds</span></div>
+      <div class="hero-actions">
+        <a class="btn" href="#presale">Enter Presale</a>
+        <a class="btn ghost" href="#modes">Explore Modes</a>
+        <a class="btn ghost" href="SCHIZORA_Master_Whitepaper.pdf" target="_blank">Whitepaper</a>
       </div>
-      <div class="progress"><div id="progressBar"></div></div>
-      <p id="raisedText">Raised: loading...</p>
-    </div>
 
-    <div class="card">
-      <h3>Buy Presale</h3>
-      <input id="buyAmount" value="0.05" placeholder="BNB amount">
-      <button class="btn" onclick="buyPresale()">Buy SZR</button>
-      <button class="btn" onclick="claimTokens()">Claim</button>
-      <button class="btn" onclick="refundBNB()">Refund</button>
-      <p id="web3Status">Wallet not connected.</p>
-    </div>
-  </div>
-</section>
-
-<section id="modes" class="section">
-  <h2>Modes</h2>
-  <div class="modes">
-    <div class="mode-list" id="modeList"></div>
-
-    <div class="card mode-main">
-      <div class="mode-image">
-        <img id="modeImage" alt="Mode image">
+      <div class="mini-stats">
+        <span class="pill">Softcap 5 BNB</span>
+        <span class="pill">Hardcap 20 BNB</span>
+        <span class="pill">Min 0.05 BNB</span>
+        <span class="pill">Max 0.50 BNB</span>
+        <span class="pill">50% Claim + 50% After 7 Days</span>
       </div>
-      <div class="mode-info">
-        <h3 id="modeTitle"></h3>
-        <div class="meaning" id="modeMeaning"></div>
-        <div class="taxgrid">
-          <div class="tax"><small>BUY TAX</small><b id="buyTax"></b></div>
-          <div class="tax"><small>SELL TAX</small><b id="sellTax"></b></div>
-          <div class="tax"><small>DURATION</small><b id="duration"></b></div>
+    </div>
+
+    <div class="hero-card">
+      <img id="heroImage" alt="SCHIZORA homepage image">
+    </div>
+  </section>
+
+  <section class="wrap section" id="presale">
+    <div class="section-head">
+      <h2>Presale</h2>
+      <p id="phaseLabel" class="pill">Loading countdown...</p>
+    </div>
+
+    <div class="presale-grid">
+      <div class="glass card">
+        <h3>Countdown</h3>
+        <div class="countdown">
+          <div class="timebox"><b id="days">00</b><span>Days</span></div>
+          <div class="timebox"><b id="hours">00</b><span>Hours</span></div>
+          <div class="timebox"><b id="minutes">00</b><span>Minutes</span></div>
+          <div class="timebox"><b id="seconds">00</b><span>Seconds</span></div>
         </div>
-        <h4>Function</h4>
-        <ul id="modeFunction"></ul>
-        <h4>Meaning</h4>
-        <p id="modeLong"></p>
+
+        <div class="progress-bg"><div class="progress-bar" id="progressBar"></div></div>
+        <p class="status" id="raisedText">Raised: loading...</p>
+
+        <div class="stat-grid">
+          <div class="stat"><small>Softcap</small><strong>5 BNB</strong></div>
+          <div class="stat"><small>Hardcap</small><strong>20 BNB</strong></div>
+          <div class="stat"><small>Min Buy</small><strong>0.05 BNB</strong></div>
+          <div class="stat"><small>Max Buy</small><strong>0.50 BNB</strong></div>
+        </div>
+      </div>
+
+      <div class="glass card">
+        <h3>Presale Panel</h3>
+        <p class="muted">Connect wallet, buy with BNB, claim available SZR after success, or refund if presale fails.</p>
+        <input id="buyAmount" value="0.05" placeholder="BNB amount">
+        <div class="hero-actions">
+          <button class="btn" onclick="buyPresale()">Buy SZR</button>
+          <button class="btn ghost" onclick="claimTokens()">Claim</button>
+          <button class="btn ghost" onclick="refundBNB()">Refund</button>
+          <button class="btn ghost" onclick="loadPresaleData()">Refresh</button>
+        </div>
+        <p class="status" id="web3Status">Wallet not connected.</p>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="tokenomics" class="section">
-  <h2>Tokenomics</h2>
-  <div class="presale">
-    <div class="card">Total Supply: <b>666,666,666 SZR</b></div>
-    <div class="card">Presale: <b>166,666,666 SZR</b></div>
-    <div class="card">Liquidity Pool: <b>233,333,333 SZR</b></div>
-    <div class="card">Treasury / Ecosystem: <b>100,000,000 SZR</b></div>
-  </div>
-</section>
+  <section class="wrap section" id="modes">
+    <div class="section-head">
+      <h2>Modes</h2>
+      <p class="pill">7 Daily Modes + Parasite Mode</p>
+    </div>
 
-<section id="contracts" class="section">
-  <h2>Contracts & Links</h2>
-  <div class="card">
-    <div class="contract">SZR Token: <a target="_blank" href="https://bscscan.com/address/0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064">0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064</a></div>
-    <div class="contract">Presale: <a target="_blank" href="https://bscscan.com/address/0x6DBc5a0EFC9848eB27B1c8b5C333af8DA956161A">0x6DBc5a0EFC9848eB27B1c8b5C333af8DA956161A</a></div>
-    <p>
-      <a class="btn" target="_blank" href="https://t.me/schizora_official">Telegram</a>
-      <a class="btn" target="_blank" href="https://x.com/SchizoraHQ">X</a>
-      <a class="btn" target="_blank" href="SCHIZORA_Master_Whitepaper.pdf">Whitepaper</a>
-    </p>
-  </div>
-</section>
+    <div class="modes-layout">
+      <div class="mode-list" id="modeList"></div>
 
-<section id="terms" class="section">
-  <h2>Terms</h2>
-  <div class="card">
-    Crypto assets are volatile. This is not financial advice. Only participate with funds you can afford to lose. Always verify official contract addresses.
-  </div>
-</section>
+      <div class="glass mode-panel">
+        <div class="mode-image">
+          <img id="modeImage" alt="SCHIZORA mode image">
+        </div>
 
+        <div class="mode-info">
+          <h3 id="modeTitle"></h3>
+          <div id="modeMeaning" class="meaning"></div>
+
+          <div class="tax-grid">
+            <div class="tax"><small>Buy Tax</small><strong id="buyTax"></strong></div>
+            <div class="tax"><small>Sell Tax</small><strong id="sellTax"></strong></div>
+            <div class="tax"><small>Duration</small><strong id="duration"></strong></div>
+          </div>
+
+          <div class="mode-box">
+            <h4>Function</h4>
+            <ul id="modeFunction"></ul>
+          </div>
+
+          <div class="mode-box">
+            <h4>Meaning</h4>
+            <p id="modeLong" class="muted"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section" id="tokenomics">
+    <div class="section-head"><h2>Tokenomics</h2></div>
+    <div class="tokenomics">
+      <div class="info"><small>Total Supply</small><strong>666,666,666 SZR</strong></div>
+      <div class="info"><small>Presale</small><strong>166,666,666 SZR</strong></div>
+      <div class="info"><small>Liquidity Pool</small><strong>233,333,333 SZR</strong></div>
+      <div class="info"><small>Treasury / Ecosystem</small><strong>100,000,000 SZR</strong></div>
+      <div class="info"><small>Rewards / Utilities</small><strong>66,666,666 SZR</strong></div>
+      <div class="info"><small>Team / Development</small><strong>66,666,666 SZR</strong></div>
+    </div>
+  </section>
+
+  <section class="wrap section" id="contracts">
+    <div class="section-head"><h2>Contracts & Links</h2></div>
+    <div class="glass card">
+      <div class="contract"><b>SZR Token:</b> <a target="_blank" href="https://bscscan.com/address/0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064">0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064</a></div>
+      <div class="contract"><b>Presale:</b> <a target="_blank" href="https://bscscan.com/address/0x6DBc5a0EFC9848eB27B1c8b5C333af8DA956161A">0x6DBc5a0EFC9848eB27B1c8b5C333af8DA956161A</a></div>
+      <div class="hero-actions">
+        <a class="btn ghost" target="_blank" href="https://t.me/schizora_official">Telegram</a>
+        <a class="btn ghost" target="_blank" href="https://x.com/SchizoraHQ">X / Twitter</a>
+        <a class="btn ghost" target="_blank" href="SCHIZORA_Master_Whitepaper.pdf">Whitepaper</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap section" id="terms">
+    <div class="section-head"><h2>Terms & Risk</h2></div>
+    <div class="glass card">
+      <p class="muted">SCHIZORA is a crypto token project with dynamic mechanics. Crypto assets are risky and volatile. Nothing on this website is financial advice. Only participate with funds you can afford to lose. Always verify official contract addresses before interacting.</p>
+    </div>
+  </section>
 </main>
 
-<footer class="footer">SCHIZORA ($SZR) — Seven Minds. One Token.</footer>
+<footer class="wrap">SCHIZORA ($SZR) — Seven Minds. One Token.</footer>
 
 <script>
-const PRESALE_ADDRESS="0x6DBc5a0EFC9848eB27B1c8b5C333af8DA956161A";
-const HARD_CAP=20;
-const START_TIME=1777910400;
-const END_TIME=START_TIME+(21*24*60*60);
+const PRESALE_ADDRESS = "0x6DBc5a0EFC9848eB27B1c8b5C333af8DA956161A";
+const HARD_CAP = 20;
+const START_TIME = 1777910400;
+const END_TIME = START_TIME + (21 * 24 * 60 * 60);
 
-const ABI=[
-"function buy() payable",
-"function claimAllAvailable()",
-"function refund()",
-"function totalRaised() view returns (uint256)"
+const ABI = [
+  "function buy() payable",
+  "function claimAllAvailable()",
+  "function refund()",
+  "function totalRaised() view returns (uint256)"
 ];
 
-let provider,signer,presaleContract,account;
+let provider, signer, presaleContract, account;
 
 function setImgWithFallback(img, paths){
-  let i=0;
-  function tryNext(){
-    if(i>=paths.length){ img.style.display="none"; return; }
-    img.src=paths[i++];
+  let i = 0;
+  img.style.display = "block";
+  function next(){
+    if(i >= paths.length){ img.style.display = "none"; return; }
+    img.src = paths[i++];
   }
-  img.onerror=tryNext;
-  tryNext();
+  img.onerror = next;
+  next();
 }
 
-const modeData=[
-{id:1,name:"Calm Mode",short:"Stable market phase.",buy:"2%",sell:"2%",duration:"24h",meaning:"Silence. Stability. Patience.",fn:["Lowers market pressure","Easier entries","Stable trading environment","Recovery phase after aggressive modes"],long:"Calm Mode is the breathing phase of SCHIZORA."},
-{id:2,name:"Burn Mode",short:"Supply reduction.",buy:"5%",sell:"8%",duration:"24h",meaning:"SCHIZORA consumes itself.",fn:["Larger share redirected to burn wallet","Circulating supply reduced faster","Deflation day"],long:"Burn Mode strengthens scarcity and accelerates burn logic."},
-{id:3,name:"Reward Mode",short:"Holder rewards.",buy:"5%",sell:"8%",duration:"24h",meaning:"Loyal holders benefit.",fn:["Higher reward allocation","Supports holder rewards","Ecosystem growth day"],long:"Reward Mode supports holders and future ecosystem incentives."},
-{id:4,name:"Chaos Mode",short:"Dynamic volatility.",buy:"3–7%",sell:"6–10%",duration:"24h",meaning:"No certainty. Pure chaos.",fn:["Taxes fluctuate inside limits","Unpredictable trading conditions","High attention / hype mode"],long:"Chaos Mode creates attention through controlled unpredictability."},
-{id:5,name:"Mirror Mode",short:"Market adaptive.",buy:"4–6%",sell:"6–10%",duration:"24h",meaning:"The market speaks. SCHIZORA responds.",fn:["Adaptive taxes","If buys dominate, sell tax lowers","If sells dominate, sell tax rises"],long:"Mirror Mode reflects market behavior."},
-{id:6,name:"Silent Mode",short:"Quiet accumulation.",buy:"1%",sell:"3%",duration:"24h",meaning:"Quiet movement.",fn:["Low noise day","Accumulation style mode","Stealth growth"],long:"Silent Mode is the stealth phase."},
-{id:7,name:"Predator Mode",short:"Weak hands feed the system.",buy:"5%",sell:"12%",duration:"24h",meaning:"Weak hands feed the system.",fn:["Punishes panic sellers","Protects chart pressure","Boosts treasury / burn"],long:"Predator Mode increases sell pressure cost and strengthens the ecosystem."},
-{id:8,name:"Parasite Mode",short:"Others fall. SCHIZORA feeds.",buy:"5%",sell:"10%",duration:"2h",meaning:"Others fall. SCHIZORA feeds.",fn:["Activates on collapse signals","Automatic SZR buyback","Partial burn","Treasury strengthening","Does not buy collapsing token"],long:"Parasite Mode converts outside weakness into SCHIZORA strength."}
-];
+function heroPaths(){
+  return [
+    "assets/logo.png","assets/logo.jpg","assets/logo.jpeg",
+    "assets/hero.png","assets/hero.jpg","assets/hero.jpeg",
+    "assets/LOgo.jpeg","assets/LOgo.jpg","assets/LOgo.png",
+    "LOgo.jpeg","logo.png","hero.jpg"
+  ];
+}
 
 function modePaths(id){
   return [
     `assets/mode${id}.png`,
     `assets/mode${id}.jpg`,
     `assets/mode${id}.jpeg`,
-    `assets/Mode${id}.png`,
-    `assets/Mode${id}.jpg`,
     `images/mode${id}.png`,
-    `images/mode${id}.jpg`
+    `images/mode${id}.jpg`,
+    `mode${id}.png`,
+    `mode${id}.jpg`
   ];
 }
 
-function heroPaths(){
-  return [
-    "assets/logo.png",
-    "assets/logo.jpg",
-    "assets/hero.png",
-    "assets/hero.jpg",
-    "assets/LOgo.jpeg",
-    "assets/LOgo.jpg",
-    "LOgo.jpeg",
-    "logo.png",
-    "hero.jpg"
-  ];
-}
+const modeData = [
+  {id:1,name:"Calm Mode",short:"Stable market phase.",buy:"2%",sell:"2%",duration:"24h",meaning:"Silence. Stability. Patience.",fn:["Lowers market pressure","Easier entries","Stable trading environment","Recovery phase after aggressive modes"],long:"Calm Mode is the breathing phase of SCHIZORA. It gives the market space to reset."},
+  {id:2,name:"Burn Mode",short:"Supply reduction.",buy:"5%",sell:"8%",duration:"24h",meaning:"SCHIZORA consumes itself.",fn:["Larger share redirected to burn wallet","Circulating supply reduced faster","Deflation day"],long:"Burn Mode strengthens scarcity and accelerates long-term supply pressure."},
+  {id:3,name:"Reward Mode",short:"Holder rewards.",buy:"5%",sell:"8%",duration:"24h",meaning:"Loyal holders benefit.",fn:["Higher treasury/reward allocation","Supports future holder rewards","Ecosystem growth day"],long:"Reward Mode gives value back to the ecosystem and supports future holder incentives."},
+  {id:4,name:"Chaos Mode",short:"Dynamic volatility.",buy:"3–7%",sell:"6–10%",duration:"24h",meaning:"No certainty. Pure chaos.",fn:["Taxes fluctuate inside limits","Unpredictable trading conditions","High attention / hype mode"],long:"Chaos Mode creates curiosity and attention through controlled unpredictability."},
+  {id:5,name:"Mirror Mode",short:"Market adaptive.",buy:"4–6%",sell:"6–10%",duration:"24h",meaning:"The market speaks. SCHIZORA responds.",fn:["Adaptive taxes based on buy/sell pressure","If buys dominate, sell tax lowers","If sells dominate, sell tax rises"],long:"Mirror Mode reflects crowd behavior and makes SCHIZORA feel reactive and alive."},
+  {id:6,name:"Silent Mode",short:"Quiet accumulation.",buy:"1%",sell:"3%",duration:"24h",meaning:"Quiet movement.",fn:["Low noise day","Accumulation style mode","Stealth growth"],long:"Silent Mode is the low-friction stealth phase before mutation."},
+  {id:7,name:"Predator Mode",short:"Weak hands feed the system.",buy:"5%",sell:"12%",duration:"24h",meaning:"Weak hands feed the system.",fn:["Punishes panic sellers","Protects chart pressure","Boosts treasury / burn"],long:"Predator Mode increases the cost of weak exits and strengthens the ecosystem."},
+  {id:8,name:"Parasite Mode",short:"Others fall. SCHIZORA feeds.",buy:"5%",sell:"10%",duration:"2h",meaning:"Others fall. SCHIZORA feeds.",fn:["Activates on tracked token collapse signals","Automatic SZR buyback","Partial burn of bought tokens","Treasury strengthening","Does not buy collapsing token"],long:"Parasite Mode is special. It activates when watched tokens collapse and converts outside weakness into SCHIZORA strength."}
+];
 
 function initImages(){
   setImgWithFallback(document.getElementById("heroImage"), heroPaths());
 }
 
 function initModes(){
-  const list=document.getElementById("modeList");
-  list.innerHTML="";
-  modeData.forEach(m=>{
-    const item=document.createElement("div");
-    item.className="mode-btn";
-    item.onclick=()=>selectMode(m.id);
+  const list = document.getElementById("modeList");
+  list.innerHTML = "";
+  modeData.forEach(m => {
+    const item = document.createElement("div");
+    item.className = "mode-btn";
+    item.onclick = () => selectMode(m.id);
 
-    const thumb=document.createElement("img");
-    thumb.alt=m.name;
+    const thumb = document.createElement("img");
+    thumb.className = "mode-thumb";
+    thumb.alt = m.name;
     setImgWithFallback(thumb, modePaths(m.id));
 
-    const text=document.createElement("div");
-    text.innerHTML=`<h3>${m.id===8?"Special":("Mode "+m.id)} — ${m.name}</h3><p>${m.short}</p>`;
+    const text = document.createElement("div");
+    text.innerHTML = `<h4>${m.id === 8 ? "Special" : "Mode " + m.id} — ${m.name}</h4><span>${m.short}</span>`;
 
     item.appendChild(thumb);
     item.appendChild(text);
@@ -276,94 +571,112 @@ function initModes(){
 }
 
 function selectMode(id){
-  const m=modeData.find(x=>x.id===id);
-  document.querySelectorAll(".mode-btn").forEach((el,i)=>el.classList.toggle("active",i===id-1));
+  const m = modeData.find(x => x.id === id);
+  document.querySelectorAll(".mode-btn").forEach((el,i) => el.classList.toggle("active", i === id - 1));
   setImgWithFallback(document.getElementById("modeImage"), modePaths(id));
-  document.getElementById("modeTitle").innerText=m.name;
-  document.getElementById("modeMeaning").innerText=m.meaning;
-  document.getElementById("buyTax").innerText=m.buy;
-  document.getElementById("sellTax").innerText=m.sell;
-  document.getElementById("duration").innerText=m.duration;
-  document.getElementById("modeFunction").innerHTML=m.fn.map(x=>`<li>${x}</li>`).join("");
-  document.getElementById("modeLong").innerText=m.long;
+  document.getElementById("modeTitle").innerText = m.name;
+  document.getElementById("modeMeaning").innerText = m.meaning;
+  document.getElementById("buyTax").innerText = m.buy;
+  document.getElementById("sellTax").innerText = m.sell;
+  document.getElementById("duration").innerText = m.duration;
+  document.getElementById("modeFunction").innerHTML = m.fn.map(x => `<li>${x}</li>`).join("");
+  document.getElementById("modeLong").innerText = m.long;
 }
 
 function updateCountdown(){
-  const now=Math.floor(Date.now()/1000);
-  let target,label;
-  if(now<START_TIME){target=START_TIME;label="Presale starts in";}
-  else if(now<END_TIME){target=END_TIME;label="Presale ends in";}
-  else{target=now;label="Presale ended";}
-  const diff=Math.max(target-now,0);
-  document.getElementById("days").innerText=String(Math.floor(diff/86400)).padStart(2,"0");
-  document.getElementById("hours").innerText=String(Math.floor((diff%86400)/3600)).padStart(2,"0");
-  document.getElementById("minutes").innerText=String(Math.floor((diff%3600)/60)).padStart(2,"0");
-  document.getElementById("seconds").innerText=String(diff%60).padStart(2,"0");
-  document.getElementById("phaseLabel").innerText=label;
+  const now = Math.floor(Date.now()/1000);
+  let target, label;
+  if(now < START_TIME){ target = START_TIME; label = "Presale starts in"; }
+  else if(now < END_TIME){ target = END_TIME; label = "Presale ends in"; }
+  else { target = now; label = "Presale ended"; }
+
+  const diff = Math.max(target - now, 0);
+  document.getElementById("days").innerText = String(Math.floor(diff/86400)).padStart(2,"0");
+  document.getElementById("hours").innerText = String(Math.floor((diff%86400)/3600)).padStart(2,"0");
+  document.getElementById("minutes").innerText = String(Math.floor((diff%3600)/60)).padStart(2,"0");
+  document.getElementById("seconds").innerText = String(diff%60).padStart(2,"0");
+  document.getElementById("phaseLabel").innerText = label;
 }
 
 async function connectWallet(){
   try{
-    if(!window.ethereum){document.getElementById("web3Status").innerText="Install MetaMask.";return;}
-    provider=new ethers.providers.Web3Provider(window.ethereum);
-    await provider.send("eth_requestAccounts",[]);
-    signer=provider.getSigner();
-    account=await signer.getAddress();
-    presaleContract=new ethers.Contract(PRESALE_ADDRESS,ABI,signer);
-    document.getElementById("walletBtn").innerText=account.slice(0,6)+"..."+account.slice(-4);
-    document.getElementById("web3Status").innerText="Wallet connected.";
+    if(!window.ethereum){
+      document.getElementById("web3Status").innerText = "Install MetaMask or open with a Web3 wallet.";
+      return;
+    }
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    signer = provider.getSigner();
+    account = await signer.getAddress();
+    presaleContract = new ethers.Contract(PRESALE_ADDRESS, ABI, signer);
+    document.getElementById("walletBtn").innerText = account.slice(0,6)+"..."+account.slice(-4);
+    document.getElementById("web3Status").innerText = "Wallet connected.";
     loadPresaleData();
-  }catch(e){document.getElementById("web3Status").innerText=e.message||"Wallet failed.";}
+  } catch(e){
+    document.getElementById("web3Status").innerText = e.message || "Wallet connection failed.";
+  }
 }
 
 async function loadPresaleData(){
   try{
-    if(!window.ethereum){document.getElementById("raisedText").innerText="Raised: connect wallet to load live data.";return;}
-    const rp=new ethers.providers.Web3Provider(window.ethereum);
-    const c=new ethers.Contract(PRESALE_ADDRESS,ABI,rp);
-    const raised=await c.totalRaised();
-    const bnb=Number(ethers.utils.formatEther(raised));
-    document.getElementById("raisedText").innerText=`Raised: ${bnb.toFixed(4)} / 20 BNB`;
-    document.getElementById("progressBar").style.width=Math.min((bnb/HARD_CAP)*100,100)+"%";
-  }catch(e){document.getElementById("raisedText").innerText="Raised: unable to load.";}
+    if(!window.ethereum){
+      document.getElementById("raisedText").innerText = "Raised: connect wallet to load live data.";
+      return;
+    }
+    const readProvider = new ethers.providers.Web3Provider(window.ethereum);
+    const contract = new ethers.Contract(PRESALE_ADDRESS, ABI, readProvider);
+    const raised = await contract.totalRaised();
+    const bnb = Number(ethers.utils.formatEther(raised));
+    document.getElementById("raisedText").innerText = `Raised: ${bnb.toFixed(4)} / 20 BNB`;
+    document.getElementById("progressBar").style.width = Math.min((bnb/HARD_CAP)*100,100) + "%";
+  } catch(e){
+    document.getElementById("raisedText").innerText = "Raised: unable to load.";
+  }
 }
 
 async function buyPresale(){
   try{
     if(!presaleContract) await connectWallet();
-    const amount=document.getElementById("buyAmount").value||"0.05";
-    document.getElementById("web3Status").innerText="Buying... confirm in wallet.";
-    const tx=await presaleContract.buy({value:ethers.utils.parseEther(amount)});
+    const amount = document.getElementById("buyAmount").value || "0.05";
+    document.getElementById("web3Status").innerText = "Buying... confirm in wallet.";
+    const tx = await presaleContract.buy({ value: ethers.utils.parseEther(amount) });
     await tx.wait();
-    document.getElementById("web3Status").innerText="Buy confirmed.";
+    document.getElementById("web3Status").innerText = "Buy confirmed.";
     loadPresaleData();
-  }catch(e){document.getElementById("web3Status").innerText=e.message||"Buy failed.";}
+  } catch(e){
+    document.getElementById("web3Status").innerText = e.message || "Buy failed.";
+  }
 }
 
 async function claimTokens(){
   try{
     if(!presaleContract) await connectWallet();
-    const tx=await presaleContract.claimAllAvailable();
+    document.getElementById("web3Status").innerText = "Claiming... confirm in wallet.";
+    const tx = await presaleContract.claimAllAvailable();
     await tx.wait();
-    document.getElementById("web3Status").innerText="Claim confirmed.";
-  }catch(e){document.getElementById("web3Status").innerText=e.message||"Claim failed.";}
+    document.getElementById("web3Status").innerText = "Claim confirmed.";
+  } catch(e){
+    document.getElementById("web3Status").innerText = e.message || "Claim failed.";
+  }
 }
 
 async function refundBNB(){
   try{
     if(!presaleContract) await connectWallet();
-    const tx=await presaleContract.refund();
+    document.getElementById("web3Status").innerText = "Refunding... confirm in wallet.";
+    const tx = await presaleContract.refund();
     await tx.wait();
-    document.getElementById("web3Status").innerText="Refund confirmed.";
-  }catch(e){document.getElementById("web3Status").innerText=e.message||"Refund failed.";}
+    document.getElementById("web3Status").innerText = "Refund confirmed.";
+  } catch(e){
+    document.getElementById("web3Status").innerText = e.message || "Refund failed.";
+  }
 }
 
 initImages();
 initModes();
 updateCountdown();
-setInterval(updateCountdown,1000);
-setTimeout(loadPresaleData,1000);
+setInterval(updateCountdown, 1000);
+setTimeout(loadPresaleData, 800);
 </script>
-
 </body>
 </html>
