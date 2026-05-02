@@ -316,6 +316,90 @@
       .countdown,.stat-grid,.tax-grid,.tokenomics{grid-template-columns:1fr}
       .mode-btn{grid-template-columns:76px 1fr}.mode-thumb{width:76px;height:76px}
     }
+  
+    /* FULLSCREEN MODE MODAL */
+    .mode-modal{
+      position:fixed;
+      inset:0;
+      z-index:999;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      background:rgba(0,0,0,.86);
+      backdrop-filter:blur(16px);
+    }
+    .mode-modal.open{display:flex}
+    .modal-inner{
+      width:min(1180px,100%);
+      max-height:92vh;
+      overflow:auto;
+      border-radius:30px;
+      border:1px solid rgba(210,110,255,.38);
+      background:
+        radial-gradient(circle at 20% 0%,rgba(217,70,239,.20),transparent 30%),
+        linear-gradient(180deg,rgba(14,0,27,.98),rgba(3,0,8,.98));
+      box-shadow:0 0 90px rgba(168,85,247,.42);
+      padding:22px;
+      position:relative;
+    }
+    .modal-close{
+      position:absolute;
+      top:18px;
+      right:18px;
+      z-index:2;
+      width:46px;
+      height:46px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.08);
+      color:#fff;
+      font-size:26px;
+      cursor:pointer;
+    }
+    .modal-grid{
+      display:grid;
+      grid-template-columns:1.05fr .95fr;
+      gap:24px;
+      align-items:center;
+    }
+    .modal-image{
+      min-height:650px;
+      max-height:78vh;
+      border-radius:24px;
+      overflow:hidden;
+      background:#030006;
+      border:1px solid rgba(210,110,255,.28);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .modal-image img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      display:block;
+      filter:drop-shadow(0 0 28px rgba(217,70,239,.35));
+    }
+    .modal-content h2{
+      margin:0 0 10px;
+      font-size:clamp(38px,5vw,72px);
+      line-height:.95;
+      text-transform:uppercase;
+    }
+    .modal-content .meaning{
+      font-size:24px;
+    }
+    .modal-note{
+      color:#d9c8ed;
+      line-height:1.7;
+      font-size:17px;
+    }
+    @media(max-width:900px){
+      .modal-grid{grid-template-columns:1fr}
+      .modal-image{min-height:420px}
+    }
+
   </style>
 </head>
 
@@ -415,7 +499,7 @@
   <section class="wrap section" id="modes">
     <div class="section-head">
       <h2>Modes</h2>
-      <p class="pill">7 Daily Modes + Parasite Mode</p>
+      <p class="pill">Click any mode to open fullscreen details</p>
     </div>
 
     <div class="modes-layout">
@@ -481,6 +565,38 @@
       <p class="muted">SCHIZORA is a crypto token project with dynamic mechanics. Crypto assets are risky and volatile. Nothing on this website is financial advice. Only participate with funds you can afford to lose. Always verify official contract addresses before interacting.</p>
     </div>
   </section>
+
+<div class="mode-modal" id="modeModal" onclick="modalBackdropClose(event)">
+  <div class="modal-inner">
+    <button class="modal-close" onclick="closeModeModal()">×</button>
+    <div class="modal-grid">
+      <div class="modal-image">
+        <img id="modalModeImage" alt="SCHIZORA mode full image">
+      </div>
+      <div class="modal-content">
+        <h2 id="modalModeTitle"></h2>
+        <div class="meaning" id="modalModeMeaning"></div>
+
+        <div class="tax-grid">
+          <div class="tax"><small>Buy Tax</small><strong id="modalBuyTax"></strong></div>
+          <div class="tax"><small>Sell Tax</small><strong id="modalSellTax"></strong></div>
+          <div class="tax"><small>Duration</small><strong id="modalDuration"></strong></div>
+        </div>
+
+        <div class="mode-box">
+          <h4>Function</h4>
+          <ul id="modalModeFunction"></ul>
+        </div>
+
+        <div class="mode-box">
+          <h4>Meaning</h4>
+          <p id="modalModeLong" class="modal-note"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </main>
 
 <footer class="wrap">SCHIZORA ($SZR) — Seven Minds. One Token.</footer>
@@ -513,22 +629,69 @@ function setImgWithFallback(img, paths){
 
 function heroPaths(){
   return [
-    "assets/logo.png","assets/logo.jpg","assets/logo.jpeg",
-    "assets/hero.png","assets/hero.jpg","assets/hero.jpeg",
+    /* recommended final names */
+    "assets/hero.jpg","assets/hero.png","assets/hero.jpeg",
+    "assets/logo.jpg","assets/logo.png","assets/logo.jpeg",
+
+    /* exact original uploaded names */
     "assets/LOgo.jpeg","assets/LOgo.jpg","assets/LOgo.png",
-    "LOgo.jpeg","logo.png","hero.jpg"
+    "assets/LOgo%20.jpeg",
+
+    /* if uploaded in root instead of assets */
+    "hero.jpg","hero.png","hero.jpeg",
+    "logo.jpg","logo.png","logo.jpeg",
+    "LOgo.jpeg","LOgo.jpg","LOgo.png"
   ];
 }
 
 function modePaths(id){
+  const map = {
+    1: [
+      "assets/mode1.jpg","assets/mode1.png","assets/mode1.jpeg",
+      "assets/Calm%20Mode.png","assets/Calm Mode.png",
+      "images/mode1.jpg","images/mode1.png"
+    ],
+    2: [
+      "assets/mode2.jpg","assets/mode2.png","assets/mode2.jpeg",
+      "assets/BUrn%20MODE.png","assets/BUrn MODE.png","assets/Burn%20MODE.png","assets/Burn MODE.png",
+      "images/mode2.jpg","images/mode2.png"
+    ],
+    3: [
+      "assets/mode3.jpg","assets/mode3.png","assets/mode3.jpeg",
+      "assets/Mode%203%20-%20reward.png","assets/Mode 3 - reward.png",
+      "images/mode3.jpg","images/mode3.png"
+    ],
+    4: [
+      "assets/mode4.jpg","assets/mode4.png","assets/mode4.jpeg",
+      "assets/Mode%204%20Chaos.png","assets/Mode 4 Chaos.png",
+      "images/mode4.jpg","images/mode4.png"
+    ],
+    5: [
+      "assets/mode5.jpg","assets/mode5.png","assets/mode5.jpeg",
+      "assets/Mode%205%20Miror.png","assets/Mode 5 Miror.png","assets/Mode%205%20Mirror.png","assets/Mode 5 Mirror.png",
+      "images/mode5.jpg","images/mode5.png"
+    ],
+    6: [
+      "assets/mode6.jpg","assets/mode6.png","assets/mode6.jpeg",
+      "assets/modul%206%20silent.png","assets/modul 6 silent.png","assets/Mode%206%20silent.png","assets/Mode 6 silent.png",
+      "images/mode6.jpg","images/mode6.png"
+    ],
+    7: [
+      "assets/mode7.jpg","assets/mode7.png","assets/mode7.jpeg",
+      "assets/MOde%207%20predator.png","assets/MOde 7 predator.png","assets/Mode%207%20predator.png","assets/Mode 7 predator.png",
+      "images/mode7.jpg","images/mode7.png"
+    ],
+    8: [
+      "assets/mode8.jpg","assets/mode8.png","assets/mode8.jpeg",
+      "assets/Mode%20special%20parasite.png","assets/Mode special parasite.png",
+      "images/mode8.jpg","images/mode8.png"
+    ]
+  };
+
+  /* also try root filenames as emergency fallback */
   return [
-    `assets/mode${id}.png`,
-    `assets/mode${id}.jpg`,
-    `assets/mode${id}.jpeg`,
-    `images/mode${id}.png`,
-    `images/mode${id}.jpg`,
-    `mode${id}.png`,
-    `mode${id}.jpg`
+    ...(map[id] || []),
+    `mode${id}.jpg`, `mode${id}.png`, `mode${id}.jpeg`
   ];
 }
 
@@ -553,7 +716,7 @@ function initModes(){
   modeData.forEach(m => {
     const item = document.createElement("div");
     item.className = "mode-btn";
-    item.onclick = () => selectMode(m.id);
+    item.onclick = () => openModeModal(m.id);
 
     const thumb = document.createElement("img");
     thumb.className = "mode-thumb";
@@ -582,6 +745,36 @@ function selectMode(id){
   document.getElementById("modeFunction").innerHTML = m.fn.map(x => `<li>${x}</li>`).join("");
   document.getElementById("modeLong").innerText = m.long;
 }
+
+function openModeModal(id){
+  selectMode(id);
+  const m = modeData.find(x => x.id === id);
+
+  setImgWithFallback(document.getElementById("modalModeImage"), modePaths(id));
+  document.getElementById("modalModeTitle").innerText = m.name;
+  document.getElementById("modalModeMeaning").innerText = m.meaning;
+  document.getElementById("modalBuyTax").innerText = m.buy;
+  document.getElementById("modalSellTax").innerText = m.sell;
+  document.getElementById("modalDuration").innerText = m.duration;
+  document.getElementById("modalModeFunction").innerHTML = m.fn.map(x => `<li>${x}</li>`).join("");
+  document.getElementById("modalModeLong").innerText = m.long;
+
+  document.getElementById("modeModal").classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeModeModal(){
+  document.getElementById("modeModal").classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+function modalBackdropClose(event){
+  if(event.target.id === "modeModal") closeModeModal();
+}
+
+document.addEventListener("keydown", function(e){
+  if(e.key === "Escape") closeModeModal();
+});
 
 function updateCountdown(){
   const now = Math.floor(Date.now()/1000);
