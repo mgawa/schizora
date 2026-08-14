@@ -13,7 +13,9 @@
   },
   "dependencies": {
     "@xmtp/browser-sdk": "7.0.0",
-    "viem": "^2.55.8"
+    "viem": "^2.55.8",
+    "@upstash/redis": "^1.38.0",
+    "web-push": "^3.6.7"
   },
   "devDependencies": {
     "vite": "7.3.1"
