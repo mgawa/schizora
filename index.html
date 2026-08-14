@@ -69,7 +69,7 @@ a{text-decoration:none;color:inherit}button,input,textarea{font:inherit}
 }
 .modes-section-shell.previewing .modes-preview-bg{opacity:.88;transform:scale(1)}
 .modes-section-content{position:relative;z-index:1}
-.modes-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:11px}
+.modes-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
 .mode{min-height:220px;padding:0;border-radius:20px;background:rgba(255,255,255,.035);border:1px solid rgba(213,105,255,.20);cursor:pointer;transition:.18s;overflow:hidden;position:relative}
 .mode:hover{transform:translateY(-4px);border-color:rgba(227,130,255,.65);background:rgba(139,92,246,.1);box-shadow:0 0 32px rgba(217,70,239,.18)}
 .mode-media{height:118px;background:#030006;overflow:hidden;border-bottom:1px solid rgba(213,105,255,.16)}
@@ -77,6 +77,8 @@ a{text-decoration:none;color:inherit}button,input,textarea{font:inherit}
 .mode:hover .mode-media img{transform:scale(1.04)}
 .mode-copy{padding:14px 15px 16px}
 .mode small{color:#cdb3ee;letter-spacing:1.8px;font-weight:900}.mode h3{text-transform:uppercase;margin:11px 0 7px}.mode p{font-size:13px;line-height:1.45;color:#c9b7d9;margin:0}
+.mode.special{border-color:rgba(255,79,109,.38);background:linear-gradient(180deg,rgba(255,79,109,.07),rgba(139,92,246,.06))}
+.mode.special small{color:#ff8fa4}.mode.special:hover{border-color:rgba(255,79,109,.75);box-shadow:0 0 36px rgba(255,79,109,.18)}
 .notice{margin-top:16px;padding:16px 18px;border-radius:17px;border:1px solid rgba(103,232,249,.2);background:rgba(103,232,249,.04);color:#cdebf5;line-height:1.6}
 
 /* ECOSYSTEM */
@@ -153,7 +155,7 @@ footer{text-align:center;color:#baa5d0;padding:42px 0 54px}
  <div class="modes-section-shell" id="modesShell">
   <div class="modes-preview-bg" id="modesPreviewBg"></div>
   <div class="modes-section-content">
-   <div class="section-head"><div><div class="eyebrow">THE CORE OF SZR</div><h2>Seven Adaptive Modes</h2></div><span class="chip">One token. Seven behaviors.</span></div>
+   <div class="section-head"><div><div class="eyebrow">THE CORE OF SZR</div><h2>Seven Adaptive Modes</h2></div><span class="chip">7 Adaptive Modes + Parasite Special</span></div>
    <div class="modes-grid" id="modesGrid"></div>
    <div class="notice">The website no longer guesses the active mode from the calendar. The seven modes are presented as the core architecture of SZR. A live on-chain mode indicator should only be enabled after the exact contract read function is confirmed.</div>
   </div>
@@ -196,7 +198,7 @@ footer{text-align:center;color:#baa5d0;padding:42px 0 54px}
  <div class="glass card"><p class="muted">VEIL is a SCHIZORA utility. It has no separate token, separate X account or separate Telegram.</p><div class="actions"><a class="btn ghost" target="_blank" href="https://t.me/schizora_official">Telegram</a><a class="btn ghost" target="_blank" href="https://x.com/SchizoraHQ">X / Twitter</a><a class="btn ghost" href="SCHIZORA_Master_Whitepaper.pdf" target="_blank">Whitepaper</a></div></div>
 </section>
 
-<div class="modal" id="modeModal" onclick="backdrop(event,'modeModal')"><div class="modal-inner"><button class="close" onclick="closeModal('modeModal')">×</button><div class="modal-body"><div class="eyebrow" id="modeEyebrow"></div><h2 class="grad" id="modeTitle"></h2><p class="muted" id="modeShort"></p><div class="triplet"><div class="box"><small>Buy Tax</small><strong id="modeBuy"></strong></div><div class="box"><small>Sell Tax</small><strong id="modeSell"></strong></div><div class="box"><small>Cycle</small><strong>24h</strong></div></div><div class="glass card"><div class="eyebrow">FUNCTION</div><ul class="muted" id="modeFunctions"></ul></div></div></div></div>
+<div class="modal" id="modeModal" onclick="backdrop(event,'modeModal')"><div class="modal-inner"><button class="close" onclick="closeModal('modeModal')">×</button><div class="modal-body"><div class="eyebrow" id="modeEyebrow"></div><h2 class="grad" id="modeTitle"></h2><p class="muted" id="modeShort"></p><div class="triplet"><div class="box"><small>Buy Tax</small><strong id="modeBuy"></strong></div><div class="box"><small>Sell Tax</small><strong id="modeSell"></strong></div><div class="box"><small>Cycle</small><strong id="modeCycle">24h</strong></div></div><div class="glass card"><div class="eyebrow">FUNCTION</div><ul class="muted" id="modeFunctions"></ul></div></div></div></div>
 
 <div class="modal" id="veilModal" onclick="backdrop(event,'veilModal')"><div class="modal-inner veil-inner"><button class="close" onclick="closeModal('veilModal')">×</button><div class="veil-shell">
  <aside class="veil-side">
@@ -232,7 +234,8 @@ const modes=[
 {id:4,name:"Chaos",short:"Controlled unpredictability.",buy:"3–7%",sell:"6–10%",fn:["Dynamic tax range","Unpredictable trading conditions","Creates a high-attention phase"]},
 {id:5,name:"Mirror",short:"Market-responsive behavior.",buy:"4–6%",sell:"6–10%",fn:["Responds to buy/sell pressure","Adapts behavior to market conditions","Reflects crowd activity"]},
 {id:6,name:"Silent",short:"Low-friction quiet phase.",buy:"1%",sell:"3%",fn:["Reduced transaction friction","Quiet accumulation profile","Low-noise operating mode"]},
-{id:7,name:"Predator",short:"High-pressure defensive phase.",buy:"5%",sell:"12%",fn:["Higher exit friction","Strengthens burn/treasury pressure","Aggressive operating profile"]}
+{id:7,name:"Predator",short:"High-pressure defensive phase.",buy:"5%",sell:"12%",fn:["Higher exit friction","Strengthens burn/treasury pressure","Aggressive operating profile"]},
+{id:8,name:"Parasite",short:"Others fall. SCHIZORA feeds.",buy:"5%",sell:"10%",fn:["Special mode outside the seven-mode rotation","Tracks external collapse signals","Routes ecosystem response toward SZR buyback / burn logic","Does not buy the collapsing token"]}
 ];
 
 function toastMsg(m){const t=document.getElementById("toast");t.innerText=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3200)}
@@ -247,9 +250,9 @@ function initModes(){
  const preview=document.getElementById("modesPreviewBg");
  modes.forEach(m=>{
   const d=document.createElement("div");
-  d.className="mode";
+  d.className="mode"+(m.id===8?" special":"");
   d.onclick=()=>showMode(m.id);
-  d.innerHTML=`<div class="mode-media"><img src="assets/mode${m.id}.jpg" alt="${m.name} Mode"></div><div class="mode-copy"><small>MODE ${String(m.id).padStart(2,"0")}</small><h3>${m.name}</h3><p>${m.short}</p></div>`;
+  d.innerHTML=`<div class="mode-media"><img src="assets/mode${m.id}.jpg" alt="${m.name} Mode"></div><div class="mode-copy"><small>${m.id===8?"SPECIAL MODE":"MODE "+String(m.id).padStart(2,"0")}</small><h3>${m.name}</h3><p>${m.short}</p></div>`;
   d.addEventListener("mouseenter",()=>{
     preview.style.backgroundImage=`url("assets/mode${m.id}.jpg")`;
     shell.classList.add("previewing");
@@ -265,8 +268,8 @@ function initModes(){
 }
 function showMode(id){
  const m=modes.find(x=>x.id===id);
- modeEyebrow.innerText=`SZR • MODE ${String(id).padStart(2,"0")}`;
- modeTitle.innerText=m.name+" Mode";modeShort.innerText=m.short;modeBuy.innerText=m.buy;modeSell.innerText=m.sell;modeFunctions.innerHTML=m.fn.map(x=>`<li style="margin:8px 0">${x}</li>`).join("");
+ modeEyebrow.innerText=id===8?"SZR • SPECIAL MODE":`SZR • MODE ${String(id).padStart(2,"0")}`;
+ modeTitle.innerText=m.name+" Mode";modeShort.innerText=m.short;modeBuy.innerText=m.buy;modeSell.innerText=m.sell;modeCycle.innerText=id===8?"Special":"24h";modeFunctions.innerHTML=m.fn.map(x=>`<li style="margin:8px 0">${x}</li>`).join("");
  openModal("modeModal");
 }
 async function ensureBSC(){
