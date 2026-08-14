@@ -1,5 +1,9 @@
-
 import { Client, IdentifierKind, ConsentState } from "@xmtp/browser-sdk";
+import {
+  enableVeilPush,
+  notifyVeilRecipient,
+  requestVeilNotificationPermission,
+} from "./veil-push.js";
 
 const ENV = "production";
 let xmtp = null;
@@ -54,22 +58,28 @@ function hexToBytes(hex) {
   const clean = hex.startsWith("0x") ? hex.slice(2) : hex;
   if (clean.length % 2) throw new Error("Invalid signature.");
   const out = new Uint8Array(clean.length / 2);
-  for (let i = 0; i < out.length; i++) out[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16);
+  for (let i = 0; i < out.length; i++) {
+    out[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16);
+  }
   return out;
 }
 
 async function ensureWallet() {
-  if (!window.ethereum) throw new Error("Open SCHIZORA in MetaMask, Bitget Wallet, Trust Wallet, or another injected Web3 wallet.");
+  if (!window.ethereum) {
+    throw new Error("Open SCHIZORA in MetaMask, Bitget Wallet, Trust Wallet, or another injected Web3 wallet.");
+  }
+
   const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
   const address = accounts?.[0];
   if (!address) throw new Error("No wallet account selected.");
 
-  // Keep the existing SCHIZORA wallet UI synchronized.
   window.account = address;
+
   const walletBtn = $("walletBtn");
   const veilWallet = $("veilWallet");
   if (walletBtn) walletBtn.textContent = `${address.slice(0, 6)}...${address.slice(-4)}`;
   if (veilWallet) veilWallet.textContent = address;
+
   updateTrialUI();
   return address;
 }
@@ -82,7 +92,6 @@ function createXmtpSigner(address) {
       identifierKind: IdentifierKind.Ethereum,
     }),
     signMessage: async (message) => {
-      // personal_sign produces the ERC-191 style signature XMTP expects for an EOA signer.
       const signature = await window.ethereum.request({
         method: "personal_sign",
         params: [message, address],
@@ -101,24 +110,23 @@ async function initializeXMTP() {
   const signer = createXmtpSigner(address);
   xmtp = await Client.create(signer, {
     env: ENV,
-    appVersion: "SCHIZORA-VEIL/0.1",
+    appVersion: "SCHIZORA-VEIL/0.2",
   });
 
   networkStatus("VEIL encrypted network online.", `XMTP inbox: ${short(xmtp.inboxId)}`);
 
-  // Sync existing conversations and catch up on messages.
   try {
     await xmtp.conversations.syncAll(["allowed", "unknown"]);
-  } catch (e) {
-    console.warn("Initial XMTP sync warning:", e);
+  } catch (error) {
+    console.warn("Initial XMTP sync warning:", error);
   }
 
   startGlobalStream();
   return xmtp;
 }
 
-function short(v) {
-  const s = String(v || "");
+function short(value) {
+  const s = String(value || "");
   return s.length > 16 ? `${s.slice(0, 8)}...${s.slice(-6)}` : s;
 }
 
@@ -130,19 +138,29 @@ async function resolveInboxId(address) {
 
   const reachable = await Client.canMessage([identifier], ENV);
   const can = reachable instanceof Map
-    ? (reachable.get(address.toLowerCase()) ?? reachable.get(address) ?? [...reachable.values()][0])
+    ? (
+        reachable.get(address.toLowerCase()) ??
+        reachable.get(address) ??
+        [...reachable.values()][0]
+      )
     : false;
 
   if (!can) {
-    throw new Error("This wallet is not reachable on VEIL yet. The owner must connect to VEIL once to register its encrypted inbox.");
+    throw new Error(
+      "This wallet is not reachable on VEIL yet. The owner must connect to VEIL once to register its encrypted inbox."
+    );
   }
 
-  // Browser SDK APIs have evolved. Use the current identity lookup when available,
-  // with compatible fallbacks for adjacent SDK releases.
   if (typeof xmtp.findInboxIdByIdentities === "function") {
     const result = await xmtp.findInboxIdByIdentities([identifier]);
     if (Array.isArray(result)) return result[0];
-    if (result instanceof Map) return result.get(address.toLowerCase()) || result.get(address) || [...result.values()][0];
+    if (result instanceof Map) {
+      return (
+        result.get(address.toLowerCase()) ||
+        result.get(address) ||
+        [...result.values()][0]
+      );
+    }
     if (typeof result === "string") return result;
   }
 
@@ -161,19 +179,23 @@ async function resolveInboxId(address) {
     if (result) return result;
   }
 
-  throw new Error("Your installed XMTP Browser SDK does not expose the inbox lookup expected by this build. Update @xmtp/browser-sdk.");
+  throw new Error(
+    "Your installed XMTP Browser SDK does not expose the inbox lookup expected by this build."
+  );
 }
 
 function getMessageText(message) {
   try {
     if (typeof message.content === "function") {
-      const c = message.content();
-      if (typeof c === "string") return c;
-      if (c && typeof c.content === "string") return c.content;
-      if (c != null) return String(c);
+      const content = message.content();
+      if (typeof content === "string") return content;
+      if (content && typeof content.content === "string") return content.content;
+      if (content != null) return String(content);
     }
     if (typeof message.content === "string") return message.content;
-    if (message.content && typeof message.content.content === "string") return message.content.content;
+    if (message.content && typeof message.content.content === "string") {
+      return message.content.content;
+    }
   } catch {}
   return "[Unsupported encrypted content]";
 }
@@ -197,6 +219,7 @@ async function renderActiveConversation() {
   if (!activeDm || !windowEl) return;
 
   windowEl.innerHTML = `<div class="chat-loading">Decrypting conversation...</div>`;
+
   try {
     const messages = await activeDm.messages({
       limit: 100n,
@@ -204,6 +227,7 @@ async function renderActiveConversation() {
     });
 
     const myInbox = xmtp?.inboxId || "";
+
     if (!messages.length) {
       windowEl.innerHTML = `<div><div style="font-size:38px">◇</div><b>Encrypted channel ready.</b><div style="margin-top:8px">Send the first VEIL message to ${escapeHtml(short(activePeerAddress))}.</div></div>`;
       return;
@@ -214,13 +238,16 @@ async function renderActiveConversation() {
 
     for (const message of messages) {
       const mine = getSenderInboxId(message) === myInbox;
+
       const row = document.createElement("div");
       row.className = `msg-row ${mine ? "mine" : "theirs"}`;
+
       const bubble = document.createElement("div");
       bubble.className = "msg-bubble";
 
       const content = document.createElement("div");
       content.textContent = getMessageText(message);
+
       const meta = document.createElement("div");
       meta.className = "msg-meta";
       meta.textContent = `${mine ? "You" : short(activePeerAddress)} • ${getSentDate(message).toLocaleString()}`;
@@ -233,8 +260,8 @@ async function renderActiveConversation() {
     windowEl.innerHTML = "";
     windowEl.appendChild(list);
     windowEl.scrollTop = windowEl.scrollHeight;
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
     windowEl.innerHTML = `<div style="color:#ff8fa4">Could not decrypt/load this conversation.</div>`;
   }
 }
@@ -242,10 +269,16 @@ async function renderActiveConversation() {
 async function openConversation() {
   try {
     if (!xmtp) await initializeXMTP();
+
     const address = $("recipient")?.value?.trim();
-    if (!address || !/^0x[a-fA-F0-9]{40}$/.test(address)) throw new Error("Enter a valid EVM wallet address.");
+    if (!address || !/^0x[a-fA-F0-9]{40}$/.test(address)) {
+      throw new Error("Enter a valid EVM wallet address.");
+    }
+
     const myAddress = (await ensureWallet()).toLowerCase();
-    if (address.toLowerCase() === myAddress) throw new Error("Choose another wallet address.");
+    if (address.toLowerCase() === myAddress) {
+      throw new Error("Choose another wallet address.");
+    }
 
     uiStatus("Locating recipient encrypted inbox...");
     const inboxId = await resolveInboxId(address);
@@ -256,12 +289,13 @@ async function openConversation() {
     $("veilMessageInput").disabled = false;
     $("veilSendBtn").disabled = false;
     $("veilMessageInput").placeholder = "Write an end-to-end encrypted message...";
+
     uiStatus(`Encrypted DM open with ${short(address)}.`);
     await renderActiveConversation();
-  } catch (e) {
-    console.error(e);
-    uiStatus(e?.message || "Could not open conversation.", true);
-    window.toastMsg?.(e?.message || "Could not open conversation.");
+  } catch (error) {
+    console.error(error);
+    uiStatus(error?.message || "Could not open conversation.", true);
+    window.toastMsg?.(error?.message || "Could not open conversation.");
   }
 }
 
@@ -272,22 +306,34 @@ async function sendMessage() {
 
   const text = input.value.trim();
   if (!text) return;
-  if (trialRemaining() <= 0) { uiStatus("Free trial complete: 50 messages used.", true); return; }
+
+  if (trialRemaining() <= 0) {
+    uiStatus("Free trial complete: 50 messages used.", true);
+    return;
+  }
 
   try {
     button.disabled = true;
     uiStatus("Encrypting and sending...");
-    // Optimistic local send, then publish to XMTP network.
+
     await activeDm.sendText(text, true);
     input.value = "";
     await renderActiveConversation();
+
     await activeDm.publishMessages();
     consumeTrialMessage();
+
+    // The notification service receives only the recipient wallet.
+    // Message text remains exclusively in XMTP's encrypted transport.
+    notifyVeilRecipient(activePeerAddress).catch((error) => {
+      console.warn("VEIL push alert warning:", error);
+    });
+
     uiStatus(`Encrypted message delivered. ${trialRemaining()} free messages left.`);
     await renderActiveConversation();
-  } catch (e) {
-    console.error(e);
-    uiStatus(e?.message || "Message failed.", true);
+  } catch (error) {
+    console.error(error);
+    uiStatus(error?.message || "Message failed.", true);
   } finally {
     button.disabled = false;
     input.focus();
@@ -296,31 +342,40 @@ async function sendMessage() {
 
 async function startGlobalStream() {
   if (!xmtp || streamHandle) return;
+
   try {
     streamHandle = await xmtp.conversations.streamAllMessages({
       consentStates: [ConsentState.Allowed, ConsentState.Unknown],
-      onValue: async (message) => {
-        // Refresh current DM. The message body remains handled by XMTP's encrypted transport.
+      onValue: async () => {
         if (activeDm) await renderActiveConversation();
-
-        if (document.hidden && "Notification" in window && Notification.permission === "granted") {
-          new Notification("SCHIZORA VEIL", { body: "New encrypted message received." });
-        }
       },
       onError: (error) => console.warn("VEIL stream:", error),
     });
-  } catch (e) {
-    console.warn("Could not start XMTP message stream:", e);
+  } catch (error) {
+    console.warn("Could not start XMTP message stream:", error);
   }
 }
 
 async function enter() {
-  const accepted = $("termsCheck")?.checked || localStorage.getItem("veil_terms") === "1";
+  const accepted =
+    $("termsCheck")?.checked ||
+    localStorage.getItem("veil_terms") === "1";
+
   if (!accepted) {
     window.toastMsg?.("Please accept the VEIL privacy terms first.");
     return;
   }
+
   localStorage.setItem("veil_terms", "1");
+
+  // Ask while the user is actively pressing the VEIL button.
+  // A notification denial does not block encrypted messaging.
+  let notificationPermission = "unsupported";
+  try {
+    notificationPermission = await requestVeilNotificationPermission();
+  } catch (error) {
+    console.warn("Notification permission warning:", error);
+  }
 
   try {
     uiStatus("Connecting to encrypted network...");
@@ -329,31 +384,51 @@ async function enter() {
     $("veilGate").style.display = "none";
     $("veilChat").classList.add("open");
 
-    if ("Notification" in window && Notification.permission === "default") {
-      // Optional foreground/background-tab notification. True closed-browser Web Push requires the push server stage.
-      Notification.requestPermission().catch(() => {});
+    let pushReady = false;
+    if (notificationPermission === "granted") {
+      try {
+        await enableVeilPush(window.account);
+        pushReady = true;
+      } catch (error) {
+        console.warn("VEIL push registration warning:", error);
+      }
     }
 
-    uiStatus("VEIL is ready. Enter another registered wallet address.");
+    if (pushReady) {
+      networkStatus(
+        "VEIL encrypted network online.",
+        `XMTP inbox: ${short(xmtp.inboxId)} • Push alerts enabled`
+      );
+      uiStatus("VEIL is ready. Encrypted messaging and push alerts are enabled.");
+    } else {
+      uiStatus("VEIL is ready. Messaging works; push alerts are not enabled on this browser.");
+    }
+
     window.toastMsg?.("VEIL encrypted messaging initialized.");
-  } catch (e) {
-    console.error(e);
-    uiStatus(e?.message || "VEIL initialization failed.", true);
-    window.toastMsg?.(e?.message || "VEIL initialization failed.");
+  } catch (error) {
+    console.error(error);
+    uiStatus(error?.message || "VEIL initialization failed.", true);
+    window.toastMsg?.(error?.message || "VEIL initialization failed.");
   }
 }
 
 function bind() {
   $("openConversationBtn")?.addEventListener("click", openConversation);
   $("veilSendBtn")?.addEventListener("click", sendMessage);
-  $("veilMessageInput")?.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
+
+  $("veilMessageInput")?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
       sendMessage();
     }
   });
 }
 
-window.VEIL = { enter, openConversation, sendMessage };
+window.VEIL = {
+  enter,
+  openConversation,
+  sendMessage,
+};
+
 bind();
 updateTrialUI();
