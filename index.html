@@ -52,10 +52,31 @@ a{text-decoration:none;color:inherit}button,input,textarea{font:inherit}
 .hero-card img{width:100%;display:block;max-height:650px;object-fit:contain;border-radius:25px;background:#030006}
 
 /* MODES */
+.modes-section-shell{position:relative;overflow:hidden;border-radius:30px;padding:18px}
+.modes-preview-bg{
+  position:absolute;inset:0;z-index:0;
+  background-position:center;background-size:cover;background-repeat:no-repeat;
+  opacity:0;transform:scale(1.04);
+  transition:opacity .28s ease, transform .45s ease, filter .28s ease;
+  filter:saturate(.9) brightness(.28) blur(1px);
+  pointer-events:none;
+}
+.modes-preview-bg:after{
+  content:"";position:absolute;inset:0;
+  background:
+    linear-gradient(90deg,rgba(3,0,6,.92) 0%,rgba(3,0,6,.72) 38%,rgba(3,0,6,.46) 68%,rgba(3,0,6,.78) 100%),
+    linear-gradient(180deg,rgba(3,0,6,.46),rgba(3,0,6,.84));
+}
+.modes-section-shell.previewing .modes-preview-bg{opacity:.88;transform:scale(1)}
+.modes-section-content{position:relative;z-index:1}
 .modes-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:11px}
-.mode{min-height:170px;padding:17px;border-radius:20px;background:rgba(255,255,255,.035);border:1px solid rgba(213,105,255,.20);cursor:pointer;transition:.18s}
-.mode:hover{transform:translateY(-4px);border-color:rgba(227,130,255,.65);background:rgba(139,92,246,.1)}
-.mode small{color:#cdb3ee;letter-spacing:1.8px;font-weight:900}.mode h3{text-transform:uppercase;margin:14px 0 8px}.mode p{font-size:13px;line-height:1.5;color:#c9b7d9}
+.mode{min-height:220px;padding:0;border-radius:20px;background:rgba(255,255,255,.035);border:1px solid rgba(213,105,255,.20);cursor:pointer;transition:.18s;overflow:hidden;position:relative}
+.mode:hover{transform:translateY(-4px);border-color:rgba(227,130,255,.65);background:rgba(139,92,246,.1);box-shadow:0 0 32px rgba(217,70,239,.18)}
+.mode-media{height:118px;background:#030006;overflow:hidden;border-bottom:1px solid rgba(213,105,255,.16)}
+.mode-media img{width:100%;height:100%;object-fit:cover;display:block;transition:.22s}
+.mode:hover .mode-media img{transform:scale(1.04)}
+.mode-copy{padding:14px 15px 16px}
+.mode small{color:#cdb3ee;letter-spacing:1.8px;font-weight:900}.mode h3{text-transform:uppercase;margin:11px 0 7px}.mode p{font-size:13px;line-height:1.45;color:#c9b7d9;margin:0}
 .notice{margin-top:16px;padding:16px 18px;border-radius:17px;border:1px solid rgba(103,232,249,.2);background:rgba(103,232,249,.04);color:#cdebf5;line-height:1.6}
 
 /* ECOSYSTEM */
@@ -98,7 +119,7 @@ a{text-decoration:none;color:inherit}button,input,textarea{font:inherit}
 footer{text-align:center;color:#baa5d0;padding:42px 0 54px}
 @media(max-width:1100px){.modes-grid{grid-template-columns:repeat(4,1fr)}}
 @media(max-width:960px){.hero,.ecosystem{grid-template-columns:1fr}.navlinks{display:none}.metrics{grid-template-columns:repeat(2,1fr)}.veil-shell{grid-template-columns:1fr}.veil-side{border-right:0;border-bottom:1px solid rgba(213,105,255,.18)}}
-@media(max-width:640px){.wrap{width:min(100% - 26px,1240px)}.hero-title{font-size:44px;letter-spacing:-2px}.modes-grid{grid-template-columns:repeat(2,1fr)}.metrics{grid-template-columns:1fr}.triplet,.target,.composer{grid-template-columns:1fr}.brand h1{font-size:20px;letter-spacing:4px}.brand span{letter-spacing:2px}.nav .btn.ghost{display:none}}
+@media(max-width:640px){.modes-preview-bg{display:none}.modes-section-shell{padding:0}.wrap{width:min(100% - 26px,1240px)}.hero-title{font-size:44px;letter-spacing:-2px}.modes-grid{grid-template-columns:repeat(2,1fr)}.metrics{grid-template-columns:1fr}.triplet,.target,.composer{grid-template-columns:1fr}.brand h1{font-size:20px;letter-spacing:4px}.brand span{letter-spacing:2px}.nav .btn.ghost{display:none}}
 </style>
 </head>
 <body>
@@ -129,9 +150,14 @@ footer{text-align:center;color:#baa5d0;padding:42px 0 54px}
 </section>
 
 <section class="wrap section" id="modes">
- <div class="section-head"><div><div class="eyebrow">THE CORE OF SZR</div><h2>Seven Adaptive Modes</h2></div><span class="chip">One token. Seven behaviors.</span></div>
- <div class="modes-grid" id="modesGrid"></div>
- <div class="notice">The website no longer guesses the active mode from the calendar. The seven modes are presented as the core architecture of SZR. A live on-chain mode indicator should only be enabled after the exact contract read function is confirmed.</div>
+ <div class="modes-section-shell" id="modesShell">
+  <div class="modes-preview-bg" id="modesPreviewBg"></div>
+  <div class="modes-section-content">
+   <div class="section-head"><div><div class="eyebrow">THE CORE OF SZR</div><h2>Seven Adaptive Modes</h2></div><span class="chip">One token. Seven behaviors.</span></div>
+   <div class="modes-grid" id="modesGrid"></div>
+   <div class="notice">The website no longer guesses the active mode from the calendar. The seven modes are presented as the core architecture of SZR. A live on-chain mode indicator should only be enabled after the exact contract read function is confirmed.</div>
+  </div>
+ </div>
 </section>
 
 <section class="wrap section" id="ecosystem">
@@ -217,7 +243,25 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){document.querySelec
 
 function initModes(){
  const g=document.getElementById("modesGrid");
- modes.forEach(m=>{const d=document.createElement("div");d.className="mode";d.onclick=()=>showMode(m.id);d.innerHTML=`<small>MODE ${String(m.id).padStart(2,"0")}</small><h3>${m.name}</h3><p>${m.short}</p>`;g.appendChild(d)})
+ const shell=document.getElementById("modesShell");
+ const preview=document.getElementById("modesPreviewBg");
+ modes.forEach(m=>{
+  const d=document.createElement("div");
+  d.className="mode";
+  d.onclick=()=>showMode(m.id);
+  d.innerHTML=`<div class="mode-media"><img src="assets/mode${m.id}.jpg" alt="${m.name} Mode"></div><div class="mode-copy"><small>MODE ${String(m.id).padStart(2,"0")}</small><h3>${m.name}</h3><p>${m.short}</p></div>`;
+  d.addEventListener("mouseenter",()=>{
+    preview.style.backgroundImage=`url("assets/mode${m.id}.jpg")`;
+    shell.classList.add("previewing");
+  });
+  d.addEventListener("focusin",()=>{
+    preview.style.backgroundImage=`url("assets/mode${m.id}.jpg")`;
+    shell.classList.add("previewing");
+  });
+  d.addEventListener("mouseleave",()=>shell.classList.remove("previewing"));
+  d.addEventListener("focusout",()=>shell.classList.remove("previewing"));
+  g.appendChild(d);
+ })
 }
 function showMode(id){
  const m=modes.find(x=>x.id===id);
