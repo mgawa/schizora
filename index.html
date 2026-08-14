@@ -52,54 +52,111 @@ a{text-decoration:none;color:inherit}button,input,textarea{font:inherit}
 .hero-card img{width:100%;display:block;max-height:650px;object-fit:contain;border-radius:25px;background:#030006}
 
 /* MODES */
-.modes-section-shell{position:relative;overflow:hidden;border-radius:30px;padding:18px}
-.modes-preview-bg{
-  position:absolute;inset:0;z-index:0;
-  background-position:center top;background-size:cover;background-repeat:no-repeat;
-  opacity:0;transform:scale(1.04);
-  transition:opacity .28s ease, transform .45s ease, filter .28s ease;
-  filter:saturate(.9) brightness(.28) blur(1px);
-  pointer-events:none;
-}
-.modes-preview-bg:after{
-  content:"";position:absolute;inset:0;
+.modes-section-shell{
+  position:relative;
+  overflow:hidden;
+  border-radius:30px;
+  padding:18px;
   background:
-    linear-gradient(90deg,rgba(3,0,6,.92) 0%,rgba(3,0,6,.72) 38%,rgba(3,0,6,.46) 68%,rgba(3,0,6,.78) 100%),
-    linear-gradient(180deg,rgba(3,0,6,.46),rgba(3,0,6,.84));
+    radial-gradient(circle at 50% 20%,rgba(139,92,246,.10),transparent 44%),
+    rgba(0,0,0,.10);
+  border:1px solid rgba(213,105,255,.10)
 }
-.modes-section-shell.previewing .modes-preview-bg{opacity:.88;transform:scale(1)}
 .modes-section-content{position:relative;z-index:1}
 .modes-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}
-.mode{min-height:292px;padding:0;border-radius:20px;background:rgba(255,255,255,.035);border:1px solid rgba(213,105,255,.20);cursor:pointer;transition:.18s;overflow:hidden;position:relative}
-.mode:hover{transform:translateY(-4px);border-color:rgba(227,130,255,.65);background:rgba(139,92,246,.1);box-shadow:0 0 32px rgba(217,70,239,.18)}
-.mode-media{
-  height:190px;
-  background:
-    radial-gradient(circle at 50% 45%,rgba(139,92,246,.16),transparent 60%),
-    #030006;
+.mode{
+  --mode-accent:#a855f7;
+  --mode-accent-soft:rgba(168,85,247,.20);
+  min-height:292px;
+  padding:0;
+  border-radius:20px;
+  background:linear-gradient(180deg,rgba(255,255,255,.038),rgba(7,0,13,.90));
+  border:1px solid rgba(213,105,255,.20);
+  cursor:pointer;
+  transition:.22s;
   overflow:hidden;
-  border-bottom:1px solid rgba(213,105,255,.16);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:5px;
+  position:relative
 }
-.mode-media img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  object-position:center center;
-  display:block;
-  transition:transform .25s ease,filter .25s ease;
+.mode:hover{
+  transform:translateY(-5px);
+  border-color:var(--mode-accent);
+  box-shadow:0 0 36px var(--mode-accent-soft)
 }
-.mode:hover .mode-media img{
-  transform:scale(1.025);
-  filter:brightness(1.08);
+.mode-visual{
+  height:190px;
+  position:relative;
+  overflow:hidden;
+  display:grid;
+  place-items:center;
+  background:
+    radial-gradient(circle at 50% 52%,var(--mode-accent-soft),transparent 34%),
+    linear-gradient(145deg,rgba(255,255,255,.025),rgba(0,0,0,.36));
+  border-bottom:1px solid rgba(213,105,255,.14)
+}
+.mode-visual:before,
+.mode-visual:after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  border:1px solid var(--mode-accent);
+  opacity:.42;
+  transition:.28s
+}
+.mode-visual:before{width:126px;height:126px}
+.mode-visual:after{width:88px;height:88px;box-shadow:0 0 32px var(--mode-accent-soft) inset}
+.mode:hover .mode-visual:before{transform:rotate(18deg) scale(1.08);opacity:.70}
+.mode:hover .mode-visual:after{transform:rotate(-18deg) scale(.96);opacity:.82}
+.mode-glyph{
+  position:relative;
+  z-index:2;
+  font-size:58px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-4px;
+  color:#fff;
+  text-shadow:0 0 16px var(--mode-accent),0 0 38px var(--mode-accent);
+  transform:skew(-7deg)
+}
+.mode-glyph small{
+  position:absolute;
+  left:50%;
+  top:100%;
+  transform:translate(-50%,8px);
+  font-size:9px!important;
+  letter-spacing:3px!important;
+  color:var(--mode-accent)!important;
+  white-space:nowrap;
+  text-shadow:none
+}
+.mode-scan{
+  position:absolute;
+  inset:0;
+  opacity:.14;
+  background:
+    repeating-linear-gradient(180deg,transparent 0 9px,rgba(255,255,255,.09) 10px);
+  pointer-events:none
 }
 .mode-copy{padding:14px 15px 16px}
-.mode small{color:#cdb3ee;letter-spacing:1.8px;font-weight:900}.mode h3{text-transform:uppercase;margin:11px 0 7px}.mode p{font-size:13px;line-height:1.45;color:#c9b7d9;margin:0}
-.mode.special{border-color:rgba(255,79,109,.38);background:linear-gradient(180deg,rgba(255,79,109,.07),rgba(139,92,246,.06))}
-.mode.special small{color:#ff8fa4}.mode.special:hover{border-color:rgba(255,79,109,.75);box-shadow:0 0 36px rgba(255,79,109,.18)}
+.mode small{color:#cdb3ee;letter-spacing:1.8px;font-weight:900}
+.mode h3{text-transform:uppercase;margin:11px 0 7px}
+.mode p{font-size:13px;line-height:1.45;color:#c9b7d9;margin:0}
+
+/* CSS-only visual identities. No mode image files are requested. */
+.mode.m1{--mode-accent:#d8ccff;--mode-accent-soft:rgba(216,204,255,.18)}
+.mode.m2{--mode-accent:#c026ff;--mode-accent-soft:rgba(192,38,255,.22)}
+.mode.m3{--mode-accent:#f0b6ff;--mode-accent-soft:rgba(240,182,255,.20)}
+.mode.m4{--mode-accent:#8b5cf6;--mode-accent-soft:rgba(139,92,246,.26)}
+.mode.m5{--mode-accent:#b66cff;--mode-accent-soft:rgba(182,108,255,.22)}
+.mode.m6{--mode-accent:#7863ff;--mode-accent-soft:rgba(120,99,255,.19)}
+.mode.m7{--mode-accent:#d946ef;--mode-accent-soft:rgba(217,70,239,.24)}
+.mode.special{
+  --mode-accent:#8fff48;
+  --mode-accent-soft:rgba(143,255,72,.18);
+  border-color:rgba(143,255,72,.34);
+  background:linear-gradient(180deg,rgba(143,255,72,.045),rgba(18,1,15,.94))
+}
+.mode.special small{color:#aaff76}
+.mode.special .mode-glyph{color:#d9ffbf;text-shadow:0 0 16px #7dff35,0 0 42px rgba(125,255,53,.75)}
 .notice{margin-top:16px;padding:16px 18px;border-radius:17px;border:1px solid rgba(103,232,249,.2);background:rgba(103,232,249,.04);color:#cdebf5;line-height:1.6}
 
 /* ECOSYSTEM */
@@ -149,9 +206,9 @@ a{text-decoration:none;color:inherit}button,input,textarea{font:inherit}
 
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:2000;display:none;max-width:min(560px,calc(100% - 30px));padding:13px 17px;border-radius:15px;background:rgba(16,0,28,.96);border:1px solid var(--line);box-shadow:0 0 34px rgba(217,70,239,.35);text-align:center}.toast.show{display:block}
 footer{text-align:center;color:#baa5d0;padding:42px 0 54px}
-@media(max-width:1100px){.modes-grid{grid-template-columns:repeat(4,1fr)}.mode-media{height:175px}}
+@media(max-width:1100px){.modes-grid{grid-template-columns:repeat(4,1fr)}.mode-visual{height:175px}}
 @media(max-width:960px){.hero,.ecosystem{grid-template-columns:1fr}.navlinks{display:none}.metrics{grid-template-columns:repeat(2,1fr)}.veil-shell{grid-template-columns:1fr}.veil-side{border-right:0;border-bottom:1px solid rgba(213,105,255,.18)}}
-@media(max-width:640px){.mode-media{height:160px}.modes-preview-bg{display:none}.modes-section-shell{padding:0}.wrap{width:min(100% - 26px,1240px)}.hero-title{font-size:44px;letter-spacing:-2px}.modes-grid{grid-template-columns:repeat(2,1fr)}.metrics{grid-template-columns:1fr}.triplet,.target,.composer{grid-template-columns:1fr}.brand h1{font-size:20px;letter-spacing:4px}.brand span{letter-spacing:2px}.nav .btn.ghost{display:none}}
+@media(max-width:640px){.mode-visual{height:160px}.modes-section-shell{padding:0}.wrap{width:min(100% - 26px,1240px)}.hero-title{font-size:44px;letter-spacing:-2px}.modes-grid{grid-template-columns:repeat(2,1fr)}.metrics{grid-template-columns:1fr}.triplet,.target,.composer{grid-template-columns:1fr}.brand h1{font-size:20px;letter-spacing:4px}.brand span{letter-spacing:2px}.nav .btn.ghost{display:none}}
 </style>
 </head>
 <body>
@@ -183,7 +240,6 @@ footer{text-align:center;color:#baa5d0;padding:42px 0 54px}
 
 <section class="wrap section" id="modes">
  <div class="modes-section-shell" id="modesShell">
-  <div class="modes-preview-bg" id="modesPreviewBg"></div>
   <div class="modes-section-content">
    <div class="section-head"><div><div class="eyebrow">THE CORE OF SZR</div><h2>Seven Adaptive Modes</h2></div><span class="chip">7 Adaptive Modes + Parasite Special</span></div>
    <div class="modes-grid" id="modesGrid"></div>
@@ -289,23 +345,25 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"){document.querySelec
 
 function initModes(){
  const g=document.getElementById("modesGrid");
- const shell=document.getElementById("modesShell");
- const preview=document.getElementById("modesPreviewBg");
+ const glyphs={1:"01",2:"02",3:"03",4:"04",5:"05",6:"06",7:"07",8:"P"};
  modes.forEach(m=>{
   const d=document.createElement("div");
-  d.className="mode"+(m.id===8?" special":"");
+  d.className=`mode m${m.id}${m.id===8?" special":""}`;
+  d.tabIndex=0;
   d.onclick=()=>showMode(m.id);
-  d.innerHTML=`<div class="mode-media"><img src="assets/mode${m.id}.jpg" alt="${m.name} Mode"></div><div class="mode-copy"><small>${m.id===8?"SPECIAL MODE":"MODE "+String(m.id).padStart(2,"0")}</small><h3>${m.name}</h3><p>${m.short}</p></div>`;
-  d.addEventListener("mouseenter",()=>{
-    preview.style.backgroundImage=`url("assets/mode${m.id}.jpg")`;
-    shell.classList.add("previewing");
+  d.addEventListener("keydown",e=>{
+    if(e.key==="Enter"||e.key===" "){e.preventDefault();showMode(m.id)}
   });
-  d.addEventListener("focusin",()=>{
-    preview.style.backgroundImage=`url("assets/mode${m.id}.jpg")`;
-    shell.classList.add("previewing");
-  });
-  d.addEventListener("mouseleave",()=>shell.classList.remove("previewing"));
-  d.addEventListener("focusout",()=>shell.classList.remove("previewing"));
+  d.innerHTML=`
+    <div class="mode-visual" aria-hidden="true">
+      <div class="mode-scan"></div>
+      <div class="mode-glyph">${glyphs[m.id]}<small>${m.id===8?"PARASITE":"SCHIZORA"}</small></div>
+    </div>
+    <div class="mode-copy">
+      <small>${m.id===8?"SPECIAL MODE":"MODE "+String(m.id).padStart(2,"0")}</small>
+      <h3>${m.name}</h3>
+      <p>${m.short}</p>
+    </div>`;
   g.appendChild(d);
  })
 }
