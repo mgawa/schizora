@@ -138,6 +138,15 @@ a{text-decoration:none;color:inherit}button,input,textarea{font:inherit}
 .target input,.composer textarea{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(213,105,255,.22);color:#fff;border-radius:14px;padding:13px;outline:none}
 .window{flex:1;min-height:310px;border-radius:18px;background:rgba(0,0,0,.24);border:1px solid rgba(213,105,255,.14);display:grid;place-items:center;text-align:center;padding:28px;color:#bfaad7}
 .composer{display:grid;grid-template-columns:1fr auto;gap:9px;margin-top:10px}.composer textarea{resize:none;min-height:58px}.preview{color:#ffd166;font-size:11px;text-transform:uppercase;letter-spacing:1.7px;font-weight:900}
+
+.msg-list{width:100%;display:flex;flex-direction:column;gap:10px;align-self:stretch}
+.msg-row{display:flex;width:100%}.msg-row.mine{justify-content:flex-end}.msg-row.theirs{justify-content:flex-start}
+.msg-bubble{max-width:min(76%,620px);padding:11px 14px;border-radius:17px;line-height:1.45;text-align:left;word-break:break-word}
+.msg-row.mine .msg-bubble{background:linear-gradient(135deg,rgba(124,33,255,.92),rgba(217,70,239,.78));border-bottom-right-radius:5px}
+.msg-row.theirs .msg-bubble{background:rgba(255,255,255,.075);border:1px solid rgba(213,105,255,.17);border-bottom-left-radius:5px}
+.msg-meta{font-size:10px;margin-top:5px;opacity:.66}
+.chat-loading{display:grid;place-items:center;min-height:220px;color:#cdb3ee}
+
 .toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:2000;display:none;max-width:min(560px,calc(100% - 30px));padding:13px 17px;border-radius:15px;background:rgba(16,0,28,.96);border:1px solid var(--line);box-shadow:0 0 34px rgba(217,70,239,.35);text-align:center}.toast.show{display:block}
 footer{text-align:center;color:#baa5d0;padding:42px 0 54px}
 @media(max-width:1100px){.modes-grid{grid-template-columns:repeat(4,1fr)}.mode-media{height:175px}}
@@ -200,8 +209,8 @@ footer{text-align:center;color:#baa5d0;padding:42px 0 54px}
    <div class="statusrow"><span>Wallet connect</span><strong>Enabled</strong></div>
    <div class="statusrow"><span>Wallet signature</span><strong>Enabled in VEIL</strong></div>
    <div class="statusrow"><span>VEIL UI</span><strong>Integrated</strong></div>
-   <div class="statusrow"><span>Encrypted transport</span><strong>Next stage</strong></div>
-   <div class="statusrow"><span>Browser Push</span><strong>Next stage</strong></div>
+   <div class="statusrow"><span>Encrypted transport</span><strong>XMTP E2EE</strong></div>
+   <div class="statusrow"><span>Browser Push</span><strong>Server stage</strong></div>
    <div class="statusrow"><span>SZR access payment</span><strong>Next stage</strong></div>
    <div class="statusrow warning"><span>Privacy</span><strong>No absolute anonymity promise</strong></div>
   </div>
@@ -224,15 +233,28 @@ footer{text-align:center;color:#baa5d0;padding:42px 0 54px}
 <div class="modal" id="veilModal" onclick="backdrop(event,'veilModal')"><div class="modal-inner veil-inner"><button class="close" onclick="closeModal('veilModal')">×</button><div class="veil-shell">
  <aside class="veil-side">
   <div class="veil-brand"><div class="vmark">V</div><div><strong>VEIL</strong><small>A SCHIZORA utility</small></div></div>
-  <div class="veil-info"><b>Frontend integrated.</b><br>Encrypted message transport and browser push are not connected in this build yet.</div>
+  <div class="veil-info" id="veilNetworkStatus"><b>VEIL ready.</b><br>Connect and sign to initialize encrypted messaging.</div>
   <div class="account"><small>Connected wallet</small><div class="addr" id="veilWallet">Not connected</div></div>
   <div class="plan"><div><small>Trial</small><strong>50 messages</strong></div><div><small>Access</small><strong>1,000 SZR / 30d</strong></div></div>
   <p class="muted" style="font-size:12px"><b>Privacy begins with your wallet.</b><br><br>For improved privacy, use a dedicated wallet that is not publicly associated with your identity. VEIL cannot guarantee absolute anonymity.</p>
  </aside>
  <section class="veil-main">
   <div class="veil-head"><div class="preview">SCHIZORA UTILITY • INTERFACE BUILD</div><h2>Encrypted wallet communication.</h2><p>No usernames. No emails. No phone numbers. No personal profiles.</p></div>
-  <div class="gate" id="veilGate"><h3>Enter VEIL</h3><p>Connect your wallet and sign a non-transaction authentication message. The signature proves wallet ownership; it does not spend funds.</p><div class="terms"><label><input type="checkbox" id="termsCheck"><span>I understand that VEIL is designed for encrypted wallet-to-wallet communication but cannot guarantee absolute anonymity. I accept responsibility for how I use, disclose or associate my wallet address with my identity.</span></label></div><div class="actions"><button class="btn" onclick="enterVeil()">Connect, Sign & Continue</button><button class="btn ghost" onclick="openTerms()">Read Privacy Terms</button></div></div>
-  <div class="chat" id="veilChat"><div class="target"><input id="recipient" placeholder="Recipient wallet address (0x...)" autocomplete="off"><button class="btn ghost" onclick="selectRecipient()">Open Conversation</button></div><div class="window" id="chatWindow"><div><div style="font-size:40px">◇</div><b>No conversation selected.</b><div style="margin-top:8px">Enter a recipient wallet address above.</div></div></div><div class="composer"><textarea disabled placeholder="Encrypted messaging transport will be connected in the next stage."></textarea><button class="btn" disabled>Send</button></div></div>
+  <div class="gate" id="veilGate"><h3>Enter VEIL</h3><p>Connect your wallet and sign a non-transaction authentication message. The signature proves wallet ownership; it does not spend funds.</p><div class="terms"><label><input type="checkbox" id="termsCheck"><span>I understand that VEIL is designed for encrypted wallet-to-wallet communication but cannot guarantee absolute anonymity. I accept responsibility for how I use, disclose or associate my wallet address with my identity.</span></label></div><div class="actions"><button class="btn" onclick="window.VEIL?.enter()">Connect, Sign & Continue</button><button class="btn ghost" onclick="openTerms()">Read Privacy Terms</button></div></div>
+  <div class="chat" id="veilChat">
+  <div class="target">
+    <input id="recipient" placeholder="Recipient wallet address (0x...)" autocomplete="off">
+    <button class="btn ghost" id="openConversationBtn">Open Conversation</button>
+  </div>
+  <div class="window" id="chatWindow">
+    <div><div style="font-size:40px">◇</div><b>No conversation selected.</b><div style="margin-top:8px">Enter a recipient wallet address above.</div></div>
+  </div>
+  <div class="composer">
+    <textarea id="veilMessageInput" disabled placeholder="Open a conversation first."></textarea>
+    <button class="btn" id="veilSendBtn" disabled>Send</button>
+  </div>
+  <div id="veilChatStatus" class="muted" style="font-size:12px;margin-top:8px"></div>
+</div>
  </section>
 </div></div></div>
 
@@ -315,7 +337,7 @@ async function addSZRToken(){
 function openVeil(){openModal("veilModal");if(account)veilWallet.innerText=account}
 function openTerms(){openModal("termsModal")}
 function acceptTerms(){localStorage.setItem("veil_terms","1");termsCheck.checked=true;closeModal("termsModal");toastMsg("VEIL privacy terms acknowledged.")}
-async function enterVeil(){
+async function enterVeilLegacy(){
  if(!termsCheck.checked&&localStorage.getItem("veil_terms")!=="1"){toastMsg("Please accept the VEIL privacy terms first.");return}
  localStorage.setItem("veil_terms","1");
  try{
@@ -325,7 +347,7 @@ async function enterVeil(){
   veilGate.style.display="none";veilChat.classList.add("open");toastMsg("Wallet authenticated. VEIL interface unlocked.")
  }catch(e){toastMsg(e.message||"Authentication cancelled.")}
 }
-function selectRecipient(){
+function selectRecipientLegacy(){
  const v=recipient.value.trim();
  if(!ethers.utils.isAddress(v)){toastMsg("Enter a valid EVM wallet address.");return}
  if(account&&v.toLowerCase()===account.toLowerCase()){toastMsg("Choose another wallet address.");return}
@@ -337,4 +359,5 @@ if(window.ethereum){
 initModes();
 if(localStorage.getItem("veil_terms")==="1")termsCheck.checked=true;
 </script>
+<script type="module" src="/src/veil-xmtp.js"></script>
 </body></html>
