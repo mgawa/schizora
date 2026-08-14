@@ -1,431 +1,272 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>SCHIZORA ($SZR) — DEX Activation</title>
-<meta name="description" content="SCHIZORA ($SZR) — Seven Minds. One Token. DEX activation on BNB Chain." />
-<meta property="og:title" content="SCHIZORA ($SZR) — DEX Activation" />
-<meta property="og:description" content="Seven Minds. One Token. SCHIZORA enters the market on BNB Chain." />
-<meta property="og:image" content="https://schizora.vercel.app/assets/hero.jpg" />
-<meta property="og:url" content="https://schizora.vercel.app/" />
-<meta name="twitter:card" content="summary_large_image" />
-
-<script defer src="/_vercel/insights/script.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SCHIZORA ($SZR) — Seven Minds. One Token.</title>
+<meta name="description" content="SCHIZORA ($SZR) — seven adaptive modes, one token, one ecosystem.">
+<meta property="og:image" content="https://schizora.vercel.app/assets/hero.jpg">
 <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
-
 <style>
 :root{
-  --bg:#030006;--panel:rgba(16,0,28,.80);--line:rgba(213,105,255,.30);
-  --hot:#d946ef;--violet:#8b5cf6;--green:#5cff9d;--text:#fff;--muted:#d7c4ed;
-  --red:#ff4f6d;--yellow:#ffd166;--cyan:#67e8f9;
+ --bg:#030006;--bg2:#090012;--panel:rgba(16,0,28,.84);--line:rgba(213,105,255,.30);
+ --hot:#d946ef;--violet:#8b5cf6;--green:#5cff9d;--text:#fff;--muted:#d7c4ed;
+ --red:#ff4f6d;--cyan:#67e8f9;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{
-  margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--text);
-  background:
-    radial-gradient(circle at 12% 5%, rgba(139,92,246,.35), transparent 30%),
-    radial-gradient(circle at 84% 12%, rgba(217,70,239,.22), transparent 34%),
-    radial-gradient(circle at 55% 85%, rgba(103,232,249,.10), transparent 30%),
-    linear-gradient(180deg,#030006,#090012 48%,#020004);
-  overflow-x:hidden;
-}
-#particleCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.72}
-body:before{
-  content:"";position:fixed;inset:0;pointer-events:none;opacity:.34;z-index:0;
-  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
-  background-size:56px 56px;
-}
-a{color:inherit;text-decoration:none}
-button,input{font-family:inherit}
-.wrap{width:min(1320px,calc(100% - 40px));margin:auto;position:relative;z-index:1}
-.topbar{position:sticky;top:0;z-index:50;background:rgba(4,0,9,.84);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
-.nav{min-height:90px;display:flex;align-items:center;justify-content:space-between;gap:22px}
-.brand{display:flex;align-items:center;gap:14px}
-.brand-mark{width:60px;height:60px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(135deg,#280747,#8b22ff,#e84cff);box-shadow:0 0 34px rgba(217,70,239,.4);font-size:34px;font-weight:900;overflow:hidden}.brand-mark img{width:100%;height:100%;object-fit:cover}
-.brand h1{margin:0;font-size:29px;letter-spacing:8px;line-height:1}
-.brand span{display:block;margin-top:8px;color:#cdb3ee;font-size:12px;letter-spacing:6px}
-.navlinks{display:flex;gap:24px;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:1.6px;color:#eadbff}
-.navlinks a:hover{color:white;text-shadow:0 0 18px var(--hot)}
-.btn{
-  border:0;cursor:pointer;color:white;min-height:48px;padding:14px 22px;border-radius:16px;font-weight:900;
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  background:linear-gradient(135deg,#7c21ff,#d946ef);box-shadow:0 0 34px rgba(217,70,239,.38);
-  transition:.18s;white-space:nowrap
-}
-.btn:hover{transform:translateY(-2px);box-shadow:0 0 54px rgba(217,70,239,.7)}
-.btn.ghost{background:rgba(255,255,255,.055);border:1px solid var(--line);box-shadow:none}
-.btn.ghost:hover{background:rgba(139,92,246,.18)}
-.hero{min-height:calc(100vh - 90px);display:grid;grid-template-columns:1fr 1fr;gap:42px;align-items:center;padding:72px 0 56px}
-.tag{display:inline-flex;align-items:center;gap:10px;padding:11px 17px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.055);color:#eadbff;font-weight:900}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 18px var(--green)}
-.hero-title{margin:28px 0 18px;font-size:clamp(52px,7.5vw,108px);line-height:.9;letter-spacing:-5px;text-transform:uppercase}
-.grad{background:linear-gradient(90deg,#fff,#ddb5ff,#a855f7,#67e8f9);color:transparent;-webkit-background-clip:text;background-clip:text}
-.hero p{max-width:720px;color:var(--muted);font-size:20px;line-height:1.75}
-.actions{display:flex;flex-wrap:wrap;gap:13px;margin-top:26px}
-.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
-.chip{padding:10px 14px;border-radius:999px;background:rgba(255,255,255,.052);border:1px solid rgba(213,105,255,.22);color:#e6d3fa;font-weight:800}
-.hero-card{padding:16px;border-radius:34px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.025));border:1px solid var(--line);box-shadow:0 0 90px rgba(139,92,246,.28)}
-.hero-card img{width:100%;max-height:660px;display:block;object-fit:contain;border-radius:25px;background:#030006}
-.section{padding:74px 0}
-.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:26px}
-.section-head h2{margin:0;font-size:44px;text-transform:uppercase;letter-spacing:-1px}
-.glass{border:1px solid var(--line);border-radius:28px;background:var(--panel);box-shadow:0 24px 80px rgba(0,0,0,.34);backdrop-filter:blur(18px)}
-.card{padding:26px}
-.card h3{margin:0 0 13px;font-size:26px}
-.muted,.status{color:var(--muted);line-height:1.6;word-break:break-word}
-.success{color:var(--green)} .warn{color:var(--yellow)} .error{color:var(--red)}
-.presale-grid{display:grid;grid-template-columns:.95fr 1.05fr;gap:24px}
-.countdown{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin:22px 0}
-.timebox{text-align:center;padding:18px 8px;border-radius:20px;background:rgba(0,0,0,.35);border:1px solid rgba(213,105,255,.22)}
-.timebox b{display:block;font-size:34px;color:#f0a6ff}.timebox span{display:block;margin-top:6px;font-size:11px;text-transform:uppercase;letter-spacing:2px;color:#cdb3ee}
-.progress-bg{height:18px;border-radius:999px;background:rgba(0,0,0,.5);border:1px solid rgba(213,105,255,.22);overflow:hidden;margin:18px 0 12px}
-.progress-bar{height:100%;width:0;background:linear-gradient(90deg,#7c21ff,#e252ff,#67e8f9)}
-.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}
-.stat{border:1px solid rgba(213,105,255,.18);background:rgba(0,0,0,.24);border-radius:18px;padding:15px}
-.stat small{display:block;color:#cdb3ee;text-transform:uppercase}.stat strong{display:block;margin-top:8px;font-size:20px}
-.input-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
-input{width:100%;padding:17px;border-radius:17px;border:1px solid rgba(213,105,255,.28);background:rgba(0,0,0,.42);color:white;outline:none;font-size:18px;margin:12px 0}
-.quick{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
-.quick button{padding:9px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.05);color:white;cursor:pointer}
-.web3-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px}
-.web3-box{padding:14px;border-radius:16px;background:rgba(0,0,0,.25);border:1px solid rgba(213,105,255,.16)}
-.web3-box small{display:block;color:#cdb3ee;text-transform:uppercase}.web3-box strong{display:block;margin-top:6px}
-.modes-layout{display:grid;grid-template-columns:365px 1fr;gap:24px}.mode-list{display:flex;flex-direction:column;gap:12px}
-.mode-btn{display:grid;grid-template-columns:88px 1fr;gap:15px;align-items:center;padding:13px;border-radius:22px;background:rgba(255,255,255,.045);border:1px solid rgba(213,105,255,.22);cursor:pointer;transition:.18s}
-.mode-btn:hover,.mode-btn.active{transform:translateX(4px);border-color:rgba(236,120,255,.9);box-shadow:0 0 32px rgba(217,70,239,.24);background:rgba(139,92,246,.13)}
-.mode-thumb{width:88px;height:88px;object-fit:cover;border-radius:16px;background:#030006}
-.mode-btn h4{margin:0;font-size:18px;text-transform:uppercase}.mode-btn span{display:block;margin-top:6px;color:#cdb3ee;font-size:14px}
-.mode-panel{display:grid;grid-template-columns:1fr .95fr;gap:24px;padding:24px}.mode-image{height:640px;border-radius:26px;overflow:hidden;background:#030006;border:1px solid rgba(213,105,255,.24);display:flex;align-items:center;justify-content:center;padding:18px}
-.mode-image img{width:auto;max-width:100%;height:auto;max-height:100%;object-fit:contain;display:block}
-.mode-info h3{font-size:48px;margin:0 0 8px;text-transform:uppercase}.meaning{font-size:22px;color:#f0a6ff;margin-bottom:20px}
-.tax-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0}.tax{padding:18px 8px;text-align:center;border-radius:19px;background:rgba(0,0,0,.25);border:1px solid rgba(213,105,255,.2)}.tax small{display:block;color:#cdb3ee;text-transform:uppercase;letter-spacing:2px;font-weight:900}.tax strong{display:block;margin-top:10px;font-size:35px;color:#f0a6ff}
-.mode-box{margin-top:16px;padding:21px;border-radius:22px;background:rgba(0,0,0,.24);border:1px solid rgba(213,105,255,.18)}.mode-box h4{margin:0 0 12px;color:#e252ff;text-transform:uppercase;letter-spacing:3px}.mode-box li{margin:10px 0;color:#eee2f8;line-height:1.55}
-.tokenomics-img{border-radius:28px;border:1px solid var(--line);background:#030006;box-shadow:0 0 70px rgba(139,92,246,.22);overflow:hidden}.tokenomics-img img{width:100%;display:block;object-fit:contain}
-.tokenomics{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:22px}.info{padding:22px;border-radius:22px;background:rgba(255,255,255,.045);border:1px solid rgba(213,105,255,.2)}.info small{display:block;color:#cdb3ee;text-transform:uppercase;letter-spacing:2px}.info strong{display:block;margin-top:8px;font-size:24px}
-.contract{padding:16px;border-radius:16px;background:rgba(0,0,0,.28);border:1px solid rgba(213,105,255,.18);margin:12px 0;word-break:break-all}
-footer{text-align:center;color:#baa5d0;padding:46px 0}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999;display:none;align-items:center;justify-content:center;padding:22px;backdrop-filter:blur(14px)}
-.modal.open{display:flex}.modal-inner{width:min(1180px,100%);max-height:92vh;overflow:auto;border-radius:30px;border:1px solid rgba(213,105,255,.38);background:#050008;padding:22px;position:relative}
-.modal-close{position:absolute;right:18px;top:18px;width:46px;height:46px;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:white;font-size:26px;cursor:pointer}
-.modal-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:24px}.modal-image{height:78vh;min-height:560px;max-height:760px;border-radius:24px;background:#030006;border:1px solid rgba(213,105,255,.28);display:flex;align-items:center;justify-content:center;padding:18px}
-.modal-image img{width:auto;max-width:100%;height:auto;max-height:100%;object-fit:contain}.modal-content h2{font-size:clamp(38px,5vw,72px);margin:0 0 10px;text-transform:uppercase}
-.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:1000;display:none;max-width:min(520px,calc(100% - 32px));padding:14px 18px;border-radius:16px;background:rgba(16,0,28,.95);border:1px solid var(--line);box-shadow:0 0 34px rgba(217,70,239,.35);color:white;text-align:center}
-.toast.show{display:block}
-@media(max-width:1050px){.hero,.presale-grid,.modes-layout,.mode-panel,.modal-grid{grid-template-columns:1fr}.navlinks{display:none}.stat-grid,.tokenomics,.web3-grid{grid-template-columns:repeat(2,1fr)}.mode-image{height:480px}.modal-image{height:70vh;min-height:420px}}
-@media(max-width:640px){.wrap{width:min(100% - 28px,1320px)}.nav{min-height:auto;padding:14px 0}.brand h1{font-size:22px;letter-spacing:5px}.brand span{letter-spacing:3px}.hero{padding:44px 0}.hero-title{font-size:42px;letter-spacing:-2px}.countdown,.stat-grid,.tax-grid,.tokenomics,.web3-grid,.input-row{grid-template-columns:1fr}.mode-btn{grid-template-columns:76px 1fr}.mode-thumb{width:76px;height:76px}}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--text);background:
+radial-gradient(circle at 12% 5%,rgba(139,92,246,.34),transparent 30%),
+radial-gradient(circle at 84% 12%,rgba(217,70,239,.20),transparent 34%),
+linear-gradient(180deg,var(--bg),var(--bg2) 50%,#020004);overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.28;background-image:
+linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:56px 56px}
+a{text-decoration:none;color:inherit}button,input,textarea{font:inherit}
+.wrap{width:min(1240px,calc(100% - 40px));margin:auto;position:relative;z-index:1}
+.topbar{position:sticky;top:0;z-index:80;background:rgba(4,0,9,.86);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.nav{min-height:84px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.brand{display:flex;gap:12px;align-items:center}
+.brand img{width:54px;height:54px;border-radius:16px;object-fit:cover;box-shadow:0 0 28px rgba(217,70,239,.35)}
+.brand h1{font-size:25px;letter-spacing:7px;margin:0}.brand span{display:block;color:#cdb3ee;font-size:10px;letter-spacing:4px;margin-top:7px}
+.navlinks{display:flex;gap:20px;font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:1.4px;color:#eadbff}
+.navlinks a:hover{color:#fff;text-shadow:0 0 16px var(--hot)}
+.btn{border:0;cursor:pointer;color:#fff;min-height:46px;padding:13px 19px;border-radius:15px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#7c21ff,#d946ef);box-shadow:0 0 32px rgba(217,70,239,.34);transition:.18s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 0 48px rgba(217,70,239,.62)}
+.btn.ghost{background:rgba(255,255,255,.05);border:1px solid var(--line);box-shadow:none}
+.btn.small{min-height:40px;padding:10px 14px}
+.glass{background:linear-gradient(180deg,rgba(19,2,31,.86),rgba(8,0,15,.80));border:1px solid var(--line);border-radius:25px;box-shadow:0 24px 80px rgba(0,0,0,.34);backdrop-filter:blur(18px)}
+.card{padding:25px}.muted{color:var(--muted);line-height:1.7}.grad{background:linear-gradient(90deg,#fff,#ddb5ff,#a855f7,#67e8f9);color:transparent;-webkit-background-clip:text;background-clip:text}
+.eyebrow{color:#f0a6ff;font-size:12px;font-weight:900;letter-spacing:2.6px;text-transform:uppercase;margin-bottom:10px}
+.section{padding:70px 0}.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:24px}
+.section-head h2{font-size:clamp(34px,4vw,50px);margin:0;text-transform:uppercase;letter-spacing:-1px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid rgba(213,105,255,.22);color:#e6d3fa;font-size:12px;font-weight:900}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 15px var(--green)}
+.actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:24px}
 
-.engine-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:24px}
-.engine-panel{position:relative;overflow:hidden}
-.engine-panel:before{content:"";position:absolute;inset:-40%;background:radial-gradient(circle,rgba(217,70,239,.18),transparent 48%);animation:pulseGlow 5s ease-in-out infinite}
-@keyframes pulseGlow{0%,100%{transform:scale(.9);opacity:.45}50%{transform:scale(1.08);opacity:.9}}
-.engine-content{position:relative;z-index:1}
-.mode-live-title{font-size:clamp(42px,6vw,82px);line-height:.9;margin:12px 0;text-transform:uppercase;letter-spacing:-3px}
-.mode-live-sub{color:#f0a6ff;font-weight:900;text-transform:uppercase;letter-spacing:2px}
-.mode-countdown{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
-.terminal{font-family:Consolas,Monaco,monospace;background:rgba(0,0,0,.42);border:1px solid rgba(92,255,157,.24);border-radius:24px;padding:22px;min-height:280px;color:#bfffd7;box-shadow:0 0 50px rgba(92,255,157,.08)}
-.terminal-line{margin:10px 0;line-height:1.5;text-shadow:0 0 12px rgba(92,255,157,.35);animation:terminalFade .25s ease both}
-@keyframes terminalFade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
-.terminal-line:before{content:"> ";color:var(--green)}
-.blink{display:inline-block;width:10px;height:18px;background:var(--green);margin-left:5px;animation:blink 1s steps(1) infinite;vertical-align:middle}
-@keyframes blink{50%{opacity:0}}
-.system-pill{display:inline-flex;align-items:center;gap:8px;padding:10px 13px;border-radius:999px;background:rgba(0,0,0,.28);border:1px solid rgba(213,105,255,.2);color:#eadbff;font-weight:900;margin:6px 6px 0 0}
-.system-dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 15px var(--green)}
-@media(max-width:1050px){.engine-grid{grid-template-columns:1fr}}
-@media(max-width:640px){.mode-countdown{grid-template-columns:1fr}}
+/* HERO */
+.hero{min-height:calc(100vh - 84px);display:grid;grid-template-columns:1fr 1fr;gap:42px;align-items:center;padding:64px 0 50px}
+.hero-title{font-size:clamp(52px,7vw,100px);line-height:.91;letter-spacing:-5px;text-transform:uppercase;margin:24px 0 15px}
+.hero p{font-size:18px;line-height:1.75;color:var(--muted);max-width:680px}
+.hero-card{padding:13px;border-radius:33px;background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(255,255,255,.02));border:1px solid var(--line);box-shadow:0 0 90px rgba(139,92,246,.27)}
+.hero-card img{width:100%;display:block;max-height:650px;object-fit:contain;border-radius:25px;background:#030006}
 
+/* MODES */
+.modes-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:11px}
+.mode{min-height:170px;padding:17px;border-radius:20px;background:rgba(255,255,255,.035);border:1px solid rgba(213,105,255,.20);cursor:pointer;transition:.18s}
+.mode:hover{transform:translateY(-4px);border-color:rgba(227,130,255,.65);background:rgba(139,92,246,.1)}
+.mode small{color:#cdb3ee;letter-spacing:1.8px;font-weight:900}.mode h3{text-transform:uppercase;margin:14px 0 8px}.mode p{font-size:13px;line-height:1.5;color:#c9b7d9}
+.notice{margin-top:16px;padding:16px 18px;border-radius:17px;border:1px solid rgba(103,232,249,.2);background:rgba(103,232,249,.04);color:#cdebf5;line-height:1.6}
+
+/* ECOSYSTEM */
+.ecosystem{display:grid;grid-template-columns:1.1fr .9fr;gap:20px}
+.veil-title{font-size:clamp(44px,6vw,76px);margin:3px 0 14px;letter-spacing:-3px;text-transform:uppercase}
+.feature{display:flex;gap:12px;padding:14px;margin-top:10px;border-radius:15px;background:rgba(0,0,0,.24);border:1px solid rgba(213,105,255,.16)}
+.icon{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:rgba(139,92,246,.15);border:1px solid rgba(213,105,255,.22);font-weight:900;flex:0 0 auto}
+.feature b{display:block}.feature span{display:block;color:#c9b7dc;font-size:13px;line-height:1.45;margin-top:3px}
+.statusrow{display:flex;justify-content:space-between;gap:12px;padding:13px 14px;border-radius:14px;background:rgba(0,0,0,.24);border:1px solid rgba(213,105,255,.15);margin-top:9px}
+.statusrow span{color:#cdb3ee}.warning{border-color:rgba(255,79,109,.35)!important;background:rgba(255,79,109,.055)!important}
+
+/* TOKEN */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:11px}.metric{padding:18px;border-radius:18px;background:rgba(255,255,255,.04);border:1px solid rgba(213,105,255,.18)}
+.metric small{color:#cdb3ee;text-transform:uppercase;letter-spacing:1.5px}.metric strong{display:block;font-size:20px;margin-top:7px}
+.contract{padding:14px;margin-top:15px;border-radius:15px;background:rgba(0,0,0,.28);border:1px solid rgba(213,105,255,.18);word-break:break-all}
+
+/* MODALS */
+.modal{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.9);backdrop-filter:blur(14px)}
+.modal.open{display:flex}.modal-inner{width:min(920px,100%);max-height:92vh;overflow:auto;border-radius:28px;background:#07000c;border:1px solid rgba(213,105,255,.38);box-shadow:0 0 90px rgba(139,92,246,.34);position:relative}
+.close{position:sticky;float:right;top:14px;right:14px;margin:14px 14px 0 0;width:42px;height:42px;border-radius:13px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.07);color:#fff;font-size:23px;cursor:pointer;z-index:5}
+.modal-body{padding:28px 30px 32px}.modal-body h2{font-size:44px;margin:0 0 8px;text-transform:uppercase}
+.triplet{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}.box{padding:14px;border-radius:14px;background:rgba(255,255,255,.04);border:1px solid rgba(213,105,255,.16);text-align:center}.box small{color:#cdb3ee}.box strong{display:block;font-size:22px;margin-top:6px;color:#f0a6ff}
+
+/* VEIL */
+.veil-inner{width:min(1120px,100%)}.veil-shell{display:grid;grid-template-columns:320px 1fr;min-height:660px}
+.veil-side{padding:24px;border-right:1px solid rgba(213,105,255,.18);background:linear-gradient(180deg,rgba(25,3,40,.78),rgba(8,0,15,.86))}
+.veil-main{padding:25px;display:flex;flex-direction:column}.veil-brand{display:flex;gap:10px;align-items:center;margin-bottom:18px}.vmark{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#7c21ff,#d946ef);font-weight:900}
+.veil-brand strong{letter-spacing:4px}.veil-brand small{display:block;color:#bfaad7}
+.veil-info{padding:13px;border-radius:14px;background:rgba(92,255,157,.05);border:1px solid rgba(92,255,157,.17);color:#bfffd7;font-size:13px;line-height:1.5}
+.account{margin-top:13px;padding:13px;border-radius:14px;background:rgba(0,0,0,.24);border:1px solid rgba(213,105,255,.15)}.account small{color:#bfaad7}.addr{font-family:monospace;word-break:break-all;margin-top:5px}
+.plan{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}.plan div{padding:11px;border-radius:13px;background:rgba(255,255,255,.035);border:1px solid rgba(213,105,255,.14)}.plan small{color:#baa5d0}.plan strong{display:block;margin-top:4px}
+.veil-head{padding-bottom:18px;border-bottom:1px solid rgba(213,105,255,.15)}.veil-head h2{margin:0;font-size:36px}.veil-head p{color:#cdb3ee}
+.gate{max-width:680px;margin:auto;padding:28px 0;width:100%}.gate h3{font-size:28px;margin:0 0 8px}.gate p{color:#cbb9dc;line-height:1.65}
+.terms{padding:17px;margin:17px 0;border-radius:17px;border:1px solid rgba(255,79,109,.28);background:rgba(255,79,109,.045)}.terms label{display:flex;gap:10px;align-items:flex-start;line-height:1.55}.terms input{width:auto;margin-top:4px;accent-color:var(--hot)}
+.chat{display:none;flex:1;flex-direction:column}.chat.open{display:flex}.target{display:grid;grid-template-columns:1fr auto;gap:9px;margin:16px 0}
+.target input,.composer textarea{width:100%;background:rgba(0,0,0,.3);border:1px solid rgba(213,105,255,.22);color:#fff;border-radius:14px;padding:13px;outline:none}
+.window{flex:1;min-height:310px;border-radius:18px;background:rgba(0,0,0,.24);border:1px solid rgba(213,105,255,.14);display:grid;place-items:center;text-align:center;padding:28px;color:#bfaad7}
+.composer{display:grid;grid-template-columns:1fr auto;gap:9px;margin-top:10px}.composer textarea{resize:none;min-height:58px}.preview{color:#ffd166;font-size:11px;text-transform:uppercase;letter-spacing:1.7px;font-weight:900}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:2000;display:none;max-width:min(560px,calc(100% - 30px));padding:13px 17px;border-radius:15px;background:rgba(16,0,28,.96);border:1px solid var(--line);box-shadow:0 0 34px rgba(217,70,239,.35);text-align:center}.toast.show{display:block}
+footer{text-align:center;color:#baa5d0;padding:42px 0 54px}
+@media(max-width:1100px){.modes-grid{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:960px){.hero,.ecosystem{grid-template-columns:1fr}.navlinks{display:none}.metrics{grid-template-columns:repeat(2,1fr)}.veil-shell{grid-template-columns:1fr}.veil-side{border-right:0;border-bottom:1px solid rgba(213,105,255,.18)}}
+@media(max-width:640px){.wrap{width:min(100% - 26px,1240px)}.hero-title{font-size:44px;letter-spacing:-2px}.modes-grid{grid-template-columns:repeat(2,1fr)}.metrics{grid-template-columns:1fr}.triplet,.target,.composer{grid-template-columns:1fr}.brand h1{font-size:20px;letter-spacing:4px}.brand span{letter-spacing:2px}.nav .btn.ghost{display:none}}
 </style>
 </head>
-
 <body>
+
 <header class="topbar">
-  <div class="wrap nav">
-    <a class="brand" href="#top"><div class="brand-mark"><img src="assets/szr-logo.png" alt="SZR logo"></div><div><h1>SCHIZORA</h1><span>SEVEN MINDS. ONE TOKEN.</span></div></a>
-    <nav class="navlinks">
-      <a href="#activation">Activation</a><a href="#modes">Modes</a><a href="#tokenomics">Tokenomics</a><a href="#contracts">Contracts</a><a href="#terms">Terms</a><a href="SCHIZORA_Master_Whitepaper.pdf" target="_blank">Whitepaper</a>
-    </nav>
-    <button class="btn" id="walletBtn" onclick="connectWallet()">Connect Wallet</button>
-  </div>
+ <div class="wrap nav">
+  <a class="brand" href="#top"><img src="assets/szr-logo.png" alt="SZR"><div><h1>SCHIZORA</h1><span>SEVEN MINDS. ONE TOKEN.</span></div></a>
+  <nav class="navlinks"><a href="#modes">7 Modes</a><a href="#ecosystem">Ecosystem</a><a href="#szr">SZR</a><a href="#official">Official</a><a href="SCHIZORA_Master_Whitepaper.pdf" target="_blank">Whitepaper</a></nav>
+  <div style="display:flex;gap:9px"><button class="btn ghost small" onclick="openVeil()">VEIL</button><button class="btn small" id="walletBtn" onclick="connectWallet()">Connect Wallet</button></div>
+ </div>
 </header>
 
 <main>
 <section class="wrap hero" id="top">
-  <div>
-    <div class="tag"><span class="dot"></span> DEX ACTIVATION • BNB Chain • 06.06 — 6:06 PM UTC</div>
-    <h2 class="hero-title"><span class="grad">Seven Minds.</span><br>One Token.</h2>
-    <p>SCHIZORA is a living token system driven by seven rotating personalities, adaptive market behavior, burn mechanics, and psychological market pressure.</p>
-    <div class="actions"><a class="btn" href="#activation">DEX Activation</a><button class="btn ghost" onclick="connectWallet()">Connect Wallet</button><button class="btn ghost" onclick="addSZRToken()">Add SZR to Wallet</button><a class="btn ghost" href="#modes">Explore Modes</a><a class="btn ghost" href="SCHIZORA_Master_Whitepaper.pdf" target="_blank">Whitepaper</a></div>
-    <div class="chips"><span class="chip">06.06</span><span class="chip">6:06 PM UTC</span><span class="chip">BNB Chain</span><span class="chip">PancakeSwap</span><span class="chip">Modes Become Active</span></div>
+ <div>
+  <span class="chip"><span class="dot"></span> LIVE ON BNB CHAIN</span>
+  <h2 class="hero-title"><span class="grad">Seven Minds.</span><br>One Token.</h2>
+  <p>SCHIZORA ($SZR) is an adaptive token built around seven operating modes. One contract. Seven behaviors. A growing ecosystem built around SZR.</p>
+  <div class="actions">
+   <a class="btn" target="_blank" href="https://pancakeswap.finance/swap?outputCurrency=0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064">Buy SZR</a>
+   <a class="btn ghost" href="#modes">Explore 7 Modes</a>
+   <button class="btn ghost" onclick="openVeil()">Open VEIL</button>
+   <a class="btn ghost" href="SCHIZORA_Master_Whitepaper.pdf" target="_blank">Whitepaper</a>
   </div>
-  <div class="hero-card"><img src="assets/hero.jpg" alt="SCHIZORA homepage image"></div>
-</section>
-
-<section class="wrap section" id="activation">
-  <div class="section-head"><h2>Live Mode Engine</h2><p class="chip">System Online</p></div>
-  <div class="engine-grid">
-    <div class="glass card engine-panel"><div class="engine-content">
-      <div class="mode-live-sub">Current System Mode</div>
-      <div class="mode-live-title grad" id="liveModeName">Loading...</div>
-      <p class="muted" id="liveModeMeaning">Initializing SCHIZORA behavioral engine.</p>
-      <div class="mode-countdown">
-        <div class="stat"><small>Next Rotation</small><strong id="modeHours">--h</strong></div>
-        <div class="stat"><small>Engine</small><strong>Online</strong></div>
-        <div class="stat"><small>Network</small><strong>BNB</strong></div>
-      </div>
-      <div style="margin-top:18px;">
-        <span class="system-pill"><span class="system-dot"></span> MODE ENGINE ACTIVE</span>
-        <span class="system-pill"><span class="system-dot"></span> MARKET RESPONSE READY</span>
-        <span class="system-pill"><span class="system-dot"></span> DEX ACTIVATION 06.06</span>
-      </div>
-      <div class="actions"><a class="btn" href="https://pancakeswap.finance" target="_blank">PancakeSwap</a><a class="btn ghost" href="#modes">Explore All Modes</a></div>
-    </div></div>
-    <div class="glass card">
-      <h3>SCHIZORA TERMINAL</h3>
-      <div class="terminal" id="terminalBox">
-        <div class="terminal-line">booting SCHIZORA core...</div>
-        <div class="terminal-line">loading seven personalities...</div>
-        <div class="terminal-line">behavioral engine online</div>
-        <div class="terminal-line">market pressure scanner ready</div>
-        <div class="terminal-line">DEX activation locked: 06.06 / 6:06 PM UTC</div>
-        <div class="terminal-line">awaiting market contact<span class="blink"></span></div>
-      </div>
-    </div>
-  </div>
+  <div class="actions" style="margin-top:17px"><span class="chip">BNB Chain</span><span class="chip">PancakeSwap V2</span><span class="chip">7 Adaptive Modes</span><span class="chip">VEIL Utility</span></div>
+ </div>
+ <div class="hero-card"><img src="assets/hero.jpg" alt="SCHIZORA hero"></div>
 </section>
 
 <section class="wrap section" id="modes">
-  <div class="section-head"><h2>Modes</h2><p class="chip">Click any mode to open fullscreen</p></div>
-  <div class="modes-layout">
-    <div class="mode-list" id="modeList"></div>
-    <div class="glass mode-panel">
-      <div class="mode-image"><img id="modeImage" src="assets/mode1.jpg" alt="SCHIZORA mode image"></div>
-      <div class="mode-info"><h3 id="modeTitle"></h3><div id="modeMeaning" class="meaning"></div><div class="tax-grid"><div class="tax"><small>Buy Tax</small><strong id="buyTax"></strong></div><div class="tax"><small>Sell Tax</small><strong id="sellTax"></strong></div><div class="tax"><small>Duration</small><strong id="duration"></strong></div></div><div class="mode-box"><h4>Function</h4><ul id="modeFunction"></ul></div><div class="mode-box"><h4>Meaning</h4><p id="modeLong" class="muted"></p></div></div>
-    </div>
-  </div>
+ <div class="section-head"><div><div class="eyebrow">THE CORE OF SZR</div><h2>Seven Adaptive Modes</h2></div><span class="chip">One token. Seven behaviors.</span></div>
+ <div class="modes-grid" id="modesGrid"></div>
+ <div class="notice">The website no longer guesses the active mode from the calendar. The seven modes are presented as the core architecture of SZR. A live on-chain mode indicator should only be enabled after the exact contract read function is confirmed.</div>
 </section>
 
-<section class="wrap section" id="tokenomics">
-  <div class="section-head"><h2>Tokenomics</h2><p class="chip">Full allocation + launch parameters</p></div>
-  <div class="tokenomics-img"><img src="assets/tokenomics.jpg" alt="SCHIZORA tokenomics"></div>
-  <div class="tokenomics"><div class="info"><small>Total Supply</small><strong>666,666,666 SZR</strong></div><div class="info"><small>Presale</small><strong>166,666,666 SZR</strong></div><div class="info"><small>Liquidity Pool</small><strong>233,333,333 SZR</strong></div><div class="info"><small>Treasury / Ecosystem</small><strong>100,000,000 SZR</strong></div><div class="info"><small>Rewards / Utilities</small><strong>66,666,666 SZR</strong></div><div class="info"><small>Team / Development</small><strong>66,666,666 SZR</strong></div></div>
-</section>
-
-<section class="wrap section" id="contracts">
-  <div class="section-head"><h2>Contracts & Links</h2></div>
+<section class="wrap section" id="ecosystem">
+ <div class="section-head"><div><div class="eyebrow">SCHIZORA ECOSYSTEM</div><h2>Beyond the Token</h2></div><span class="chip">SZR remains the core</span></div>
+ <div class="ecosystem">
   <div class="glass card">
-    <div class="contract"><b>SZR Token:</b> <a target="_blank" href="https://bscscan.com/address/0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064">0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064</a></div>
-    <div class="actions"><a class="btn ghost" target="_blank" href="https://t.me/schizora_official">Telegram</a><a class="btn ghost" target="_blank" href="https://x.com/SchizoraHQ">X / Twitter</a><a class="btn ghost" target="_blank" href="SCHIZORA_Master_Whitepaper.pdf">Whitepaper</a><button class="btn ghost" onclick="addSZRToken()">Add SZR to Wallet</button></div>
+   <div class="eyebrow">SCHIZORA UTILITY</div><h3 class="veil-title grad">VEIL</h3>
+   <p class="muted">A wallet-to-wallet communication utility being developed inside SCHIZORA. VEIL is designed around end-to-end encrypted conversations between wallet addresses, without usernames, emails, phone numbers or personal profiles.</p>
+   <div class="feature"><div class="icon">◇</div><div><b>Wallet-native identity</b><span>Access begins with cryptographic wallet ownership, not a traditional account.</span></div></div>
+   <div class="feature"><div class="icon">⌁</div><div><b>Encrypted conversations</b><span>Conversation content is intended to be encrypted end-to-end before transport.</span></div></div>
+   <div class="feature"><div class="icon">SZR</div><div><b>Powered by SZR</b><span>Proposed model: 50-message trial, then 1,000 SZR for 30 days.</span></div></div>
+   <div class="actions"><button class="btn" onclick="openVeil()">Open VEIL Interface</button><button class="btn ghost" onclick="openTerms()">Privacy & Terms</button></div>
   </div>
+  <div class="glass card">
+   <div class="eyebrow">DEVELOPMENT STATUS</div><h3 style="font-size:29px;margin:0">VEIL Interface</h3>
+   <p class="muted">First we integrate the interface into SCHIZORA. Encrypted transport, browser push and SZR access verification can then be connected in controlled stages.</p>
+   <div class="statusrow"><span>Wallet connect</span><strong>Enabled</strong></div>
+   <div class="statusrow"><span>Wallet signature</span><strong>Enabled in VEIL</strong></div>
+   <div class="statusrow"><span>VEIL UI</span><strong>Integrated</strong></div>
+   <div class="statusrow"><span>Encrypted transport</span><strong>Next stage</strong></div>
+   <div class="statusrow"><span>Browser Push</span><strong>Next stage</strong></div>
+   <div class="statusrow"><span>SZR access payment</span><strong>Next stage</strong></div>
+   <div class="statusrow warning"><span>Privacy</span><strong>No absolute anonymity promise</strong></div>
+  </div>
+ </div>
 </section>
 
-<section class="wrap section" id="terms"><div class="section-head"><h2>Terms & Risk</h2></div><div class="glass card"><p class="muted">SCHIZORA is a crypto token project with dynamic mechanics. Crypto assets are risky and volatile. Nothing on this website is financial advice. Only participate with funds you can afford to lose. Always verify official contract addresses before interacting.</p></div></section>
+<section class="wrap section" id="szr">
+ <div class="section-head"><div><div class="eyebrow">THE ASSET AT THE CENTER</div><h2>SZR</h2></div><span class="chip">BNB Chain</span></div>
+ <div class="metrics"><div class="metric"><small>Total Supply</small><strong>666,666,666 SZR</strong></div><div class="metric"><small>Core Design</small><strong>7 Modes</strong></div><div class="metric"><small>DEX</small><strong>PancakeSwap V2</strong></div><div class="metric"><small>Utility</small><strong>VEIL</strong></div></div>
+ <div class="glass card" style="margin-top:17px"><div class="eyebrow">OFFICIAL CONTRACT</div><div class="contract"><a target="_blank" href="https://bscscan.com/address/0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064">0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064</a></div><div class="actions"><button class="btn ghost" onclick="addSZRToken()">Add SZR to Wallet</button><a class="btn ghost" target="_blank" href="https://bscscan.com/address/0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064">BscScan</a></div></div>
+</section>
 
-<div class="modal" id="modeModal" onclick="modalBackdropClose(event)"><div class="modal-inner"><button class="modal-close" onclick="closeModeModal()">×</button><div class="modal-grid"><div class="modal-image"><img id="modalModeImage" src="assets/mode1.jpg" alt="mode full image"></div><div class="modal-content"><h2 id="modalModeTitle"></h2><div class="meaning" id="modalModeMeaning"></div><div class="tax-grid"><div class="tax"><small>Buy Tax</small><strong id="modalBuyTax"></strong></div><div class="tax"><small>Sell Tax</small><strong id="modalSellTax"></strong></div><div class="tax"><small>Duration</small><strong id="modalDuration"></strong></div></div><div class="mode-box"><h4>Function</h4><ul id="modalModeFunction"></ul></div><div class="mode-box"><h4>Meaning</h4><p id="modalModeLong" class="muted"></p></div></div></div></div></div>
+<section class="wrap section" id="official">
+ <div class="section-head"><div><div class="eyebrow">VERIFY FIRST</div><h2>Official SCHIZORA</h2></div></div>
+ <div class="glass card"><p class="muted">VEIL is a SCHIZORA utility. It has no separate token, separate X account or separate Telegram.</p><div class="actions"><a class="btn ghost" target="_blank" href="https://t.me/schizora_official">Telegram</a><a class="btn ghost" target="_blank" href="https://x.com/SchizoraHQ">X / Twitter</a><a class="btn ghost" href="SCHIZORA_Master_Whitepaper.pdf" target="_blank">Whitepaper</a></div></div>
+</section>
+
+<div class="modal" id="modeModal" onclick="backdrop(event,'modeModal')"><div class="modal-inner"><button class="close" onclick="closeModal('modeModal')">×</button><div class="modal-body"><div class="eyebrow" id="modeEyebrow"></div><h2 class="grad" id="modeTitle"></h2><p class="muted" id="modeShort"></p><div class="triplet"><div class="box"><small>Buy Tax</small><strong id="modeBuy"></strong></div><div class="box"><small>Sell Tax</small><strong id="modeSell"></strong></div><div class="box"><small>Cycle</small><strong>24h</strong></div></div><div class="glass card"><div class="eyebrow">FUNCTION</div><ul class="muted" id="modeFunctions"></ul></div></div></div></div>
+
+<div class="modal" id="veilModal" onclick="backdrop(event,'veilModal')"><div class="modal-inner veil-inner"><button class="close" onclick="closeModal('veilModal')">×</button><div class="veil-shell">
+ <aside class="veil-side">
+  <div class="veil-brand"><div class="vmark">V</div><div><strong>VEIL</strong><small>A SCHIZORA utility</small></div></div>
+  <div class="veil-info"><b>Frontend integrated.</b><br>Encrypted message transport and browser push are not connected in this build yet.</div>
+  <div class="account"><small>Connected wallet</small><div class="addr" id="veilWallet">Not connected</div></div>
+  <div class="plan"><div><small>Trial</small><strong>50 messages</strong></div><div><small>Access</small><strong>1,000 SZR / 30d</strong></div></div>
+  <p class="muted" style="font-size:12px"><b>Privacy begins with your wallet.</b><br><br>For improved privacy, use a dedicated wallet that is not publicly associated with your identity. VEIL cannot guarantee absolute anonymity.</p>
+ </aside>
+ <section class="veil-main">
+  <div class="veil-head"><div class="preview">SCHIZORA UTILITY • INTERFACE BUILD</div><h2>Encrypted wallet communication.</h2><p>No usernames. No emails. No phone numbers. No personal profiles.</p></div>
+  <div class="gate" id="veilGate"><h3>Enter VEIL</h3><p>Connect your wallet and sign a non-transaction authentication message. The signature proves wallet ownership; it does not spend funds.</p><div class="terms"><label><input type="checkbox" id="termsCheck"><span>I understand that VEIL is designed for encrypted wallet-to-wallet communication but cannot guarantee absolute anonymity. I accept responsibility for how I use, disclose or associate my wallet address with my identity.</span></label></div><div class="actions"><button class="btn" onclick="enterVeil()">Connect, Sign & Continue</button><button class="btn ghost" onclick="openTerms()">Read Privacy Terms</button></div></div>
+  <div class="chat" id="veilChat"><div class="target"><input id="recipient" placeholder="Recipient wallet address (0x...)" autocomplete="off"><button class="btn ghost" onclick="selectRecipient()">Open Conversation</button></div><div class="window" id="chatWindow"><div><div style="font-size:40px">◇</div><b>No conversation selected.</b><div style="margin-top:8px">Enter a recipient wallet address above.</div></div></div><div class="composer"><textarea disabled placeholder="Encrypted messaging transport will be connected in the next stage."></textarea><button class="btn" disabled>Send</button></div></div>
+ </section>
+</div></div></div>
+
+<div class="modal" id="termsModal" onclick="backdrop(event,'termsModal')"><div class="modal-inner"><button class="close" onclick="closeModal('termsModal')">×</button><div class="modal-body"><div class="eyebrow">VEIL • SCHIZORA UTILITY</div><h2 class="grad">Privacy & User Responsibility</h2><p class="muted">VEIL is intended to protect conversation content through end-to-end encryption. It does not guarantee absolute anonymity. A wallet address can become associated with a person through the way that wallet is used outside VEIL.</p><div class="glass card warning"><div class="eyebrow" style="color:#ff8fa4">IMPORTANT</div><p style="line-height:1.7;margin:0">If you publish your wallet address or associate it with a name, username, email address, phone number, postal address, exchange account, social profile or other identifying information, that association is outside the control of VEIL and SCHIZORA.</p></div><div class="glass card" style="margin-top:14px"><div class="eyebrow">PRIVACY RECOMMENDATION</div><p class="muted" style="margin:0">For stronger separation between VEIL communications and your existing Web3 identity, consider a dedicated wallet that has not already been publicly associated with personal profiles or identity-linked services.</p></div><div class="actions"><button class="btn" onclick="acceptTerms()">I Understand</button></div></div></div></div>
+
 </main>
-
-<footer class="wrap">SCHIZORA ($SZR) — Seven Minds. One Token.</footer>
+<footer class="wrap">SCHIZORA ($SZR) — Seven Minds. One Token.<br><span style="font-size:12px">VEIL is a SCHIZORA utility. No separate token.</span></footer>
 <div class="toast" id="toast"></div>
 
 <script>
+const TOKEN_ADDRESS="0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064";
 const BSC_CHAIN_ID_HEX="0x38";
 const BSC_PARAMS={chainId:"0x38",chainName:"BNB Smart Chain",nativeCurrency:{name:"BNB",symbol:"BNB",decimals:18},rpcUrls:["https://bsc-dataseed.binance.org/"],blockExplorerUrls:["https://bscscan.com"]};
-let provider,signer,account;
+let provider=null,signer=null,account=null;
 
-const modeData=[
-{id:1,name:"Calm Mode",short:"Stable market phase.",buy:"2%",sell:"2%",duration:"24h",meaning:"Silence. Stability. Patience.",fn:["Lowers market pressure","Easier entries","Stable trading environment","Recovery phase after aggressive modes"],long:"Calm Mode is the breathing phase of SCHIZORA. It gives the market space to reset."},
-{id:2,name:"Burn Mode",short:"Supply reduction.",buy:"5%",sell:"8%",duration:"24h",meaning:"SCHIZORA consumes itself.",fn:["Larger share redirected to burn wallet","Circulating supply reduced faster","Deflation day"],long:"Burn Mode strengthens scarcity and accelerates long-term supply pressure."},
-{id:3,name:"Reward Mode",short:"Holder rewards.",buy:"5%",sell:"8%",duration:"24h",meaning:"Loyal holders benefit.",fn:["Higher treasury/reward allocation","Supports future holder rewards","Ecosystem growth day"],long:"Reward Mode gives value back to the ecosystem and supports future holder incentives."},
-{id:4,name:"Chaos Mode",short:"Dynamic volatility.",buy:"3–7%",sell:"6–10%",duration:"24h",meaning:"No certainty. Pure chaos.",fn:["Taxes fluctuate inside limits","Unpredictable trading conditions","High attention / hype mode"],long:"Chaos Mode creates curiosity and attention through controlled unpredictability."},
-{id:5,name:"Mirror Mode",short:"Market adaptive.",buy:"4–6%",sell:"6–10%",duration:"24h",meaning:"The market speaks. SCHIZORA responds.",fn:["Adaptive taxes based on buy/sell pressure","If buys dominate, sell tax lowers","If sells dominate, sell tax rises"],long:"Mirror Mode reflects crowd behavior and makes SCHIZORA feel reactive and alive."},
-{id:6,name:"Silent Mode",short:"Quiet accumulation.",buy:"1%",sell:"3%",duration:"24h",meaning:"Quiet movement.",fn:["Low noise day","Accumulation style mode","Stealth growth"],long:"Silent Mode is the low-friction stealth phase before mutation."},
-{id:7,name:"Predator Mode",short:"Weak hands feed the system.",buy:"5%",sell:"12%",duration:"24h",meaning:"Weak hands feed the system.",fn:["Punishes panic sellers","Protects chart pressure","Boosts treasury / burn"],long:"Predator Mode increases the cost of weak exits and strengthens the ecosystem."},
-{id:8,name:"Parasite Mode",short:"Others fall. SCHIZORA feeds.",buy:"5%",sell:"10%",duration:"2h",meaning:"Others fall. SCHIZORA feeds.",fn:["Activates on tracked token collapse signals","Automatic SZR buyback","Partial burn of bought tokens","Treasury strengthening","Does not buy collapsing token"],long:"Parasite Mode is special. It activates when watched tokens collapse and converts outside weakness into SCHIZORA strength."}
+const modes=[
+{id:1,name:"Calm",short:"Lower-friction stability phase.",buy:"2%",sell:"2%",fn:["Lowers market pressure","Supports easier entries","Creates a more stable trading phase"]},
+{id:2,name:"Burn",short:"Supply-reduction phase.",buy:"5%",sell:"8%",fn:["Redirects a larger share toward burn","Accelerates supply reduction","Strengthens deflationary pressure"]},
+{id:3,name:"Reward",short:"Holder-oriented reward phase.",buy:"5%",sell:"8%",fn:["Higher reward allocation","Supports holder incentives","Feeds ecosystem reward mechanics"]},
+{id:4,name:"Chaos",short:"Controlled unpredictability.",buy:"3–7%",sell:"6–10%",fn:["Dynamic tax range","Unpredictable trading conditions","Creates a high-attention phase"]},
+{id:5,name:"Mirror",short:"Market-responsive behavior.",buy:"4–6%",sell:"6–10%",fn:["Responds to buy/sell pressure","Adapts behavior to market conditions","Reflects crowd activity"]},
+{id:6,name:"Silent",short:"Low-friction quiet phase.",buy:"1%",sell:"3%",fn:["Reduced transaction friction","Quiet accumulation profile","Low-noise operating mode"]},
+{id:7,name:"Predator",short:"High-pressure defensive phase.",buy:"5%",sell:"12%",fn:["Higher exit friction","Strengthens burn/treasury pressure","Aggressive operating profile"]}
 ];
 
-function trackEvent(name,data={}){try{if(window.va) window.va("event",{name,...data});}catch(e){}}
-function showToast(msg){toast.innerText=msg;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),3200)}
-function img(id){return `assets/mode${id}.jpg`}
-function initModes(){const list=modeList;list.innerHTML="";modeData.forEach(m=>{const item=document.createElement("div");item.className="mode-btn";item.onclick=()=>openModeModal(m.id);item.innerHTML=`<img class="mode-thumb" src="${img(m.id)}"><div><h4>${m.id===8?"Special":"Mode "+m.id} — ${m.name}</h4><span>${m.short}</span></div>`;list.appendChild(item)});selectMode(1)}
-function selectMode(id){const m=modeData.find(x=>x.id===id);document.querySelectorAll(".mode-btn").forEach((el,i)=>el.classList.toggle("active",i===id-1));modeImage.src=img(id);modeTitle.innerText=m.name;modeMeaning.innerText=m.meaning;buyTax.innerText=m.buy;sellTax.innerText=m.sell;duration.innerText=m.duration;modeFunction.innerHTML=m.fn.map(x=>`<li>${x}</li>`).join("");modeLong.innerText=m.long;updateTerminalForMode(id)}
-function openModeModal(id){trackEvent("mode_open",{mode:id});selectMode(id);const m=modeData.find(x=>x.id===id);modalModeImage.src=img(id);modalModeTitle.innerText=m.name;modalModeMeaning.innerText=m.meaning;modalBuyTax.innerText=m.buy;modalSellTax.innerText=m.sell;modalDuration.innerText=m.duration;modalModeFunction.innerHTML=m.fn.map(x=>`<li>${x}</li>`).join("");modalModeLong.innerText=m.long;modeModal.classList.add("open");document.body.style.overflow="hidden"}
-function closeModeModal(){modeModal.classList.remove("open");document.body.style.overflow=""}
-function modalBackdropClose(e){if(e.target.id==="modeModal")closeModeModal()}document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModeModal()});
+function toastMsg(m){const t=document.getElementById("toast");t.innerText=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),3200)}
+function openModal(id){document.getElementById(id).classList.add("open");document.body.style.overflow="hidden"}
+function closeModal(id){document.getElementById(id).classList.remove("open");if(!document.querySelector(".modal.open"))document.body.style.overflow=""}
+function backdrop(e,id){if(e.target.id===id)closeModal(id)}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){document.querySelectorAll(".modal.open").forEach(x=>x.classList.remove("open"));document.body.style.overflow=""}})
 
+function initModes(){
+ const g=document.getElementById("modesGrid");
+ modes.forEach(m=>{const d=document.createElement("div");d.className="mode";d.onclick=()=>showMode(m.id);d.innerHTML=`<small>MODE ${String(m.id).padStart(2,"0")}</small><h3>${m.name}</h3><p>${m.short}</p>`;g.appendChild(d)})
+}
+function showMode(id){
+ const m=modes.find(x=>x.id===id);
+ modeEyebrow.innerText=`SZR • MODE ${String(id).padStart(2,"0")}`;
+ modeTitle.innerText=m.name+" Mode";modeShort.innerText=m.short;modeBuy.innerText=m.buy;modeSell.innerText=m.sell;modeFunctions.innerHTML=m.fn.map(x=>`<li style="margin:8px 0">${x}</li>`).join("");
+ openModal("modeModal");
+}
 async function ensureBSC(){
- if(!window.ethereum) throw new Error("Install MetaMask or open with a Web3 wallet.");
- const chainId=await window.ethereum.request({method:"eth_chainId"});
- if(chainId!==BSC_CHAIN_ID_HEX){
-  try{await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:BSC_CHAIN_ID_HEX}]});}
-  catch(e){if(e.code===4902){await window.ethereum.request({method:"wallet_addEthereumChain",params:[BSC_PARAMS]});}else{throw e;}}
+ if(!window.ethereum)throw new Error("Install MetaMask or open the site in a Web3 wallet browser.");
+ const c=await window.ethereum.request({method:"eth_chainId"});
+ if(c!==BSC_CHAIN_ID_HEX){
+  try{await window.ethereum.request({method:"wallet_switchEthereumChain",params:[{chainId:BSC_CHAIN_ID_HEX}]})}
+  catch(e){if(e.code===4902)await window.ethereum.request({method:"wallet_addEthereumChain",params:[BSC_PARAMS]});else throw e}
  }
 }
 async function connectWallet(){
- trackEvent("connect_wallet_click");
- try{
-  await ensureBSC();
-  provider=new ethers.providers.Web3Provider(window.ethereum);
-  await provider.send("eth_requestAccounts",[]);
-  signer=provider.getSigner();
-  account=await signer.getAddress();
-  walletBtn.innerText=account.slice(0,6)+"..."+account.slice(-4);
-  showToast("Wallet connected.");
-  trackEvent("connect_wallet_success");
-  }catch(e){showToast(cleanError(e));trackEvent("connect_wallet_failed")}
+ await ensureBSC();
+ provider=new ethers.providers.Web3Provider(window.ethereum);
+ await provider.send("eth_requestAccounts",[]);
+ signer=provider.getSigner();account=await signer.getAddress();
+ walletBtn.innerText=account.slice(0,6)+"..."+account.slice(-4);veilWallet.innerText=account;toastMsg("Wallet connected.");return account
 }
-function cleanError(e){let m=e?.data?.message||e?.error?.message||e?.reason||e?.message||"Transaction failed.";return String(m).replace("execution reverted: ","").slice(0,220)}
-async function readOptional(contract, fn, args=[]){try{return await contract[fn](...args)}catch(e){return null}}
 async function addSZRToken(){
- trackEvent("add_token_click");
+ try{if(!window.ethereum)throw new Error("Open in MetaMask / Bitget / Trust Wallet.");await ensureBSC();await window.ethereum.request({method:"wallet_watchAsset",params:{type:"ERC20",options:{address:TOKEN_ADDRESS,symbol:"SZR",decimals:18,image:"https://schizora.vercel.app/assets/szr-logo.png"}}});toastMsg("SZR request sent to wallet.")}
+ catch(e){toastMsg(e.message||"Could not add SZR.")}
+}
+function openVeil(){openModal("veilModal");if(account)veilWallet.innerText=account}
+function openTerms(){openModal("termsModal")}
+function acceptTerms(){localStorage.setItem("veil_terms","1");termsCheck.checked=true;closeModal("termsModal");toastMsg("VEIL privacy terms acknowledged.")}
+async function enterVeil(){
+ if(!termsCheck.checked&&localStorage.getItem("veil_terms")!=="1"){toastMsg("Please accept the VEIL privacy terms first.");return}
+ localStorage.setItem("veil_terms","1");
  try{
-  if(!window.ethereum){showToast("Open this site in MetaMask / Bitget / Trust Wallet browser.");return;}
-  await ensureBSC();
-  const added=await window.ethereum.request({
-   method:"wallet_watchAsset",
-   params:{type:"ERC20",options:{address:TOKEN_ADDRESS,symbol:"SZR",decimals:18,image:"https://schizora.vercel.app/assets/szr-logo.png"}}
-  });
-  if(added){showToast("SZR added to wallet.");trackEvent("add_token_success")}
-  else{showToast("Add token cancelled.")}
- }catch(e){showToast(cleanError(e));trackEvent("add_token_failed")}
+  if(!account)await connectWallet();
+  const msg=["SCHIZORA VEIL Authentication","","This signature proves wallet ownership.","It does not authorize a token transfer.","","Wallet: "+account,"Nonce: "+Date.now()].join("\n");
+  await signer.signMessage(msg);
+  veilGate.style.display="none";veilChat.classList.add("open");toastMsg("Wallet authenticated. VEIL interface unlocked.")
+ }catch(e){toastMsg(e.message||"Authentication cancelled.")}
 }
-if(window.ethereum){window.ethereum.on("accountsChanged",()=>location.reload());window.ethereum.on("chainChanged",()=>location.reload())}
-
-
-
-const DEAD_WALLET="0x000000000000000000000000000000000000dEaD";
-const READ_ERC20_ABI=["function balanceOf(address) view returns (uint256)"];
-let currentLiveModeId=null;
-let lastBurnedText="reading...";
-
-const terminalMessages={
-  1:[
-    "CURRENT MODE: CALM MODE",
-    "market pressure lowered",
-    "entry friction reduced",
-    "stable trading environment active",
-    "recovery phase prepared",
-    "system status: silent / stable / patient"
-  ],
-  2:[
-    "CURRENT MODE: BURN MODE",
-    "deflation route opened",
-    "burn wallet synchronized",
-    "circulating supply compression active",
-    "burned SZR: {{BURNED}}",
-    "SCHIZORA consumes itself"
-  ],
-  3:[
-    "CURRENT MODE: REWARD MODE",
-    "reward allocation increased",
-    "holder loyalty route active",
-    "ecosystem growth channel online",
-    "treasury / rewards sync active",
-    "loyal holders benefit"
-  ],
-  4:[
-    "CURRENT MODE: CHAOS MODE",
-    "tax range unstable: buy 3%-7% / sell 6%-10%",
-    "market certainty removed",
-    "volatility field expanding",
-    "hype pressure rising",
-    "no certainty. pure chaos"
-  ],
-  5:[
-    "CURRENT MODE: MIRROR MODE",
-    "buy / sell pressure scanner online",
-    "market behavior reflected",
-    "adaptive response active",
-    "crowd psychology detected",
-    "the market speaks. SCHIZORA responds"
-  ],
-  6:[
-    "CURRENT MODE: SILENT MODE",
-    "low-noise protocol active",
-    "stealth accumulation enabled",
-    "external signal reduced",
-    "quiet movement detected",
-    "system status: hidden / patient / watching"
-  ],
-  7:[
-    "CURRENT MODE: PREDATOR MODE",
-    "weak-hands scanner active",
-    "panic-sell pressure monitored",
-    "treasury / burn pressure boosted",
-    "chart protection engaged",
-    "weak hands feed the system"
-  ],
-  8:[
-    "SPECIAL MODE: PARASITE MODE",
-    "external collapse scanner armed",
-    "tracked-token panic signals monitored",
-    "buyback / burn route prepared",
-    "ecosystem advantage enabled",
-    "others fall. SCHIZORA feeds"
-  ]
-};
-
-function terminalLinesForMode(id){
-  const base=(terminalMessages[id]||terminalMessages[1]).map(x=>x.replace("{{BURNED}}", lastBurnedText));
-  const now=new Date().toISOString().replace("T"," ").slice(0,19)+" UTC";
-  return ["SCHIZORA terminal online", "timestamp: "+now, ...base];
+function selectRecipient(){
+ const v=recipient.value.trim();
+ if(!ethers.utils.isAddress(v)){toastMsg("Enter a valid EVM wallet address.");return}
+ if(account&&v.toLowerCase()===account.toLowerCase()){toastMsg("Choose another wallet address.");return}
+ chatWindow.innerHTML=`<div><div class="preview">CONVERSATION TARGET</div><div style="font-family:monospace;color:#fff;margin-top:10px;word-break:break-all">${v}</div><div style="margin-top:15px;line-height:1.6">Recipient accepted by the interface.<br>Encrypted transport will be connected in the next VEIL implementation stage.</div></div>`
 }
-
-function updateTerminalForMode(id, force=false){
-  const box=document.getElementById("terminalBox");
-  if(!box) return;
-  if(!force && currentLiveModeId===id) return;
-  currentLiveModeId=id;
-  const lines=terminalLinesForMode(id);
-  box.innerHTML=lines.map((x,i)=>`<div class="terminal-line" style="animation-delay:${i*0.06}s">${x}</div>`).join("")+`<div class="terminal-line" style="animation-delay:${lines.length*0.06}s">awaiting next system signal<span class="blink"></span></div>`;
+if(window.ethereum){
+ window.ethereum.on("accountsChanged",a=>{account=a?.[0]||null;walletBtn.innerText=account?account.slice(0,6)+"..."+account.slice(-4):"Connect Wallet";veilWallet.innerText=account||"Not connected";veilGate.style.display="";veilChat.classList.remove("open")});
 }
-
-async function loadBurnedAmount(){
-  try{
-    const readProvider=new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
-    const token=new ethers.Contract(TOKEN_ADDRESS,READ_ERC20_ABI,readProvider);
-    const burned=await token.balanceOf(DEAD_WALLET);
-    const amount=Number(ethers.utils.formatUnits(burned,18));
-    lastBurnedText=amount.toLocaleString(undefined,{maximumFractionDigits:0})+" SZR";
-    if(currentLiveModeId===2) updateTerminalForMode(2,true);
-  }catch(e){
-    lastBurnedText="unavailable";
-  }
-}
-
-function updateLiveMode(){
-  const modes=[
-    {id:1,name:"CALM MODE",meaning:"Silence. Stability. Patience."},
-    {id:2,name:"BURN MODE",meaning:"SCHIZORA consumes itself."},
-    {id:3,name:"REWARD MODE",meaning:"Loyal holders benefit."},
-    {id:4,name:"CHAOS MODE",meaning:"No certainty. Pure chaos."},
-    {id:5,name:"MIRROR MODE",meaning:"The market speaks. SCHIZORA responds."},
-    {id:6,name:"SILENT MODE",meaning:"Quiet movement."},
-    {id:7,name:"PREDATOR MODE",meaning:"Weak hands feed the system."}
-  ];
-  const now=new Date();
-  const start=Date.UTC(now.getUTCFullYear(),0,1);
-  const day=Math.floor((Date.now()-start)/86400000);
-  const current=modes[day % modes.length];
-  const nextUtc=Date.UTC(now.getUTCFullYear(),now.getUTCMonth(),now.getUTCDate()+1,0,0,0);
-  const diff=Math.max(nextUtc-Date.now(),0);
-  const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
-  if(document.getElementById("liveModeName")){
-    liveModeName.innerText=current.name;
-    liveModeMeaning.innerText=current.meaning;
-    modeHours.innerText=`${String(h).padStart(2,"0")}h ${String(m).padStart(2,"0")}m ${String(s).padStart(2,"0")}s`;
-  }
-  updateTerminalForMode(current.id);
-}
-function initParticles(){
-  const canvas=document.createElement("canvas");canvas.id="particleCanvas";document.body.prepend(canvas);
-  const ctx=canvas.getContext("2d");let particles=[];
-  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;particles=Array.from({length:80},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*2+0.4,vx:(Math.random()-.5)*0.35,vy:(Math.random()-.5)*0.35,a:Math.random()*0.7+0.15}));}
-  function draw(){ctx.clearRect(0,0,canvas.width,canvas.height);for(const p of particles){p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(217,70,239,${p.a})`;ctx.shadowColor="rgba(217,70,239,.8)";ctx.shadowBlur=12;ctx.fill();}requestAnimationFrame(draw);}
-  window.addEventListener("resize",resize);resize();draw();
-}
-
-trackEvent("page_view");
-initModes();loadBurnedAmount();updateLiveMode();setInterval(updateLiveMode,1000);setInterval(loadBurnedAmount,60000);initParticles();
+initModes();
+if(localStorage.getItem("veil_terms")==="1")termsCheck.checked=true;
 </script>
-</body>
-</html>
+</body></html>
