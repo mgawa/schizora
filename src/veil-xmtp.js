@@ -6,10 +6,15 @@ import {
 } from "./veil-push.js";
 
 const ENV = "production";
+const PENDING_API = "/api/veil-inbox";
+
 let xmtp = null;
 let activeDm = null;
 let activePeerAddress = null;
+let activeTransport = null;
 let streamHandle = null;
+let claimedPendingMessages = [];
+
 const FREE_TRIAL_LIMIT = 50;
 
 function trialKey() {
@@ -58,10 +63,15 @@ function hexToBytes(hex) {
   const clean = hex.startsWith("0x") ? hex.slice(2) : hex;
   if (clean.length % 2) throw new Error("Invalid signature.");
   const out = new Uint8Array(clean.length / 2);
-  for (let i = 0; i < out.length; i++) {
-    out[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16);
-  }
+  for (let i = 0; i < out.length; i++) out[i] = parseInt(clean.slice(i * 2, i * 2 + 2), 16);
   return out;
+}
+
+async function apiJson(url, options) {
+  const response = await fetch(url, options);
+  let data = {};
+  try { data = await response.json(); } catch {}
+  return { response, data };
 }
 
 async function ensureWallet() {
@@ -110,7 +120,7 @@ async function initializeXMTP() {
   const signer = createXmtpSigner(address);
   xmtp = await Client.create(signer, {
     env: ENV,
-    appVersion: "SCHIZORA-VEIL/0.2",
+    appVersion: "SCHIZORA-VEIL/0.3-ANY-BSC",
   });
 
   networkStatus("VEIL encrypted network online.", `XMTP inbox: ${short(xmtp.inboxId)}`);
@@ -130,7 +140,7 @@ function short(value) {
   return s.length > 16 ? `${s.slice(0, 8)}...${s.slice(-6)}` : s;
 }
 
-async function resolveInboxId(address) {
+async function canReachXMTP(address) {
   const identifier = {
     identifier: address.toLowerCase(),
     identifierKind: IdentifierKind.Ethereum,
@@ -145,21 +155,15 @@ async function resolveInboxId(address) {
       )
     : false;
 
-  if (!can) {
-    throw new Error(
-      "This wallet is not reachable on VEIL yet. The owner must connect to VEIL once to register its encrypted inbox."
-    );
-  }
+  return { can: Boolean(can), identifier };
+}
 
+async function resolveInboxId(address, identifier) {
   if (typeof xmtp.findInboxIdByIdentities === "function") {
     const result = await xmtp.findInboxIdByIdentities([identifier]);
     if (Array.isArray(result)) return result[0];
     if (result instanceof Map) {
-      return (
-        result.get(address.toLowerCase()) ||
-        result.get(address) ||
-        [...result.values()][0]
-      );
+      return result.get(address.toLowerCase()) || result.get(address) || [...result.values()][0];
     }
     if (typeof result === "string") return result;
   }
@@ -179,23 +183,19 @@ async function resolveInboxId(address) {
     if (result) return result;
   }
 
-  throw new Error(
-    "Your installed XMTP Browser SDK does not expose the inbox lookup expected by this build."
-  );
+  throw new Error("XMTP inbox lookup failed.");
 }
 
 function getMessageText(message) {
   try {
     if (typeof message.content === "function") {
-      const content = message.content();
-      if (typeof content === "string") return content;
-      if (content && typeof content.content === "string") return content.content;
-      if (content != null) return String(content);
+      const c = message.content();
+      if (typeof c === "string") return c;
+      if (c && typeof c.content === "string") return c.content;
+      if (c != null) return String(c);
     }
     if (typeof message.content === "string") return message.content;
-    if (message.content && typeof message.content.content === "string") {
-      return message.content.content;
-    }
+    if (message.content && typeof message.content.content === "string") return message.content.content;
   } catch {}
   return "[Unsupported encrypted content]";
 }
@@ -214,18 +214,118 @@ function getSentDate(message) {
   return new Date();
 }
 
+function renderClaimedPendingInbox() {
+  const windowEl = $("chatWindow");
+  if (!windowEl || !claimedPendingMessages.length) return;
+
+  const list = document.createElement("div");
+  list.className = "msg-list";
+
+  const title = document.createElement("div");
+  title.style.cssText = "padding:10px 0 14px;font-weight:900;color:#fff";
+  title.textContent = "VEIL messages waiting for this wallet";
+  list.appendChild(title);
+
+  for (const item of claimedPendingMessages) {
+    const row = document.createElement("div");
+    row.className = "msg-row theirs";
+
+    const bubble = document.createElement("div");
+    bubble.className = "msg-bubble";
+
+    const content = document.createElement("div");
+    content.textContent = item.message;
+
+    const meta = document.createElement("div");
+    meta.className = "msg-meta";
+    meta.textContent = `${short(item.sender)} • ${new Date(item.createdAt).toLocaleString()}`;
+
+    bubble.append(content, meta);
+    row.appendChild(bubble);
+    list.appendChild(row);
+  }
+
+  windowEl.innerHTML = "";
+  windowEl.appendChild(list);
+  windowEl.scrollTop = windowEl.scrollHeight;
+}
+
+async function claimPendingInboxIfAny(address) {
+  try {
+    const check = await apiJson(
+      `${PENDING_API}?action=has-pending&wallet=${encodeURIComponent(address)}`
+    );
+
+    if (!check.response.ok || !check.data.hasPending) return [];
+
+    const timestamp = Date.now();
+    const proof = [
+      "SCHIZORA VEIL Pending Inbox Claim",
+      "",
+      "This signature proves wallet ownership and unlocks pending VEIL messages.",
+      "It does not authorize a token transfer.",
+      "",
+      `Wallet: ${address.toLowerCase()}`,
+      `Timestamp: ${timestamp}`,
+    ].join("\n");
+
+    const signature = await window.ethereum.request({
+      method: "personal_sign",
+      params: [proof, address],
+    });
+
+    const result = await apiJson(PENDING_API, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        action: "claim",
+        wallet: address.toLowerCase(),
+        timestamp,
+        signature,
+      }),
+    });
+
+    if (!result.response.ok) {
+      console.warn("Pending inbox claim failed:", result.data);
+      return [];
+    }
+
+    claimedPendingMessages = Array.isArray(result.data.messages)
+      ? result.data.messages
+      : [];
+
+    if (claimedPendingMessages.length) {
+      renderClaimedPendingInbox();
+      window.toastMsg?.(`${claimedPendingMessages.length} VEIL message(s) received.`);
+    }
+
+    return claimedPendingMessages;
+  } catch (error) {
+    console.warn("Pending inbox warning:", error);
+    return [];
+  }
+}
+
 async function renderActiveConversation() {
   const windowEl = $("chatWindow");
-  if (!activeDm || !windowEl) return;
+  if (!windowEl) return;
+
+  if (activeTransport === "pending") {
+    windowEl.innerHTML = `
+      <div>
+        <div style="font-size:38px">◇</div>
+        <b>VEIL channel ready.</b>
+        <div style="margin-top:8px">Write your message below.</div>
+      </div>`;
+    return;
+  }
+
+  if (!activeDm) return;
 
   windowEl.innerHTML = `<div class="chat-loading">Decrypting conversation...</div>`;
 
   try {
-    const messages = await activeDm.messages({
-      limit: 100n,
-      direction: "ascending",
-    });
-
+    const messages = await activeDm.messages({ limit: 100n, direction: "ascending" });
     const myInbox = xmtp?.inboxId || "";
 
     if (!messages.length) {
@@ -238,10 +338,8 @@ async function renderActiveConversation() {
 
     for (const message of messages) {
       const mine = getSenderInboxId(message) === myInbox;
-
       const row = document.createElement("div");
       row.className = `msg-row ${mine ? "mine" : "theirs"}`;
-
       const bubble = document.createElement("div");
       bubble.className = "msg-bubble";
 
@@ -272,25 +370,31 @@ async function openConversation() {
 
     const address = $("recipient")?.value?.trim();
     if (!address || !/^0x[a-fA-F0-9]{40}$/.test(address)) {
-      throw new Error("Enter a valid EVM wallet address.");
+      throw new Error("Enter a valid BSC wallet address.");
     }
 
     const myAddress = (await ensureWallet()).toLowerCase();
-    if (address.toLowerCase() === myAddress) {
-      throw new Error("Choose another wallet address.");
-    }
+    if (address.toLowerCase() === myAddress) throw new Error("Choose another wallet address.");
 
-    uiStatus("Locating recipient encrypted inbox...");
-    const inboxId = await resolveInboxId(address);
-
-    activeDm = await xmtp.conversations.createDm(inboxId);
+    uiStatus("Opening VEIL channel...");
     activePeerAddress = address;
+
+    const reach = await canReachXMTP(address);
+
+    if (reach.can) {
+      const inboxId = await resolveInboxId(address, reach.identifier);
+      activeDm = await xmtp.conversations.createDm(inboxId);
+      activeTransport = "xmtp";
+    } else {
+      activeDm = null;
+      activeTransport = "pending";
+    }
 
     $("veilMessageInput").disabled = false;
     $("veilSendBtn").disabled = false;
-    $("veilMessageInput").placeholder = "Write an end-to-end encrypted message...";
+    $("veilMessageInput").placeholder = "Write a message...";
 
-    uiStatus(`Encrypted DM open with ${short(address)}.`);
+    uiStatus(`VEIL channel open with ${short(address)}.`);
     await renderActiveConversation();
   } catch (error) {
     console.error(error);
@@ -299,10 +403,60 @@ async function openConversation() {
   }
 }
 
+async function sendPendingMessage(text) {
+  const sender = await ensureWallet();
+  const recipient = activePeerAddress;
+  const timestamp = Date.now();
+
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(text)
+  );
+  const messageHash = [...new Uint8Array(digest)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+
+  const proof = [
+    "SCHIZORA VEIL Pending Message",
+    "",
+    "This signature authorizes storing one pending VEIL message.",
+    "It does not authorize a token transfer.",
+    "",
+    `Sender: ${sender.toLowerCase()}`,
+    `Recipient: ${recipient.toLowerCase()}`,
+    `Timestamp: ${timestamp}`,
+    `Message SHA256: ${messageHash}`,
+  ].join("\n");
+
+  const signature = await window.ethereum.request({
+    method: "personal_sign",
+    params: [proof, sender],
+  });
+
+  const result = await apiJson(PENDING_API, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      action: "send",
+      sender: sender.toLowerCase(),
+      recipient: recipient.toLowerCase(),
+      timestamp,
+      signature,
+      message: text,
+    }),
+  });
+
+  if (!result.response.ok) {
+    throw new Error(result.data.error || "Message failed.");
+  }
+
+  notifyVeilRecipient(recipient).catch(() => {});
+}
+
 async function sendMessage() {
   const input = $("veilMessageInput");
   const button = $("veilSendBtn");
-  if (!activeDm || !input) return;
+  if (!activePeerAddress || !input) return;
 
   const text = input.value.trim();
   if (!text) return;
@@ -314,23 +468,37 @@ async function sendMessage() {
 
   try {
     button.disabled = true;
-    uiStatus("Encrypting and sending...");
+    uiStatus("Securing and sending...");
 
-    await activeDm.sendText(text, true);
-    input.value = "";
-    await renderActiveConversation();
+    if (activeTransport === "xmtp") {
+      await activeDm.sendText(text, true);
+      input.value = "";
+      await renderActiveConversation();
+      await activeDm.publishMessages();
+      notifyVeilRecipient(activePeerAddress).catch(() => {});
+    } else {
+      await sendPendingMessage(text);
+      input.value = "";
+    }
 
-    await activeDm.publishMessages();
     consumeTrialMessage();
 
-    // The notification service receives only the recipient wallet.
-    // Message text remains exclusively in XMTP's encrypted transport.
-    notifyVeilRecipient(activePeerAddress).catch((error) => {
-      console.warn("VEIL push alert warning:", error);
-    });
+    uiStatus(`Message sent. ${trialRemaining()} free messages left.`);
+    window.toastMsg?.("VEIL message sent.");
 
-    uiStatus(`Encrypted message delivered. ${trialRemaining()} free messages left.`);
-    await renderActiveConversation();
+    if (activeTransport === "xmtp") {
+      await renderActiveConversation();
+    } else {
+      const windowEl = $("chatWindow");
+      if (windowEl) {
+        windowEl.innerHTML = `
+          <div>
+            <div style="font-size:38px">✓</div>
+            <b>Message sent.</b>
+            <div style="margin-top:8px">VEIL will make it available to the destination wallet.</div>
+          </div>`;
+      }
+    }
   } catch (error) {
     console.error(error);
     uiStatus(error?.message || "Message failed.", true);
@@ -368,8 +536,6 @@ async function enter() {
 
   localStorage.setItem("veil_terms", "1");
 
-  // Ask while the user is actively pressing the VEIL button.
-  // A notification denial does not block encrypted messaging.
   let notificationPermission = "unsupported";
   try {
     notificationPermission = await requestVeilNotificationPermission();
@@ -378,7 +544,7 @@ async function enter() {
   }
 
   try {
-    uiStatus("Connecting to encrypted network...");
+    uiStatus("Connecting to VEIL...");
     await initializeXMTP();
 
     $("veilGate").style.display = "none";
@@ -394,17 +560,24 @@ async function enter() {
       }
     }
 
+    const pending = await claimPendingInboxIfAny(window.account);
+
     if (pushReady) {
       networkStatus(
         "VEIL encrypted network online.",
         `XMTP inbox: ${short(xmtp.inboxId)} • Push alerts enabled`
       );
-      uiStatus("VEIL is ready. Encrypted messaging and push alerts are enabled.");
-    } else {
-      uiStatus("VEIL is ready. Messaging works; push alerts are not enabled on this browser.");
     }
 
-    window.toastMsg?.("VEIL encrypted messaging initialized.");
+    if (!pending.length) {
+      uiStatus(
+        pushReady
+          ? "VEIL is ready. Messaging and push alerts are enabled."
+          : "VEIL is ready."
+      );
+    }
+
+    window.toastMsg?.("VEIL initialized.");
   } catch (error) {
     console.error(error);
     uiStatus(error?.message || "VEIL initialization failed.", true);
@@ -424,11 +597,7 @@ function bind() {
   });
 }
 
-window.VEIL = {
-  enter,
-  openConversation,
-  sendMessage,
-};
+window.VEIL = { enter, openConversation, sendMessage };
 
 bind();
 updateTrialUI();
