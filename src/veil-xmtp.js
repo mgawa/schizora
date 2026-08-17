@@ -104,12 +104,12 @@ function sessionKey(wallet) {
 
 function loadSession(wallet) {
   try {
-    const raw = sessionStorage.getItem(sessionKey(wallet));
+    const raw = localStorage.getItem(sessionKey(wallet));
     if (!raw) return null;
     const session = JSON.parse(raw);
 
     if (!session?.token || Number(session.expiresAt) <= Date.now() + 60000) {
-      sessionStorage.removeItem(sessionKey(wallet));
+      localStorage.removeItem(sessionKey(wallet));
       return null;
     }
 
@@ -163,7 +163,7 @@ async function ensureVeilSession(walletAddress) {
     expiresAt: result.data.expiresAt,
   };
 
-  sessionStorage.setItem(sessionKey(wallet), JSON.stringify(session));
+  localStorage.setItem(sessionKey(wallet), JSON.stringify(session));
   currentSessionToken = session.token;
   return session.token;
 }
@@ -243,7 +243,7 @@ async function initializeXMTP() {
 
   xmtp = await Client.create(createXmtpSigner(address), {
     env: ENV,
-    appVersion: "SCHIZORA-VEIL/0.5-CONVERSATIONS",
+    appVersion: "SCHIZORA-VEIL/0.6-CONVERSATIONS-60D",
   });
 
   networkStatus(
@@ -759,7 +759,7 @@ async function sendServerMessage(text) {
   });
 
   if (result.response.status === 401) {
-    sessionStorage.removeItem(sessionKey(currentWallet));
+    localStorage.removeItem(sessionKey(currentWallet));
     throw new Error("VEIL session expired. Re-enter VEIL to continue.");
   }
 
@@ -859,7 +859,7 @@ async function enter() {
 
     const wallet = await ensureWallet();
 
-    // One VEIL authorization signature for this browser tab/session.
+    // One VEIL authorization signature for up to 60 days on this browser/device.
     // Individual messages do not request a new wallet signature.
     currentSessionToken = await ensureVeilSession(wallet);
 
