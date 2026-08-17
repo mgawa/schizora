@@ -243,7 +243,7 @@ async function initializeXMTP() {
 
   xmtp = await Client.create(createXmtpSigner(address), {
     env: ENV,
-    appVersion: "SCHIZORA-VEIL/0.6-CONVERSATIONS-60D",
+    appVersion: "SCHIZORA-VEIL/0.6.1-CONVERSATIONS-60D-XMTP-FALLBACK",
   });
 
   networkStatus(
@@ -718,13 +718,29 @@ async function openConversation() {
 
     const reach = await canReachXMTP(address);
 
+    // Always keep VEIL fallback available.
+    // XMTP is preferred when a valid XMTP inbox can be resolved, but
+    // an XMTP lookup failure must never block the user from writing/sending.
+    activeDm = null;
+    activeTransport = "veil-pending";
+
     if (reach.can) {
-      const inboxId = await resolveInboxId(address, reach.identifier);
-      activeDm = await xmtp.conversations.createDm(inboxId);
-      activeTransport = "xmtp";
-    } else {
-      activeDm = null;
-      activeTransport = "veil-pending";
+      try {
+        const inboxId = await resolveInboxId(address, reach.identifier);
+
+        if (inboxId) {
+          activeDm = await xmtp.conversations.createDm(inboxId);
+          activeTransport = "xmtp";
+        }
+      } catch (error) {
+        console.warn(
+          "XMTP lookup failed; using VEIL fallback conversation instead:",
+          error
+        );
+
+        activeDm = null;
+        activeTransport = "veil-pending";
+      }
     }
 
     const input = $("veilMessageInput");
