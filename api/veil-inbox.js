@@ -21,9 +21,9 @@ const redis = REDIS_URL && REDIS_TOKEN
 const MAX_MESSAGE_LENGTH = 2000;
 const MAX_MESSAGES_PER_THREAD = 200;
 const MAX_PROOF_AGE_MS = 5 * 60 * 1000;
-const THREAD_TTL_SECONDS = 30 * 24 * 60 * 60;
+const THREAD_TTL_SECONDS = 180 * 24 * 60 * 60;
 const SEND_LIMIT_PER_MINUTE = 30;
-const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
+const SESSION_TTL_MS = 60 * 24 * 60 * 60 * 1000;
 
 function isWallet(value) {
   return typeof value === "string" && /^0x[a-fA-F0-9]{40}$/.test(value);
