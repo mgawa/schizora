@@ -18,6 +18,7 @@ let streamHandle = null;
 let currentSessionToken = null;
 let currentWallet = null;
 let serverConversations = [];
+let composingNewConversation = false;
 
 const FREE_TRIAL_LIMIT = 50;
 
@@ -243,7 +244,7 @@ async function initializeXMTP() {
 
   xmtp = await Client.create(createXmtpSigner(address), {
     env: ENV,
-    appVersion: "SCHIZORA-VEIL/0.6.1-CONVERSATIONS-60D-XMTP-FALLBACK",
+    appVersion: "SCHIZORA-VEIL/0.7-SIMPLE-UI",
   });
 
   networkStatus(
@@ -359,11 +360,28 @@ function installConversationUI() {
 
   if (!chat || !target || !windowEl || !composer || !status) return;
 
+  const openButton = $("openConversationBtn");
+  if (openButton) openButton.style.display = "none";
+
   const style = document.createElement("style");
   style.textContent = `
+    #veilModal .modal-inner{
+      background:#0a0610!important;
+      box-shadow:0 24px 70px rgba(0,0,0,.48)!important
+    }
+    #veilModal .veil-shell{
+      background:#0a0610!important
+    }
+    #veilModal .veil-side{
+      background:#100919!important;
+      border-color:rgba(182,108,255,.14)!important
+    }
+    #veilModal .veil-main{
+      background:#0c0712!important
+    }
     #veilConversationLayout{
       display:grid;
-      grid-template-columns:245px minmax(0,1fr);
+      grid-template-columns:250px minmax(0,1fr);
       gap:12px;
       flex:1;
       min-height:0;
@@ -371,21 +389,40 @@ function installConversationUI() {
     }
     #veilConversationSidebar{
       min-height:470px;
-      border:1px solid rgba(213,105,255,.17);
+      border:1px solid rgba(182,108,255,.14);
       border-radius:18px;
-      background:rgba(0,0,0,.22);
+      background:#120b1a;
       overflow:hidden;
       display:flex;
       flex-direction:column
     }
+    .veil-conv-titlebar{
+      min-height:54px;
+      padding:9px 10px 9px 14px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      border-bottom:1px solid rgba(182,108,255,.11)
+    }
     .veil-conv-title{
-      padding:14px 14px 10px;
       font-size:11px;
       font-weight:900;
       letter-spacing:1.7px;
-      color:#d8c3ef;
-      text-transform:uppercase;
-      border-bottom:1px solid rgba(213,105,255,.12)
+      color:#e2d5ef;
+      text-transform:uppercase
+    }
+    #veilNewConversationBtn{
+      border:1px solid rgba(182,108,255,.22);
+      background:#1a1024;
+      color:#fff;
+      border-radius:11px;
+      padding:8px 11px;
+      font-weight:900;
+      cursor:pointer
+    }
+    #veilNewConversationBtn:hover{
+      background:#251333
     }
     #veilConversationList{
       padding:7px;
@@ -406,17 +443,18 @@ function installConversationUI() {
     }
     .veil-conv-item:hover,
     .veil-conv-item.active{
-      background:rgba(139,92,246,.15)
+      background:#21122d
     }
     .veil-conv-wallet{
       display:block;
       font-family:monospace;
       font-weight:900;
-      font-size:12px
+      font-size:12px;
+      color:#f4eff8
     }
     .veil-conv-preview{
       display:block;
-      color:#baa8cf;
+      color:#aa9bb8;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
@@ -429,26 +467,72 @@ function installConversationUI() {
       flex-direction:column
     }
     #veilActivePeerHeader{
-      min-height:44px;
-      padding:9px 12px;
-      border:1px solid rgba(213,105,255,.14);
+      min-height:50px;
+      padding:10px 13px;
+      border:1px solid rgba(182,108,255,.13);
       border-radius:14px;
-      background:rgba(255,255,255,.035);
+      background:#120b1a;
       margin-bottom:8px;
       display:none
     }
     #veilActivePeerHeader strong{
       display:block;
       font-family:monospace;
-      word-break:break-all
+      word-break:break-all;
+      color:#fff
     }
-    #veilActivePeerHeader small{color:#baa8cf}
-    #veilThreadPane .target{margin:0 0 8px}
-    #veilThreadPane .window{min-height:335px}
+    #veilActivePeerHeader small{color:#aa9bb8}
+    #veilThreadPane .target{
+      margin:0 0 8px;
+      display:none;
+      grid-template-columns:1fr
+    }
+    #veilThreadPane .target input{
+      background:#120b1a!important;
+      border:1px solid rgba(182,108,255,.16)!important;
+      color:#fff!important;
+      box-shadow:none!important
+    }
+    #veilThreadPane .window{
+      min-height:335px;
+      background:#08050c!important;
+      border:1px solid rgba(182,108,255,.12)!important;
+      color:#cfc2da!important
+    }
+    #veilThreadPane .composer textarea{
+      background:#120b1a!important;
+      border:1px solid rgba(182,108,255,.16)!important;
+      color:#fff!important;
+      box-shadow:none!important
+    }
+    #veilThreadPane .composer textarea::placeholder,
+    #veilThreadPane .target input::placeholder{
+      color:#807388
+    }
+    #veilThreadPane .composer .btn{
+      background:linear-gradient(135deg,#7c21ff,#c63dea)!important;
+      box-shadow:0 8px 24px rgba(124,33,255,.18)!important
+    }
+    #veilThreadPane .composer .btn:hover{
+      box-shadow:0 10px 30px rgba(124,33,255,.26)!important
+    }
+    #veilModal .msg-row.mine .msg-bubble{
+      background:linear-gradient(135deg,#6e28d9,#b535cf)!important;
+      box-shadow:none!important
+    }
+    #veilModal .msg-row.theirs .msg-bubble{
+      background:#17101e!important;
+      border:1px solid rgba(182,108,255,.11)!important
+    }
+    #veilModal .msg-meta{
+      color:#b6a8bf!important;
+      opacity:.82!important
+    }
     @media(max-width:760px){
       #veilConversationLayout{grid-template-columns:1fr}
-      #veilConversationSidebar{min-height:120px;max-height:190px}
+      #veilConversationSidebar{min-height:118px;max-height:190px}
       #veilThreadPane .window{min-height:300px}
+      #veilModal .modal-body{padding:18px!important}
     }
   `;
   document.head.appendChild(style);
@@ -459,7 +543,10 @@ function installConversationUI() {
   const sidebar = document.createElement("aside");
   sidebar.id = "veilConversationSidebar";
   sidebar.innerHTML = `
-    <div class="veil-conv-title">Conversations</div>
+    <div class="veil-conv-titlebar">
+      <div class="veil-conv-title">Conversations</div>
+      <button id="veilNewConversationBtn" type="button">+ New</button>
+    </div>
     <div id="veilConversationList">
       <div class="muted" style="padding:12px;font-size:12px">No conversations yet.</div>
     </div>
@@ -474,6 +561,87 @@ function installConversationUI() {
   chat.insertBefore(layout, target);
   layout.append(sidebar, thread);
   thread.append(header, target, windowEl, composer, status);
+
+  $("veilNewConversationBtn")?.addEventListener("click", startNewConversation);
+}
+function showTargetRow(show) {
+  const target = $("veilChat")?.querySelector(".target");
+  if (target) target.style.display = show ? "grid" : "none";
+}
+
+function startNewConversation() {
+  composingNewConversation = true;
+  activePeerAddress = null;
+  activeDm = null;
+  activeTransport = "veil-pending";
+
+  const recipient = $("recipient");
+  const input = $("veilMessageInput");
+  const send = $("veilSendBtn");
+  const windowEl = $("chatWindow");
+
+  setActiveHeader(null);
+  showTargetRow(true);
+
+  if (recipient) {
+    recipient.value = "";
+    recipient.placeholder = "To: wallet address (0x...)";
+    recipient.focus();
+  }
+
+  if (input) {
+    input.disabled = false;
+    input.value = "";
+    input.placeholder = "Write a message...";
+  }
+
+  if (send) send.disabled = false;
+
+  if (windowEl) {
+    windowEl.innerHTML = `
+      <div>
+        <div style="font-size:34px">＋</div>
+        <b>New message</b>
+        <div style="margin-top:8px">Add the destination wallet above, write your message and press Send.</div>
+      </div>`;
+  }
+
+  uiStatus("");
+  refreshConversationList().catch(() => {});
+}
+
+async function prepareConversationTransport(address) {
+  activePeerAddress = normalizeWallet(address);
+  activeDm = null;
+  activeTransport = "veil-pending";
+
+  try {
+    const reach = await canReachXMTP(address);
+
+    if (reach.can) {
+      try {
+        const inboxId = await resolveInboxId(address, reach.identifier);
+
+        if (inboxId) {
+          activeDm = await xmtp.conversations.createDm(inboxId);
+          activeTransport = "xmtp";
+        }
+      } catch (error) {
+        console.warn(
+          "XMTP lookup failed; using VEIL fallback conversation instead:",
+          error
+        );
+        activeDm = null;
+        activeTransport = "veil-pending";
+      }
+    }
+  } catch (error) {
+    console.warn("XMTP reachability check failed; using VEIL fallback:", error);
+    activeDm = null;
+    activeTransport = "veil-pending";
+  }
+
+  return activeTransport;
 }
 
 async function listServerConversations() {
@@ -549,8 +717,10 @@ async function refreshConversationList() {
     button.append(walletLabel, preview);
 
     button.addEventListener("click", () => {
+      composingNewConversation = false;
       const recipient = $("recipient");
       if (recipient) recipient.value = peer;
+      showTargetRow(false);
       openConversation().catch((error) => {
         console.error(error);
         uiStatus(error?.message || "Could not open conversation.", true);
@@ -712,36 +882,13 @@ async function openConversation() {
     }
 
     uiStatus("Opening conversation...");
-    activePeerAddress = normalizeWallet(address);
+    composingNewConversation = false;
+
+    await prepareConversationTransport(address);
+
     saveLocalContact(currentWallet, activePeerAddress);
     setActiveHeader(activePeerAddress);
-
-    const reach = await canReachXMTP(address);
-
-    // Always keep VEIL fallback available.
-    // XMTP is preferred when a valid XMTP inbox can be resolved, but
-    // an XMTP lookup failure must never block the user from writing/sending.
-    activeDm = null;
-    activeTransport = "veil-pending";
-
-    if (reach.can) {
-      try {
-        const inboxId = await resolveInboxId(address, reach.identifier);
-
-        if (inboxId) {
-          activeDm = await xmtp.conversations.createDm(inboxId);
-          activeTransport = "xmtp";
-        }
-      } catch (error) {
-        console.warn(
-          "XMTP lookup failed; using VEIL fallback conversation instead:",
-          error
-        );
-
-        activeDm = null;
-        activeTransport = "veil-pending";
-      }
-    }
+    showTargetRow(false);
 
     const input = $("veilMessageInput");
     const send = $("veilSendBtn");
@@ -760,7 +907,6 @@ async function openConversation() {
     window.toastMsg?.(error?.message || "Could not open conversation.");
   }
 }
-
 async function sendServerMessage(text) {
   const result = await apiJson(CONVERSATION_API, {
     method: "POST",
@@ -788,7 +934,7 @@ async function sendMessage() {
   const input = $("veilMessageInput");
   const button = $("veilSendBtn");
 
-  if (!activePeerAddress || !input || input.disabled) return;
+  if (!input || input.disabled) return;
 
   const text = input.value.trim();
   if (!text) return;
@@ -800,6 +946,24 @@ async function sendMessage() {
 
   try {
     button.disabled = true;
+
+    if (composingNewConversation || !activePeerAddress) {
+      const address = $("recipient")?.value?.trim();
+
+      if (!isWallet(address)) {
+        throw new Error("Enter a valid destination wallet address.");
+      }
+
+      const myAddress = normalizeWallet(await ensureWallet());
+      if (normalizeWallet(address) === myAddress) {
+        throw new Error("Choose another wallet address.");
+      }
+
+      uiStatus("Creating conversation...");
+      await prepareConversationTransport(address);
+      saveLocalContact(currentWallet, activePeerAddress);
+    }
+
     uiStatus("Sending...");
 
     if (activeTransport === "xmtp" && activeDm) {
@@ -815,6 +979,15 @@ async function sendMessage() {
 
     notifyVeilRecipient(activePeerAddress).catch(() => {});
 
+    composingNewConversation = false;
+    setActiveHeader(activePeerAddress);
+    showTargetRow(false);
+
+    const recipient = $("recipient");
+    if (recipient) recipient.value = activePeerAddress;
+
+    input.placeholder = `Message ${short(activePeerAddress)}...`;
+
     uiStatus(`Sent • ${trialRemaining()} free messages left.`);
     await refreshConversationList();
     await renderActiveConversation();
@@ -826,7 +999,6 @@ async function sendMessage() {
     input.focus();
   }
 }
-
 async function startGlobalStream() {
   if (!xmtp || streamHandle) return;
 
@@ -890,6 +1062,17 @@ async function enter() {
     }
 
     await refreshConversationList();
+    composingNewConversation = false;
+    showTargetRow(false);
+    setActiveHeader(null);
+
+    const messageInput = $("veilMessageInput");
+    const sendButton = $("veilSendBtn");
+    if (messageInput) {
+      messageInput.disabled = true;
+      messageInput.placeholder = "Choose a conversation or press + New.";
+    }
+    if (sendButton) sendButton.disabled = true;
 
     if (pushReady) {
       networkStatus(
