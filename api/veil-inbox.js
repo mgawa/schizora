@@ -1,6 +1,8 @@
 import { Redis } from "@upstash/redis";
 import { verifyMessage } from "viem";
 import crypto from "node:crypto";
+import { createPublicClient, http, parseAbi, parseUnits } from "viem";
+import { bsc } from "viem/chains";
 
 const REDIS_URL =
   process.env.VEIL_REDIS_KV_REST_API_URL ||
@@ -13,6 +15,19 @@ const REDIS_TOKEN =
   process.env.UPSTASH_REDIS_REST_TOKEN;
 
 const MASTER_KEY_B64 = process.env.VEIL_INBOX_MASTER_KEY || "";
+
+const BSC_RPC_URL =
+  process.env.VEIL_BSC_RPC_URL || "https://bsc-dataseed.bnbchain.org";
+const SZR_TOKEN = "0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064";
+const HOLD_REQUIRED_SZR = "1000";
+const SZR_DECIMALS = 18;
+const ERC20_ABI = parseAbi([
+  "function balanceOf(address account) view returns (uint256)",
+]);
+const publicClient = createPublicClient({
+  chain: bsc,
+  transport: http(BSC_RPC_URL),
+});
 
 const redis = REDIS_URL && REDIS_TOKEN
   ? new Redis({ url: REDIS_URL, token: REDIS_TOKEN })
@@ -228,6 +243,29 @@ function decryptThreadFor(wallet, peer, items) {
   return output.sort((a, b) => Number(a.createdAt) - Number(b.createdAt));
 }
 
+
+function paidAccessKey(wallet) {
+  return `veil:access:until:${normalizeWallet(wallet)}`;
+}
+
+async function hasPaidSendingAccess(wallet) {
+  const [balance, rawUntil] = await Promise.all([
+    publicClient.readContract({
+      address: SZR_TOKEN,
+      abi: ERC20_ABI,
+      functionName: "balanceOf",
+      args: [wallet],
+    }),
+    redis.get(paidAccessKey(wallet)),
+  ]);
+
+  const holdOk =
+    balance >= parseUnits(HOLD_REQUIRED_SZR, SZR_DECIMALS);
+  const subscriptionActive = Number(rawUntil || 0) > Date.now();
+
+  return holdOk && subscriptionActive;
+}
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store");
   res.setHeader("X-Content-Type-Options", "nosniff");
@@ -333,6 +371,11 @@ export default async function handler(req, res) {
       message.length > MAX_MESSAGE_LENGTH
     ) {
       return res.status(400).json({ error: "Invalid message." });
+    }
+    if (!(await hasPaidSendingAccess(sender))) {
+      return res.status(402).json({
+        error: "VEIL sending requires 1,000 SZR HOLD + an active 30-day subscription."
+      });
     }
     if (!(await rateAllowed(sender))) {
       return res.status(429).json({ error: "Message rate limit reached." });
