@@ -7,6 +7,10 @@ import {
 
 const ENV = "production";
 const CONVERSATION_API = "/api/veil-inbox";
+const ACCESS_API = "/api/veil-access";
+const SZR_TOKEN_ADDRESS = "0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064";
+const PANCAKE_BUY_URL =
+  "https://pancakeswap.finance/swap?outputCurrency=0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064";
 const SESSION_STORAGE_PREFIX = "schizora_veil_session_";
 const CONTACTS_PREFIX = "schizora_veil_contacts_";
 
@@ -19,8 +23,7 @@ let currentSessionToken = null;
 let currentWallet = null;
 let serverConversations = [];
 let composingNewConversation = false;
-
-const FREE_TRIAL_LIMIT = 50;
+let currentAccess = null;
 
 const $ = (id) => document.getElementById(id);
 
@@ -42,32 +45,228 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
-function trialKey() {
-  const a = normalizeWallet(window.account || "unknown");
-  return `schizora_veil_trial_sent_${a}`;
-}
+function updateAccessSummary(status = currentAccess) {
+  const planBoxes = document.querySelectorAll(".plan > div");
 
-function trialUsed() {
-  return Number(localStorage.getItem(trialKey()) || "0");
-}
-
-function trialRemaining() {
-  return Math.max(0, FREE_TRIAL_LIMIT - trialUsed());
-}
-
-function updateTrialUI() {
-  const remaining = trialRemaining();
-  const planStrong = document.querySelector(".plan div:first-child strong");
-  if (planStrong) planStrong.textContent = `${remaining} / ${FREE_TRIAL_LIMIT} left`;
-}
-
-function consumeTrialMessage() {
-  const used = trialUsed();
-  if (used >= FREE_TRIAL_LIMIT) {
-    throw new Error("Free trial complete: 50 messages used.");
+  if (planBoxes[0]) {
+    planBoxes[0].innerHTML =
+      `<small>HOLD</small><strong>${status?.holdRequiredSzr || "1,000"} SZR</strong>`;
   }
-  localStorage.setItem(trialKey(), String(used + 1));
-  updateTrialUI();
+
+  if (planBoxes[1]) {
+    const fee = status?.monthlyFeeSzr || "~7,000";
+    planBoxes[1].innerHTML =
+      `<small>Access</small><strong>${fee} SZR / 30d</strong>`;
+  }
+}
+
+async function getAccessStatus() {
+  if (!currentWallet || !currentSessionToken) return null;
+
+  const result = await apiJson(ACCESS_API, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      action: "status",
+      wallet: normalizeWallet(currentWallet),
+      sessionToken: currentSessionToken,
+    }),
+  });
+
+  if (result.response.status === 401) {
+    localStorage.removeItem(sessionKey(currentWallet));
+    throw new Error("VEIL session expired. Re-enter VEIL.");
+  }
+
+  if (!result.response.ok) {
+    throw new Error(result.data.error || "Could not verify VEIL access.");
+  }
+
+  currentAccess = result.data;
+  updateAccessSummary(currentAccess);
+  return currentAccess;
+}
+
+function accessMessage(status = currentAccess) {
+  if (!status) return "Checking VEIL access...";
+
+  if (!status.holdOk) {
+    return `To send messages, keep at least ${status.holdRequiredSzr} SZR in this wallet. Reading remains free.`;
+  }
+
+  if (!status.subscriptionActive) {
+    return `HOLD verified. Activate VEIL for ${status.monthlyFeeSzr} SZR / ${status.accessDays} days to send messages. Reading remains free.`;
+  }
+
+  return status.canSend
+    ? `VEIL sending active until ${new Date(status.expiresAt).toLocaleDateString()}.`
+    : "VEIL sending is not active.";
+}
+
+function ensureAccessPanel() {
+  let panel = $("veilAccessPanel");
+  if (panel) return panel;
+
+  const composer = $("veilChat")?.querySelector(".composer");
+  if (!composer) return null;
+
+  panel = document.createElement("div");
+  panel.id = "veilAccessPanel";
+  panel.style.cssText =
+    "display:none;margin-top:10px;padding:13px 14px;border-radius:14px;" +
+    "border:1px solid rgba(182,108,255,.18);background:#120b1a;color:#d8cdea;" +
+    "font-size:12px;line-height:1.55";
+
+  composer.insertAdjacentElement("afterend", panel);
+  return panel;
+}
+
+function renderAccessGate(status = currentAccess) {
+  const panel = ensureAccessPanel();
+  const input = $("veilMessageInput");
+  const send = $("veilSendBtn");
+
+  if (!panel || !input || !send) return;
+
+  updateAccessSummary(status);
+
+  if (status?.canSend) {
+    panel.style.display = "none";
+    if (activePeerAddress || composingNewConversation) {
+      input.disabled = false;
+      send.disabled = false;
+    }
+    return;
+  }
+
+  panel.style.display = "block";
+  panel.innerHTML = "";
+
+  const text = document.createElement("div");
+  text.textContent = accessMessage(status);
+
+  const actions = document.createElement("div");
+  actions.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;margin-top:10px";
+
+  const buy = document.createElement("a");
+  buy.href = PANCAKE_BUY_URL;
+  buy.target = "_blank";
+  buy.rel = "noopener";
+  buy.className = "btn ghost small";
+  buy.textContent = "Get $SZR";
+
+  actions.appendChild(buy);
+
+  if (status?.holdOk && !status?.subscriptionActive) {
+    const activate = document.createElement("button");
+    activate.type = "button";
+    activate.className = "btn small";
+    activate.textContent = `Activate ${status.monthlyFeeSzr} SZR`;
+    activate.addEventListener("click", () => {
+      activateVeilAccess().catch((error) => {
+        console.error(error);
+        uiStatus(error?.message || "Activation failed.", true);
+      });
+    });
+    actions.appendChild(activate);
+  }
+
+  panel.append(text, actions);
+
+  input.disabled = true;
+  send.disabled = true;
+  input.placeholder = "Reading is free. Activate VEIL to send.";
+}
+
+async function ensureBscForPayment() {
+  const chainId = await window.ethereum.request({ method: "eth_chainId" });
+
+  if (chainId !== "0x38") {
+    await window.ethereum.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: "0x38" }],
+    });
+  }
+}
+
+async function activateVeilAccess() {
+  if (!window.ethers) {
+    throw new Error("Wallet payment library is not available.");
+  }
+
+  await ensureBscForPayment();
+
+  const status = await getAccessStatus();
+  if (!status.holdOk) {
+    renderAccessGate(status);
+    throw new Error(`Hold at least ${status.holdRequiredSzr} SZR first.`);
+  }
+
+  if (!status.treasuryConfigured) {
+    throw new Error("VEIL payment treasury is not configured yet.");
+  }
+
+  const provider = new window.ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+  const token = new window.ethers.Contract(
+    SZR_TOKEN_ADDRESS,
+    ["function transfer(address to,uint256 amount) returns (bool)"],
+    signer
+  );
+
+  // Treasury address is returned only by the payment endpoint at activation time
+  // through a preflight request below.
+  const preflight = await apiJson(ACCESS_API, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      action: "status",
+      wallet: normalizeWallet(currentWallet),
+      sessionToken: currentSessionToken,
+    }),
+  });
+
+  if (!preflight.response.ok) {
+    throw new Error(preflight.data.error || "Could not prepare VEIL payment.");
+  }
+
+  // We intentionally do not expose a separate allowance/transferFrom flow:
+  // the user signs one direct ERC-20 transfer for the exact monthly fee.
+  const treasury = preflight.data.treasuryWallet;
+  if (!treasury) {
+    throw new Error("VEIL treasury wallet is not configured.");
+  }
+
+  const amount = window.ethers.utils.parseUnits(
+    String(preflight.data.monthlyFeeSzr),
+    18
+  );
+
+  uiStatus("Confirm the VEIL access payment in your wallet...");
+  const tx = await token.transfer(treasury, amount);
+
+  uiStatus("Waiting for BNB Chain confirmation...");
+  await tx.wait(1);
+
+  const result = await apiJson(ACCESS_API, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      action: "activate",
+      wallet: normalizeWallet(currentWallet),
+      sessionToken: currentSessionToken,
+      txHash: tx.hash,
+    }),
+  });
+
+  if (!result.response.ok) {
+    throw new Error(result.data.error || "Could not activate VEIL.");
+  }
+
+  currentAccess = result.data;
+  renderAccessGate(currentAccess);
+  uiStatus(`VEIL active for ${currentAccess.accessDays} days.`);
+  window.toastMsg?.("VEIL sending activated.");
 }
 
 function uiStatus(message, error = false) {
@@ -212,7 +411,7 @@ async function ensureWallet() {
   if (walletBtn) walletBtn.textContent = `${address.slice(0, 6)}...${address.slice(-4)}`;
   if (veilWallet) veilWallet.textContent = address;
 
-  updateTrialUI();
+  updateAccessSummary();
   return address;
 }
 
@@ -244,7 +443,7 @@ async function initializeXMTP() {
 
   xmtp = await Client.create(createXmtpSigner(address), {
     env: ENV,
-    appVersion: "SCHIZORA-VEIL/0.7-SIMPLE-UI",
+    appVersion: "SCHIZORA-VEIL/0.8-PAID-ACCESS",
   });
 
   networkStatus(
@@ -590,12 +789,11 @@ function startNewConversation() {
   }
 
   if (input) {
-    input.disabled = false;
     input.value = "";
     input.placeholder = "Write a message...";
   }
 
-  if (send) send.disabled = false;
+  renderAccessGate(currentAccess);
 
   if (windowEl) {
     windowEl.innerHTML = `
@@ -893,14 +1091,13 @@ async function openConversation() {
     const input = $("veilMessageInput");
     const send = $("veilSendBtn");
 
-    input.disabled = false;
-    send.disabled = false;
     input.placeholder = `Message ${short(activePeerAddress)}...`;
 
     uiStatus("");
     await refreshConversationList();
     await renderActiveConversation();
-    input.focus();
+    renderAccessGate(currentAccess);
+    if (!input.disabled) input.focus();
   } catch (error) {
     console.error(error);
     uiStatus(error?.message || "Could not open conversation.", true);
@@ -939,12 +1136,12 @@ async function sendMessage() {
   const text = input.value.trim();
   if (!text) return;
 
-  if (trialRemaining() <= 0) {
-    uiStatus("Free trial complete: 50 messages used.", true);
-    return;
-  }
-
   try {
+    const access = await getAccessStatus();
+    if (!access?.canSend) {
+      renderAccessGate(access);
+      throw new Error(accessMessage(access));
+    }
     button.disabled = true;
 
     if (composingNewConversation || !activePeerAddress) {
@@ -974,7 +1171,6 @@ async function sendMessage() {
     }
 
     input.value = "";
-    consumeTrialMessage();
     saveLocalContact(currentWallet, activePeerAddress);
 
     notifyVeilRecipient(activePeerAddress).catch(() => {});
@@ -988,7 +1184,7 @@ async function sendMessage() {
 
     input.placeholder = `Message ${short(activePeerAddress)}...`;
 
-    uiStatus(`Sent • ${trialRemaining()} free messages left.`);
+    uiStatus("Message sent.");
     await refreshConversationList();
     await renderActiveConversation();
   } catch (error) {
@@ -1061,6 +1257,7 @@ async function enter() {
       }
     }
 
+    currentAccess = await getAccessStatus();
     await refreshConversationList();
     composingNewConversation = false;
     showTargetRow(false);
@@ -1070,9 +1267,12 @@ async function enter() {
     const sendButton = $("veilSendBtn");
     if (messageInput) {
       messageInput.disabled = true;
-      messageInput.placeholder = "Choose a conversation or press + New.";
+      messageInput.placeholder = currentAccess?.canSend
+        ? "Choose a conversation or press + New."
+        : "Reading is free. Activate VEIL to send.";
     }
     if (sendButton) sendButton.disabled = true;
+    renderAccessGate(currentAccess);
 
     if (pushReady) {
       networkStatus(
@@ -1111,7 +1311,8 @@ window.VEIL = {
   enter,
   openConversation,
   sendMessage,
+  activateVeilAccess,
 };
 
 bind();
-updateTrialUI();
+updateAccessSummary();
