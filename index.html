@@ -32,7 +32,7 @@
   color-scheme:dark;}
 
 *{box-sizing:border-box}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.tape-in{animation:tape var(--td,80s) linear infinite!important}}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
 a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
@@ -340,7 +340,7 @@ body::before{background:#000}
 .tape::before,.tape::after{content:"";position:absolute;top:0;bottom:0;width:60px;z-index:1;pointer-events:none}
 .tape::before{left:0;background:linear-gradient(90deg,#07040d,transparent)}
 .tape::after{right:0;background:linear-gradient(270deg,#07040d,transparent)}
-.tape-in{display:flex;width:max-content;gap:0;animation:tape 60s linear infinite;height:100%;align-items:center}
+.tape-in{display:flex;width:max-content;gap:0;animation:tape var(--td,80s) linear infinite;height:100%;align-items:center}
 .tape:hover .tape-in{animation-play-state:paused}
 @keyframes tape{to{transform:translateX(-50%)}}
 .tk{display:inline-flex;align-items:center;gap:8px;padding:0 22px;font:500 12.5px var(--mono);color:#d9d3e6;white-space:nowrap;border-right:1px solid #1c1726;height:100%;transition:background .6s}
@@ -1093,7 +1093,7 @@ function renderTape(){
   const tape=$('tape'), keyNow=list.map(t=>t.sym).join(',');
   if(tape.dataset.k!==keyNow){
     const items=list.map(t=>'<span class="tk" data-tk="'+t.sym+'"><b>'+t.sym+'</b><span class="tp"></span><span class="tc"></span><span class="s"></span></span>').join('');
-    tape.innerHTML=items+items; tape.dataset.k=keyNow; tape.style.animationDuration=(list.length*3)+'s';
+    tape.innerHTML=items+items; tape.dataset.k=keyNow; tape.style.setProperty('--td',(list.length*3)+'s');
   }
   list.forEach(t=>{ const o=S.outlook[t.sym], sg=sigOf(o), p=S.prevPx['tk'+t.sym];
     tape.querySelectorAll('[data-tk="'+t.sym+'"]').forEach(e=>{
