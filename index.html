@@ -489,6 +489,37 @@ body::before{background:#000}
 .szr-intro p{color:var(--muted);font-size:15px;margin-top:10px;max-width:68ch}
 footer.dk{background:#07040d;border-top:1px solid #1c1726}
 footer.dk a{color:#b07cff}
+
+/* active mode, everywhere */
+:root{--mc:#b07cff}
+.modepill{display:inline-flex;align-items:center;gap:8px;margin-left:auto;padding:6px 12px;border-radius:999px;border:1px solid color-mix(in srgb,var(--mc) 55%,transparent);background:color-mix(in srgb,var(--mc) 14%,#000);color:#fff;font-size:13px;white-space:nowrap;text-decoration:none}
+.modepill:hover{text-decoration:none;background:color-mix(in srgb,var(--mc) 24%,#000)}
+.modepill i{width:8px;height:8px;border-radius:50%;background:var(--mc);box-shadow:0 0 0 0 var(--mc);animation:mpulse 2s infinite}
+@keyframes mpulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--mc) 70%,transparent)}100%{box-shadow:0 0 0 9px transparent}}
+.modepill .mpl{font:500 11px var(--mono);color:#b9b0c9;letter-spacing:.08em}
+.modepill b{font-weight:600;color:var(--mc);text-transform:uppercase;letter-spacing:.04em}
+.modepill .mpt{font-size:12px;color:#d9d3e6}
+.modepill:not([hidden]) + .netpill{margin-left:0}
+@media (max-width:760px){.modepill .mpt,.modepill .mpl{display:none}}
+.hstrip .hmode{border-color:color-mix(in srgb,var(--mc) 60%,transparent);background:color-mix(in srgb,var(--mc) 12%,rgba(10,6,18,.8));box-shadow:0 0 30px -8px color-mix(in srgb,var(--mc) 60%,transparent)}
+.hstrip .hmode b{color:var(--mc);font-size:20px;text-transform:uppercase;letter-spacing:.04em}
+.hstrip .hmode small{display:block;font:500 12px var(--mono);color:#d9d3e6;margin-top:2px}
+.tk.tkm{background:color-mix(in srgb,var(--mc) 16%,#07040d);color:#fff}
+.tk.tkm i{width:7px;height:7px;border-radius:50%;background:var(--mc);animation:mpulse 2s infinite}
+.tk.tkm .mn{color:var(--mc);font-weight:600;text-transform:uppercase}
+.szrband .modecard{border-color:color-mix(in srgb,var(--mc) 55%,transparent);background:linear-gradient(160deg,color-mix(in srgb,var(--mc) 22%,transparent),rgba(20,16,30,.92) 60%);box-shadow:0 0 60px -20px color-mix(in srgb,var(--mc) 70%,transparent)}
+.szrband .modename{color:var(--mc);text-transform:uppercase;letter-spacing:.02em;font-size:40px}
+.szrband{background:radial-gradient(60% 420px at 30% 300px,color-mix(in srgb,var(--mc) 16%,transparent),transparent 70%)}
+.szrband .mtable tr.on td{background:color-mix(in srgb,var(--mc) 14%,transparent)}
+.szrband .mtable tr.on td:first-child b::after{color:var(--mc)}
+@media (prefers-reduced-motion:reduce){.modepill i,.tk.tkm i{animation:none}}
+
+.hstats{display:flex;gap:28px;flex-wrap:wrap;margin-top:22px;padding-top:16px;border-top:1px solid rgba(176,124,255,.18)}
+.hstats div{display:grid;gap:2px}
+.hstats b{font-size:24px;font-weight:600;color:#fff;font-variant-numeric:tabular-nums}
+.hstats span{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:#9d93ad}
+.hstats .bump{animation:bump .6s ease}
+@keyframes bump{30%{color:#b07cff;transform:translateY(-2px)}}
 footer{padding-block:28px 40px;color:var(--muted);font-size:13px}
 footer .wrap{display:grid;gap:10px}
 footer .row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
@@ -506,6 +537,7 @@ footer p{max-width:90ch;font-size:12.5px}
       <img class="logo-sm" src="logo-sm.jpg" alt="" width="34" height="34">
       SCHIZORA <small>$SZR</small>
     </a>
+    <a class="modepill" href="#szr" id="modePill" title="Active SZR mode" hidden><i></i><span class="mpl">SZR</span><b id="mpName">—</b><span class="mpt mono" id="mpTax"></span></a>
     <span class="netpill"><span class="dot" id="netdot"></span><span class="t" id="nettext">Connecting…</span></span>
     <nav class="social" aria-label="Community"><a class="sbtn" href="https://t.me/schizora_official" target="_blank" rel="noopener" aria-label="SCHIZORA on Telegram" title="Telegram"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.9 4.3 18.6 19.8c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.2-8.3c.4-.4-.1-.6-.6-.2L6 13.4l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.5 3c.9-.3 1.7.2 1.4 1.3z"/></svg></a><a class="sbtn" href="https://x.com/SchizoraHQ" target="_blank" rel="noopener" aria-label="SCHIZORA on X" title="X"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.8 2.5h3.3l-7.2 8.2 8.5 11.3h-6.6l-5.2-6.8-6 6.8H1.3l7.7-8.8L.9 2.5h6.8l4.7 6.2 5.4-6.2zm-1.2 17.5h1.8L6.5 4.4H4.5L16.6 20z"/></svg></a></nav>
     <button class="btn primary small" id="connectBtn" type="button">Connect wallet</button>
@@ -520,13 +552,19 @@ footer p{max-width:90ch;font-size:12.5px}
     <h1>Seven minds read the market. You decide.</h1>
     <p>Check any BNB Chain token, see an automatic 7-day outlook for established coins, and trade with stop-loss and take-profit from your own wallet. No account, no subscription, no custody.</p>
     <div class="hstrip">
-      <div><span class="hl">SZR mode</span><b id="hMode">—</b></div>
+      <div class="hmode"><span class="hl">SZR mode · live</span><b id="hMode">—</b><small id="hTax"></small></div>
       <div><span class="hl">Next rotation</span><b class="mono" id="hNext">—</b></div>
       <div><span class="hl">Strongest signal</span><b id="hTop">—</b></div>
     </div>
     <div class="hsoc">
       <a class="hbtn tg" href="https://t.me/schizora_official" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.9 4.3 18.6 19.8c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.2-8.3c.4-.4-.1-.6-.6-.2L6 13.4l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.5 3c.9-.3 1.7.2 1.4 1.3z"/></svg>Join the Telegram</a>
-      <a class="hbtn x" href="https://x.com/SchizoraHQ" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.8 2.5h3.3l-7.2 8.2 8.5 11.3h-6.6l-5.2-6.8-6 6.8H1.3l7.7-8.8L.9 2.5h6.8l4.7 6.2 5.4-6.2zm-1.2 17.5h1.8L6.5 4.4H4.5L16.6 20z"/></svg>Follow on X</a>
+      <a class="hbtn x" href="https://x.com/SchizoraHQ" target="_blank" rel="noopener" data-x="1"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.8 2.5h3.3l-7.2 8.2 8.5 11.3h-6.6l-5.2-6.8-6 6.8H1.3l7.7-8.8L.9 2.5h6.8l4.7 6.2 5.4-6.2zm-1.2 17.5h1.8L6.5 4.4H4.5L16.6 20z"/></svg>Follow on X</a>
+    </div>
+    <div class="hstats" id="hStats" hidden>
+      <div><b class="mono" data-sk="visits">0</b><span>Visits</span></div>
+      <div><b class="mono" data-sk="wallets">0</b><span>Wallets connected</span></div>
+      <div><b class="mono" data-sk="analyses">0</b><span>Token analyses</span></div>
+      <div><b class="mono" data-sk="tokens">0</b><span>Different tokens checked</span></div>
     </div>
     </div>
     <img class="logo-hero" src="logo.jpg" alt="SCHIZORA logo: Seven Minds. One Token. $SZR" width="640" height="640">
@@ -706,7 +744,7 @@ footer p{max-width:90ch;font-size:12.5px}
           <div><span class="label">Next change</span><b class="mono" id="mNext">—</b></div>
           <button class="btn small" id="rotateBtn" type="button" disabled>Rotate mode</button>
         </div>
-        <p class="fine" id="mParasite" style="margin-top:10px">The mode changes only when someone calls the rotation after 24 hours. Anyone can do it; it costs a small network fee. The next mode is picked at random.</p>
+        <p class="fine" id="mParasite" style="margin-top:10px">The mode rotates automatically every 24 hours, and the next one is picked at random by the contract. When the timer reaches zero, anyone can also trigger the rotation for a small network fee.</p>
       </div>
       <div class="card">
         <div class="label">Supply distribution · live</div>
@@ -745,7 +783,8 @@ const CFG = {
   wbnb:'0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
   szr:'0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064',
   feeBps:50, feeBpsHolder:25, holderMin:1000000,
-  treasury:'',          // wallet that receives the platform fee; empty = fee off
+  treasury:'',
+  rotator:'',          // SZRRotator address: rotates without ever landing on Predator; empty = direct rotation          // wallet that receives the platform fee; empty = fee off
   klines:'https://data-api.binance.vision/api/v3/klines',
   goplus:'https://api.gopluslabs.io/api/v1/token_security/56?contract_addresses=',
   dex:'https://api.dexscreener.com/latest/dex/tokens/',
@@ -1033,15 +1072,22 @@ function renderTape(){
   const items=TOKENS.filter(t=>S.outlook[t.sym]).map(t=>{ const o=S.outlook[t.sym], sg=sigOf(o);
     return '<span class="tk" data-tk="'+t.sym+'"><b>'+t.sym+'</b><span>'+fmtPx(o.price)+'</span><span class="'+(o.ch1>=0?'u':'d')+'">'+pct(o.ch1)+'</span><span class="s '+sg[0]+'">'+sg[1]+'</span></span>'; }).join('');
   if(!items) return;
-  $('tape').innerHTML=items+items; $('tape').style.animationDuration=(TOKENS.length*4.5)+'s';
-  document.querySelectorAll('.tk').forEach(e=>{ const sym=e.dataset.tk, px=S.outlook[sym].price; const p=S.prevPx['tk'+sym]; if(p!=null&&p!==px) e.classList.add(px>p?'flash-up':'flash-dn'); });
+  const mt=modeInfo(); const modeTk=mt?'<span class="tk tkm"><i></i><b>SZR</b><span class="mn">'+mt.n+' mode</span><span>buy '+mt.b+' · sell '+mt.s+'</span></span>':'';
+  $('tape').innerHTML=modeTk+items+modeTk+items; $('tape').style.animationDuration=(TOKENS.length*4.5)+'s';
+  document.querySelectorAll('.tk[data-tk]').forEach(e=>{ const sym=e.dataset.tk, px=S.outlook[sym].price; const p=S.prevPx['tk'+sym]; if(p!=null&&p!==px) e.classList.add(px>p?'flash-up':'flash-dn'); });
   TOKENS.forEach(t=>{ if(S.outlook[t.sym]) S.prevPx['tk'+t.sym]=S.outlook[t.sym].price; });
   const best=TOKENS.filter(t=>S.outlook[t.sym]).sort((x,y)=>Math.abs(S.outlook[y.sym].score)-Math.abs(S.outlook[x.sym].score))[0];
   if(best){ const o=S.outlook[best.sym], sg=sigOf(o); $('hTop').innerHTML=best.sym+' <span class="'+(sg[0]==='m'?'':sg[0])+'">'+sg[1]+'</span>'; }
 }
+const MCOL={Calm:'#3cc58c',Burn:'#ff7a3d',Reward:'#f2b534',Chaos:'#ff4fd8',Mirror:'#3ab7ff',Silent:'#9fb2d6',Predator:'#ff3d4d',Parasite:'#a6ff3d'};
+function modeInfo(){ if(typeof SZ==='undefined'||!SZ.last) return null; const m=SZ.parasite?PARASITE:MODES[SZ.mode]; if(!m) return null; return {n:m.n,b:bps(SZ.buy),s:bps(SZ.sell),c:MCOL[m.n]||'#b07cff'}; }
+function paintMode(){ const mi=modeInfo(); if(!mi) return;
+  document.documentElement.style.setProperty('--mc',mi.c);
+  $('modePill').hidden=false; $('mpName').textContent=mi.n; $('mpTax').textContent=mi.b+' / '+mi.s;
+  $('hMode').textContent=mi.n; $('hTax').textContent='Buy '+mi.b+' · Sell '+mi.s; }
 function tickHero(){
   if(typeof SZ==='undefined') return;
-  $('hMode').textContent=SZ.parasite?'Parasite':(MODES[SZ.mode]||{}).n||'—';
+  paintMode();
   if(!SZ.last){ $('hNext').textContent='—'; return; }
   const left=(SZ.last+86400)*1000-Date.now();
   if(left<=0){ $('hNext').textContent='Ready now'; return; }
@@ -1065,6 +1111,21 @@ setInterval(tickHero,1000);
   new IntersectionObserver(es=>{ visible=es[0].isIntersecting; if(visible&&!raf) raf=requestAnimationFrame(draw); }).observe(cv);
   raf=requestAnimationFrame(draw);
 })();
+
+/* ---------- public counters ---------- */
+S.stats=null;
+function showStats(st){ if(!st) return; $('hStats').hidden=false;
+  document.querySelectorAll('[data-sk]').forEach(el=>{ const k=el.dataset.sk, v=st[k]||0, old=S.stats?S.stats[k]:0;
+    if(S.stats&&v!==old){ el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
+    const t0=performance.now(), from=S.stats?old:0, dur=900;
+    const step=t=>{ const k2=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-k2,3); el.textContent=Math.round(from+(v-from)*e).toLocaleString('en-US'); if(k2<1) requestAnimationFrame(step); };
+    requestAnimationFrame(step); });
+  S.stats=st; }
+async function stats(ev,data){
+  if(PREVIEW){ const d=S.stats||{visits:1284,wallets:96,analyses:412,tokens:233}; const n={...d}; if(ev==='visit') n.visits++; if(ev==='wallet') n.wallets++; if(ev==='analysis'){ n.analyses++; n.tokens++; } showStats(ev?n:d); return; }
+  try{ const r=await fetch('/api/stats',ev?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({e:ev,...(data||{})})}:{}); if(!r.ok) return; showStats(await r.json()); }catch(e){}
+}
+setInterval(()=>{ if(!document.hidden) stats(); },60000);
 
 /* ---------- the seven minds (analysis) ---------- */
 const AMINDS = ['The Code','The Exit','The Owner','The Pool','The Holders','The Crowd','The Pulse'];
@@ -1159,6 +1220,7 @@ async function analyze(addr){
     if(!d) d={priceUsd:String(oc.pool.price), liquidity:{usd:oc.pool.liq}, txns:null, baseToken:{name:oc.name,symbol:oc.sym}};
     else if(d.liquidity&&d.pairAddress&&d.pairAddress.toLowerCase()===oc.pool.pair.toLowerCase()) d.liquidity.usd=oc.pool.liq; // same pool: the chain is the latest
   }
+  if(reached) stats('analysis',{t:addr});
   if(!reached && PREVIEW){ await new Promise(r=>setTimeout(r,500)); ({g,d}=demoAnalysis(addr)); }
   else if(!reached){ box.innerHTML='<div class="err">Token data could not be reached right now. Check your connection and try again in a minute.</div>'; return; }
   else if(!g&&!d&&!oc?.name){ box.innerHTML='<div class="err">No token found at this address on BNB Chain. Check that it is a token contract.</div>'; return; }
@@ -1355,7 +1417,7 @@ async function ensureChain(){ if(await onChain()) return;
 async function connect(){
   try{
     if(window.ethereum&&S.liveChain&&E){ const accs=await window.ethereum.request({method:'eth_requestAccounts'}); S.account=E.getAddress(accs[0]); S.demoWallet=false;
-      try{ await ensureChain(); }catch(e){} S.signer=await new E.BrowserProvider(window.ethereum).getSigner(); await readBalances(); }
+      try{ await ensureChain(); }catch(e){} S.signer=await new E.BrowserProvider(window.ethereum).getSigner(); await readBalances(); stats('wallet',{a:S.account}); }
     else if(!PREVIEW){ toast(window.ethereum?'BNB Chain cannot be reached right now. Try again in a minute.':'No wallet found. Install Bitget Wallet or MetaMask, or open this site in your wallet app browser.',true); return; }
     else { S.demoWallet=true; S.account='0x7A3f9C21dE84b0F55a6e2c1B09D4e7a8C3b2F1e9'; S.balances={__BNB:0.42,USDT:1240,BNB:0.15,CAKE:86,LINK:12.5,SZR:2500000};
       if(S.liveChain) toast('No browser wallet found. Showing a demo wallet.'); }
@@ -1453,7 +1515,7 @@ function renderModes(){
   $('modeBody').innerHTML=MODES.concat([PARASITE]).map((m,i)=>'<tr class="'+((i===SZ.mode&&!SZ.parasite)||(i===7&&SZ.parasite)?'on':'')+'"><td><b>'+m.n+'</b></td><td class="r mono">'+m.b+'</td><td class="r mono">'+m.s+'</td><td>'+miniBar(m.sp)+'<span class="muted" style="font-size:12px">Burn '+m.sp[3]+'% · Liq. '+m.sp[1]+'% · Rew. '+m.sp[2]+'%</span></td><td class="muted">'+m.d+'</td></tr>').join('');
 }
 function renderMode(){
-  const m=SZ.parasite?PARASITE:MODES[SZ.mode];
+  const m=SZ.parasite?PARASITE:MODES[SZ.mode]; setTimeout(()=>{ paintMode(); if(typeof renderTape==='function') renderTape(); },0);
   $('mName').innerHTML=esc(m.n)+(SZ.parasite?' <span class="pz">Parasite active</span>':'');
   $('mLine').textContent=m.d;
   $('mBuy').textContent=bps(SZ.buy); $('mSell').textContent=bps(SZ.sell);
@@ -1500,7 +1562,10 @@ async function loadSZR(){
 $('rotateBtn').addEventListener('click',async()=>{
   if(simulated()){ SZ.mode=1+Math.floor(Math.random()*6); const m=MODES[SZ.mode]; SZ.buy=parseFloat(m.b)*100; SZ.sell=parseFloat(m.s)*100; SZ.split=m.sp; SZ.last=Math.floor(Date.now()/1000); renderMode(); toast('Demo: mode changed to '+m.n+'.'); return; }
   if(!S.account) return connect();
-  try{ await ensureChain(); toast('Sign the mode rotation in your wallet.'); await (await new E.Contract(CFG.szr,SZR_ABI,S.signer).rotateMode()).wait(); await loadSZR(); toast('New mode: '+MODES[SZ.mode].n+'.'); }
+  try{ await ensureChain(); toast('Sign the mode rotation in your wallet.');
+    if(CFG.rotator){ const rc=new E.Contract(CFG.rotator,['function rotate()'],S.signer); try{ await rc.rotate.staticCall(); }catch(err){ return toast('This attempt would land on Predator, which is skipped. Try again in a minute.',true); } await (await rc.rotate({gasLimit:250000})).wait(); }
+    else await (await new E.Contract(CFG.szr,SZR_ABI,S.signer).rotateMode()).wait();
+    await loadSZR(); toast('New mode: '+MODES[SZ.mode].n+'.'); }
   catch(e){ toast(friendly(e),true); }
 });
 setInterval(tickRotate,30000);
@@ -1551,6 +1616,7 @@ if(window.ethereum&&window.ethereum.on){
   const probe=async()=>{ for(const base of MARKETS){ try{ await getJSON(base+'/ping',7000); CFG.klines=base+'/klines'; return true; }catch(e){} } return false; };
   const [d,c]=await Promise.all([probe(), initRpc()]);
   S.liveData=d; S.liveChain=c; setNet();
+  { let first=true; try{ first=!sessionStorage.getItem('szr.v'); sessionStorage.setItem('szr.v','1'); }catch(e){} stats(first?'visit':null); }
   loadSZR();
   await buildOutlook();
   const first=TOKENS[3].addr; $('aInput').value=first; analyze(first);
