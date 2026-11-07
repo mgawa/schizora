@@ -568,12 +568,7 @@ footer p{max-width:90ch;font-size:12.5px}
       <a class="hbtn tg" href="https://t.me/schizora_official" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M21.9 4.3 18.6 19.8c-.2 1.1-.9 1.4-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.2-8.3c.4-.4-.1-.6-.6-.2L6 13.4l-4.9-1.5c-1.1-.3-1.1-1.1.2-1.6L20.5 3c.9-.3 1.7.2 1.4 1.3z"/></svg>Join the Telegram</a>
       <a class="hbtn x" href="https://x.com/SchizoraHQ" target="_blank" rel="noopener" data-x="1"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M17.8 2.5h3.3l-7.2 8.2 8.5 11.3h-6.6l-5.2-6.8-6 6.8H1.3l7.7-8.8L.9 2.5h6.8l4.7 6.2 5.4-6.2zm-1.2 17.5h1.8L6.5 4.4H4.5L16.6 20z"/></svg>Follow on X</a>
     </div>
-    <div class="hstats" id="hStats" hidden>
-      <div><b class="mono" data-sk="visits">0</b><span>Visits</span></div>
-      <div><b class="mono" data-sk="wallets">0</b><span>Wallets connected</span></div>
-      <div><b class="mono" data-sk="analyses">0</b><span>Token analyses</span></div>
-      <div><b class="mono" data-sk="tokens">0</b><span>Different tokens checked</span></div>
-    </div>
+
     </div>
     <img class="logo-hero" src="logo.jpg" alt="SCHIZORA logo: Seven Minds. One Token. $SZR" width="640" height="640">
   </div></section>
@@ -1141,18 +1136,10 @@ setInterval(tickHero,1000);
 
 /* ---------- public counters ---------- */
 S.stats=null;
-function showStats(st){ if(!st) return; $('hStats').hidden=false;
-  document.querySelectorAll('[data-sk]').forEach(el=>{ const k=el.dataset.sk, v=st[k]||0, old=S.stats?S.stats[k]:0;
-    if(S.stats&&v!==old){ el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
-    const t0=performance.now(), from=S.stats?old:0, dur=900;
-    const step=t=>{ const k2=Math.min(1,(t-t0)/dur), e=1-Math.pow(1-k2,3); el.textContent=Math.round(from+(v-from)*e).toLocaleString('en-US'); if(k2<1) requestAnimationFrame(step); };
-    requestAnimationFrame(step); });
-  S.stats=st; }
 async function stats(ev,data){
-  if(PREVIEW){ const d=S.stats||{visits:1284,wallets:96,analyses:412,tokens:233}; const n={...d}; if(ev==='visit') n.visits++; if(ev==='wallet') n.wallets++; if(ev==='analysis'){ n.analyses++; n.tokens++; } showStats(ev?n:d); return; }
-  try{ const r=await fetch('/api/stats',ev?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({e:ev,...(data||{})})}:{}); if(!r.ok) return; showStats(await r.json()); }catch(e){}
+  if(PREVIEW||!ev) return; // counters are private: the page only reports events, it never shows numbers
+  try{ await fetch('/api/stats',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({e:ev,...(data||{})}),keepalive:true}); }catch(e){}
 }
-setInterval(()=>{ if(!document.hidden) stats(); },60000);
 
 /* ---------- the seven minds (analysis) ---------- */
 const AMINDS = ['The Code','The Exit','The Owner','The Pool','The Holders','The Crowd','The Pulse'];
