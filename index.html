@@ -360,7 +360,7 @@ body::before{background:#000}
 @keyframes flashU{0%{background:color-mix(in srgb,var(--pos) 28%,transparent)}100%{background:transparent}}
 @keyframes flashD{0%{background:color-mix(in srgb,var(--neg) 28%,transparent)}100%{background:transparent}}
 .tk.flash-up{animation:flashU 1.2s ease-out} .tk.flash-dn{animation:flashD 1.2s ease-out}
-@media (prefers-reduced-motion:reduce){.tape-in{animation:none}.hero-fx{display:none}.flash-up,.flash-dn{animation:none}}
+@media (prefers-reduced-motion:reduce){.hero-fx{display:none}.flash-up,.flash-dn{animation:none}}
 
 .social{display:flex;gap:6px}
 .sbtn{width:34px;height:34px;display:grid;place-items:center;border-radius:8px;border:1px solid #2a2238;color:#d9d3e6;background:#0d0817}
@@ -1073,7 +1073,7 @@ function renderTape(){
     return '<span class="tk" data-tk="'+t.sym+'"><b>'+t.sym+'</b><span>'+fmtPx(o.price)+'</span><span class="'+(o.ch1>=0?'u':'d')+'">'+pct(o.ch1)+'</span><span class="s '+sg[0]+'">'+sg[1]+'</span></span>'; }).join('');
   if(!items) return;
   const mt=modeInfo(); const modeTk=mt?'<span class="tk tkm"><i></i><b>SZR</b><span class="mn">'+mt.n+' mode</span><span>buy '+mt.b+' · sell '+mt.s+'</span></span>':'';
-  $('tape').innerHTML=modeTk+items+modeTk+items; $('tape').style.animationDuration=(TOKENS.length*4.5)+'s';
+  $('tape').innerHTML=items+items; $('tape').style.animationDuration=(TOKENS.length*3)+'s';
   document.querySelectorAll('.tk[data-tk]').forEach(e=>{ const sym=e.dataset.tk, px=S.outlook[sym].price; const p=S.prevPx['tk'+sym]; if(p!=null&&p!==px) e.classList.add(px>p?'flash-up':'flash-dn'); });
   TOKENS.forEach(t=>{ if(S.outlook[t.sym]) S.prevPx['tk'+t.sym]=S.outlook[t.sym].price; });
   const best=TOKENS.filter(t=>S.outlook[t.sym]).sort((x,y)=>Math.abs(S.outlook[y.sym].score)-Math.abs(S.outlook[x.sym].score))[0];
