@@ -55,7 +55,11 @@ p{margin:0}
 .netpill{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);font-family:var(--mono)}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex:none}
 .dot.ok{background:var(--pos)} .dot.demo{background:var(--warn)}
-@media (max-width:460px){.netpill .t{display:none}.brand small{display:none}}
+@media (max-width:900px){.netpill .t{display:none}}
+@media (max-width:560px){.brand small{display:none}}
+.top .wrap{min-width:0}.brand{flex:none}
+.ftag{font-weight:600;color:#b07cff}
+.hsoc .hbtn{color:#fff}
 
 /* buttons */
 .btn{appearance:none;border:1px solid var(--line-strong);background:var(--surface);color:var(--fg);font:500 14px var(--sans);padding:9px 16px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
@@ -67,10 +71,12 @@ p{margin:0}
 .btn.block{width:100%;padding:12px}
 
 /* hero */
-.hero{padding-block:48px 32px;display:grid;grid-template-columns:1fr minmax(0,300px);gap:40px;align-items:center}
+.hero{padding-block:48px 32px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:40px;align-items:center}
+.tagline{font:600 13px var(--mono);letter-spacing:.22em;text-transform:uppercase;color:#f4f1fa;margin-bottom:16px}
+.tagline span{color:#b07cff}
 .hero-text{min-width:0}
 .logo-hero{width:100%;height:auto;max-width:300px;aspect-ratio:1/1;object-fit:contain;border-radius:14px;display:block;justify-self:end}
-@media (max-width:760px){.hero{grid-template-columns:1fr;gap:24px}.logo-hero{justify-self:start;max-width:240px;order:-1}}
+@media (max-width:980px){.hero{grid-template-columns:1fr;gap:24px}.logo-hero{justify-self:start;max-width:240px;order:-1}}
 .hero h1{font-size:clamp(30px,4.6vw,48px);line-height:1.08;max-width:20ch}
 .hero p{margin-top:14px;font-size:17px;color:var(--muted);max-width:60ch}
 
@@ -437,7 +443,7 @@ body::before{background:#000}
 .hlist li{display:flex;align-items:center;gap:8px}
 .hlist i{width:9px;height:9px;border-radius:2px;flex:none}
 .hlist b{margin-left:auto;font-weight:500}
-.tg{font-size:11px;padding:1px 7px;border-radius:999px;background:var(--soft);color:var(--muted)}
+.htag{font-size:11px;padding:1px 7px;border-radius:999px;background:var(--soft);color:var(--muted)}
 .kvx{margin:0;display:grid;gap:7px;font-size:13.5px}
 .kvx div{display:flex;justify-content:space-between;gap:12px}
 .kvx dt{color:var(--muted)} .kvx dd{margin:0}
@@ -466,6 +472,23 @@ body::before{background:#000}
 .pbar{height:8px;border-radius:4px;background:var(--neg-soft);overflow:hidden}
 .pb{display:block;height:100%;background:var(--pos);transform-origin:left;animation:grow .9s ease both}
 @media (prefers-reduced-motion:reduce){.dot2.risk{animation:none}.pb{animation:none}}
+
+/* SZR band: its own dark world, separate from the tools */
+.dk{--bg:#0d1016; --surface:#141922; --line:#252c39; --line-strong:#343d4d; --fg:#e7eaf0; --muted:#97a0b2; --soft:#18202d;
+  --accent:#b07cff; --accent-ink:#130a22; --accent-soft:#251a3a; --pos:#3cc58c; --neg:#ff6a6f; --warn:#e3a63c;
+  --pos-soft:#11291f; --neg-soft:#2e1517; --warn-soft:#2b2210; color-scheme:dark; color:var(--fg)}
+.szr-outer{margin-top:72px;background:linear-gradient(180deg,var(--bg) 0,#07040d 150px,#07040d 100%)}
+.szrband{background:radial-gradient(60% 420px at 50% 260px,rgba(139,61,255,.16),transparent 70%);padding-block:150px 72px}
+.szrband .szr{margin-top:0}
+.szrband .card{background:rgba(20,16,30,.85);border-color:#2a2238}
+.szrband .modecard{background:linear-gradient(160deg,rgba(139,61,255,.18),rgba(20,16,30,.9) 60%)}
+.szrband .mtable tr.on td{background:rgba(139,61,255,.16)}
+.szr-intro .eyebrow2{display:inline-block;font:500 11.5px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#b07cff;padding:4px 10px;border:1px solid rgba(176,124,255,.35);border-radius:999px;margin-bottom:14px}
+.szr-intro h2{font-size:clamp(28px,4vw,40px);display:flex;align-items:center;gap:14px}
+.szr-mark{width:44px;height:44px;border-radius:10px;flex:none}
+.szr-intro p{color:var(--muted);font-size:15px;margin-top:10px;max-width:68ch}
+footer.dk{background:#07040d;border-top:1px solid #1c1726}
+footer.dk a{color:#b07cff}
 footer{padding-block:28px 40px;color:var(--muted);font-size:13px}
 footer .wrap{display:grid;gap:10px}
 footer .row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
@@ -493,6 +516,7 @@ footer p{max-width:90ch;font-size:12.5px}
 
   <section class="heroband"><canvas class="hero-fx" id="heroFx" aria-hidden="true"></canvas><div class="wrap hero">
     <div class="hero-text">
+    <div class="tagline"><span>Seven Minds.</span> One Token.</div>
     <h1>Seven minds read the market. You decide.</h1>
     <p>Check any BNB Chain token, see an automatic 7-day outlook for established coins, and trade with stop-loss and take-profit from your own wallet. No account, no subscription, no custody.</p>
     <div class="hstrip">
@@ -653,9 +677,13 @@ footer p{max-width:90ch;font-size:12.5px}
     </div>
   </div>
 
+
+</main>
+
+<div class="szr-outer"><div class="szrband dk"><div class="wrap">
   <section class="szr" id="szr">
     <div class="szr-head">
-      <div><h2>SZR token</h2><p>One contract with seven behaviors. The active mode sets the taxes and where they go. Everything below is read live from the contract.</p></div>
+      <div class="szr-intro"><span class="eyebrow2">The token behind SCHIZORA</span><h2><img class="szr-mark" src="logo-sm.jpg" alt="" width="44" height="44">SZR token</h2><p>Everything above works with any BNB Chain token. This part is only about SZR: one contract with seven behaviors, its taxes, and where the supply sits. All figures are read live from the SZR contract.</p></div>
       <div class="acts">
         <button class="btn small" id="copyBtn" type="button">Copy contract</button>
         <a class="btn small" href="https://bscscan.com/token/0x19435589903409Ad15B3b4c4c3ECA6cb2d66c064" target="_blank" rel="noopener">BscScan</a>
@@ -695,11 +723,11 @@ footer p{max-width:90ch;font-size:12.5px}
       </table></div>
     </div>
   </section>
-</main>
+</div></div></div>
 
-<footer>
+<footer class="dk">
   <div class="wrap">
-    <div class="row"><span>© 2026 SCHIZORA · $SZR</span><nav aria-label="Community"><a href="https://t.me/schizora_official" target="_blank" rel="noopener">Telegram</a><a href="https://x.com/SchizoraHQ" target="_blank" rel="noopener">X</a></nav></div>
+    <div class="row"><span>© 2026 SCHIZORA · $SZR · <b class="ftag">Seven Minds. One Token.</b></span><nav aria-label="Community"><a href="https://t.me/schizora_official" target="_blank" rel="noopener">Telegram</a><a href="https://x.com/SchizoraHQ" target="_blank" rel="noopener">X</a></nav></div>
     <p>Information on this site is automated data analysis, not investment advice. Crypto prices can fall quickly and you can lose the full amount you trade. We never ask for your seed phrase or private key and never hold your funds. SZR is not analyzed by the seven minds.</p>
   </div>
 </footer>
@@ -1208,7 +1236,7 @@ function renderReport(box,addr,g,d,oc){
     '</div>'+
     '<div class="rgrid">'+
       '<div class="panelx rin" style="--i:9"><h4>Top holders</h4>'+(hl.length?'<div class="hbar">'+hl.map((h,i)=>'<span style="flex:'+Math.max(h.p,0.8)+';background:'+HC[i]+'"></span>').join('')+'<span style="flex:'+Math.max(0,100-hl.reduce((a,h)=>a+h.p,0))+';background:var(--soft)"></span></div>'+
-        '<ol class="hlist">'+hl.map((h,i)=>'<li><i style="background:'+HC[i]+'"></i><a class="mono" href="https://bscscan.com/address/'+h.a+'" target="_blank" rel="noopener">'+(h.a?short(h.a):'—')+'</a>'+(h.tag?'<span class="tg">'+esc(h.tag)+'</span>':'')+'<b class="mono">'+h.p.toFixed(1)+'%</b></li>').join('')+'</ol>':'<p class="muted" style="font-size:13.5px">No holder data available.</p>')+'</div>'+
+        '<ol class="hlist">'+hl.map((h,i)=>'<li><i style="background:'+HC[i]+'"></i><a class="mono" href="https://bscscan.com/address/'+h.a+'" target="_blank" rel="noopener">'+(h.a?short(h.a):'—')+'</a>'+(h.tag?'<span class="htag">'+esc(h.tag)+'</span>':'')+'<b class="mono">'+h.p.toFixed(1)+'%</b></li>').join('')+'</ol>':'<p class="muted" style="font-size:13.5px">No holder data available.</p>')+'</div>'+
       '<div class="panelx rin" style="--i:10"><h4>Contract</h4><dl class="kvx"><div><dt>Owner</dt><dd class="mono">'+(owner&&!ZERO.test(owner)?'<a href="https://bscscan.com/address/'+owner+'" target="_blank" rel="noopener">'+ownerTxt+'</a>':ownerTxt)+'</dd></div>'+
         '<div><dt>Pool tokens locked</dt><dd class="mono '+(g?.lp_holders?.length?(lpLock>=0.5?'up':'down'):'')+'">'+(g?.lp_holders?.length?(lpLock*100).toFixed(0)+'%':'Unknown')+'</dd></div>'+
         '<div><dt>Sellable</dt><dd class="'+(g?(g.is_honeypot==='1'||g.cannot_sell_all==='1'?'down':'up'):'')+'">'+(g?(g.is_honeypot==='1'||g.cannot_sell_all==='1'?'No':'Yes'):'Unknown')+'</dd></div></dl>'+
