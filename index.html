@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="icon" href="logo-sm.jpg"><meta property="og:image" content="logo.jpg"><title>SCHIZORA Terminal</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="icon" href="logo-sm.jpg"><meta property="og:image" content="logo.jpg"><style>img{max-width:100%;height:auto}[hidden]{display:none!important}</style><title>SCHIZORA Terminal</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="SCHIZORA ($SZR): token analysis, automatic 7-day outlooks and non-custodial trading on BNB Chain.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,7 +50,7 @@ p{margin:0}
 .top .wrap{display:flex;align-items:center;gap:16px;height:60px}
 .brand{display:flex;align-items:center;gap:10px;color:var(--fg);font-weight:600;letter-spacing:.06em;font-size:14px}
 .brand:hover{text-decoration:none}
-.logo-sm{width:34px;height:34px;border-radius:7px;flex:none;display:block}
+.logo-sm{width:34px;height:34px;object-fit:contain;border-radius:7px;flex:none;display:block}
 .brand small{font-family:var(--mono);font-weight:400;letter-spacing:0;color:var(--muted);font-size:12px}
 .netpill{margin-left:auto;display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted);font-family:var(--mono)}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--muted);flex:none}
@@ -69,7 +69,7 @@ p{margin:0}
 /* hero */
 .hero{padding-block:48px 32px;display:grid;grid-template-columns:1fr minmax(0,300px);gap:40px;align-items:center}
 .hero-text{min-width:0}
-.logo-hero{width:100%;max-width:300px;aspect-ratio:1;border-radius:14px;display:block;justify-self:end}
+.logo-hero{width:100%;height:auto;max-width:300px;aspect-ratio:1/1;object-fit:contain;border-radius:14px;display:block;justify-self:end}
 @media (max-width:760px){.hero{grid-template-columns:1fr;gap:24px}.logo-hero{justify-self:start;max-width:240px;order:-1}}
 .hero h1{font-size:clamp(30px,4.6vw,48px);line-height:1.08;max-width:20ch}
 .hero p{margin-top:14px;font-size:17px;color:var(--muted);max-width:60ch}
@@ -198,14 +198,11 @@ body::before{background:#000}
 .brand small{color:#9d93ad}
 .netpill{color:#b4abc3}
 .top .btn.primary{background:#8b3dff;border-color:#8b3dff;color:#fff}
-.heroband{background:
-  radial-gradient(60% 70% at 82% 38%, rgba(139,61,255,.22), transparent 70%),
-  linear-gradient(180deg,#000 0%,#000 46%,#0d0817 64%,color-mix(in srgb,var(--bg) 55%,#1a1030) 82%,var(--bg) 100%);
-  color:#f1eef7;padding-bottom:72px}
+.heroband{background:linear-gradient(180deg,#000 0%,#000 68%,#0b0714 78%,color-mix(in srgb,var(--bg) 45%,#160d28) 90%,var(--bg) 100%);color:#f1eef7;padding-bottom:150px}
 .heroband .hero h1{color:#f4f1fa}
 .heroband .hero p{color:#b9b0c9}
 .logo-hero{border-radius:0}
-.heroband + main{margin-top:-40px;position:relative}
+.heroband + main{margin-top:-56px;position:relative}
 
 /* SZR section */
 .szr{margin-top:36px;display:grid;gap:16px}
