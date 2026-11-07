@@ -461,7 +461,7 @@ body::before{background:#000}
 .dc b{display:block;font-size:14px;font-weight:600;margin-top:2px;overflow-wrap:anywhere}
 .dc small{display:block;font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
 .dot2{width:9px;height:9px;border-radius:50%;flex:none;margin-top:4px;background:var(--muted)}
-.dot2.ok{background:var(--pos)} .dot2.warn{background:var(--warn)} .dot2.risk{background:var(--neg);box-shadow:0 0 0 0 var(--neg);animation:alarm 1.6s infinite}
+.dot2.ok{background:var(--pos)} .dot2.warn{background:var(--warn)} .dot2.risk{background:var(--neg);animation:pulse 1.4s ease-in-out infinite}
 @keyframes alarm{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--neg) 60%,transparent)}100%{box-shadow:0 0 0 8px transparent}}
 .dsplit{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
 @media (max-width:700px){.dsplit{grid-template-columns:1fr}}
@@ -494,20 +494,20 @@ footer.dk a{color:#b07cff}
 :root{--mc:#b07cff}
 .modepill{display:inline-flex;align-items:center;gap:8px;margin-left:auto;padding:6px 12px;border-radius:999px;border:1px solid color-mix(in srgb,var(--mc) 55%,transparent);background:color-mix(in srgb,var(--mc) 14%,#000);color:#fff;font-size:13px;white-space:nowrap;text-decoration:none}
 .modepill:hover{text-decoration:none;background:color-mix(in srgb,var(--mc) 24%,#000)}
-.modepill i{width:8px;height:8px;border-radius:50%;background:var(--mc);box-shadow:0 0 0 0 var(--mc);animation:mpulse 2s infinite}
+.modepill i{width:8px;height:8px;border-radius:50%;background:var(--mc);animation:pulse 1.8s ease-in-out infinite}
 @keyframes mpulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--mc) 70%,transparent)}100%{box-shadow:0 0 0 9px transparent}}
 .modepill .mpl{font:500 11px var(--mono);color:#b9b0c9;letter-spacing:.08em}
 .modepill b{font-weight:600;color:var(--mc);text-transform:uppercase;letter-spacing:.04em}
 .modepill .mpt{font-size:12px;color:#d9d3e6}
 .modepill:not([hidden]) + .netpill{margin-left:0}
 @media (max-width:760px){.modepill .mpt,.modepill .mpl{display:none}}
-.hstrip .hmode{border-color:color-mix(in srgb,var(--mc) 60%,transparent);background:color-mix(in srgb,var(--mc) 12%,rgba(10,6,18,.8));box-shadow:0 0 30px -8px color-mix(in srgb,var(--mc) 60%,transparent)}
+.hstrip .hmode{border-color:color-mix(in srgb,var(--mc) 60%,transparent);background:color-mix(in srgb,var(--mc) 12%,rgba(10,6,18,.8));}
 .hstrip .hmode b{color:var(--mc);font-size:20px;text-transform:uppercase;letter-spacing:.04em}
 .hstrip .hmode small{display:block;font:500 12px var(--mono);color:#d9d3e6;margin-top:2px}
 .tk.tkm{background:color-mix(in srgb,var(--mc) 16%,#07040d);color:#fff}
-.tk.tkm i{width:7px;height:7px;border-radius:50%;background:var(--mc);animation:mpulse 2s infinite}
+.tk.tkm i{width:7px;height:7px;border-radius:50%;background:var(--mc)}
 .tk.tkm .mn{color:var(--mc);font-weight:600;text-transform:uppercase}
-.szrband .modecard{border-color:color-mix(in srgb,var(--mc) 55%,transparent);background:linear-gradient(160deg,color-mix(in srgb,var(--mc) 22%,transparent),rgba(20,16,30,.92) 60%);box-shadow:0 0 60px -20px color-mix(in srgb,var(--mc) 70%,transparent)}
+.szrband .modecard{border-color:color-mix(in srgb,var(--mc) 55%,transparent);background:linear-gradient(160deg,color-mix(in srgb,var(--mc) 22%,transparent),rgba(20,16,30,.92) 60%)}
 .szrband .modename{color:var(--mc);text-transform:uppercase;letter-spacing:.02em;font-size:40px}
 .szrband{background:radial-gradient(60% 420px at 30% 300px,color-mix(in srgb,var(--mc) 16%,transparent),transparent 70%)}
 .szrband .mtable tr.on td{background:color-mix(in srgb,var(--mc) 14%,transparent)}
@@ -520,6 +520,14 @@ footer.dk a{color:#b07cff}
 .hstats span{font-size:11.5px;text-transform:uppercase;letter-spacing:.08em;color:#9d93ad}
 .hstats .bump{animation:bump .6s ease}
 @keyframes bump{30%{color:#b07cff;transform:translateY(-2px)}}
+
+.aempty{margin-top:22px;padding:22px 24px;border:1px dashed var(--line-strong);border-radius:12px;background:var(--soft)}
+.aempty h3{font-size:17px}
+.aempty p{margin-top:6px;color:var(--fg);font-size:14px}
+.aempty ul{margin:10px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 24px;font-size:14px;color:var(--muted)}
+.aempty li::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:9px;vertical-align:2px}
+.aempty b{color:var(--fg);font-weight:600}
+@media (max-width:600px){.aempty ul{grid-template-columns:1fr}}
 footer{padding-block:28px 40px;color:var(--muted);font-size:13px}
 footer .wrap{display:grid;gap:10px}
 footer .row{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
@@ -590,7 +598,19 @@ footer p{max-width:90ch;font-size:12.5px}
         <button class="btn primary" type="submit">Analyze</button>
       </form>
       <div class="chips" id="aChips">Try:</div>
-      <div class="result" id="aResult"></div>
+      <div class="result" id="aResult"><div class="aempty">
+        <h3>Paste a token address to start</h3>
+        <p>In a few seconds you get a full report:</p>
+        <ul>
+          <li><b>Safety score</b> from 0 to 100</li>
+          <li><b>Whales</b> and the biggest wallets</li>
+          <li><b>Liquidity lock</b> and when it ends</li>
+          <li><b>Dump test</b>: the price drop if the biggest holder sells</li>
+          <li><b>Exit capacity</b> and price impact of a trade</li>
+          <li><b>Contract flags</b>: mint, blacklist, hidden owner, taxes</li>
+        </ul>
+        <p class="muted" style="font-size:13px">Not sure where to start? Try one of the examples above.</p>
+      </div></div>
     </div>
 
     <!-- OUTLOOK -->
@@ -1104,10 +1124,10 @@ setInterval(tickHero,1000);
   const cv=$('heroFx'); if(!cv||matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   const cx=cv.getContext('2d'); let W=0,H=0,dpr=1,pts=[],raf=0,visible=true;
   const size=()=>{ dpr=Math.min(1.5,devicePixelRatio||1); W=cv.clientWidth; H=cv.clientHeight; cv.width=W*dpr; cv.height=H*dpr; cx.setTransform(dpr,0,0,dpr,0,0);
-    const n=W<700?0:Math.round(Math.min(42,W*H/26000)); pts=Array.from({length:n},(_,i)=>({x:Math.random()*W,y:Math.random()*H*0.8,vx:(Math.random()-0.5)*0.25,vy:(Math.random()-0.5)*0.25,r:i<7?2.2:1.1,big:i<7})); };
+    const n=W<700?0:Math.round(Math.min(30,W*H/34000)); pts=Array.from({length:n},(_,i)=>({x:Math.random()*W,y:Math.random()*H*0.8,vx:(Math.random()-0.5)*0.25,vy:(Math.random()-0.5)*0.25,r:i<7?2.2:1.1,big:i<7})); };
   let lastT=0;
   const draw=t=>{
-    if(document.hidden||t-lastT<33){ raf=visible?requestAnimationFrame(draw):0; return; } lastT=t;
+    if(document.hidden||t-lastT<66){ raf=visible?requestAnimationFrame(draw):0; return; } lastT=t;
     cx.clearRect(0,0,W,H);
     for(const p of pts){ p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>W) p.vx*=-1; if(p.y<0||p.y>H*0.85) p.vy*=-1; }
     for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){ const a=pts[i],b=pts[j], dx=a.x-b.x, dy=a.y-b.y, d=dx*dx+dy*dy, lim=(a.big||b.big)?26000:12000;
@@ -1626,7 +1646,7 @@ if(window.ethereum&&window.ethereum.on){
   { let first=true; try{ first=!sessionStorage.getItem('szr.v'); sessionStorage.setItem('szr.v','1'); }catch(e){} stats(first?'visit':null); }
   loadSZR();
   await buildOutlook();
-  const first=TOKENS[3].addr; $('aInput').value=first; analyze(first);
+
   await refreshPrices(false);
   setInterval(()=>refreshPrices(false), S.liveChain||!PREVIEW?CFG.pollMs:3000);
   if(PREVIEW&&!S.liveChain&&!window.ethereum){ await connect();
