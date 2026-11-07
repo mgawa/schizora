@@ -13,7 +13,7 @@ const sha = s => crypto.createHash('sha256').update(String(s)).digest('hex');
 
 async function redis(cmds) {
   const r = await fetch(URL + '/pipeline', { method: 'POST', headers: { Authorization: 'Bearer ' + TOKEN, 'Content-Type': 'application/json' }, body: JSON.stringify(cmds) });
-  if (!r.ok) throw new Error('Redis ' + r.status);
+  if (!r.ok) throw new Error('Redis HTTP ' + r.status + ' ' + (await r.text()).slice(0, 80));
   return (await r.json()).map(x => x.result);
 }
 
@@ -48,6 +48,6 @@ module.exports = async (req, res) => {
     }
     return res.status(200).json(await counts());
   } catch (err) {
-    return res.status(500).json({ error: 'Counters are unavailable right now.' });
+    return res.status(500).json({ error: 'Counters are unavailable right now.', detail: String(err && err.message || err).slice(0, 120), host: (URL || '').replace(/^https?:\/\//, '').split('.')[0] });
   }
 };
