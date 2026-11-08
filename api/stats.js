@@ -6,9 +6,10 @@
 
 const crypto = require('crypto');
 
-const URL = process.env.VEIL_REDIS_KV_REST_API_URL || process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
-const TOKEN = process.env.VEIL_REDIS_KV_REST_API_TOKEN || process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-const K = { visits: 'szr:stats:visits', wallets: 'szr:stats:wallets', analyses: 'szr:stats:analyses', tokens: 'szr:stats:tokens', since: 'szr:stats:since' };
+// The dedicated stats database (prefix STATS_REDIS) wins; older names only as fallbacks.
+const URL = process.env.STATS_REDIS_KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || process.env.VEIL_REDIS_KV_REST_API_URL;
+const TOKEN = process.env.STATS_REDIS_KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || process.env.VEIL_REDIS_KV_REST_API_TOKEN;
+const K = { visits: 'szr:stats:visits', wallets: 'szr:stats:wallets', analyses: 'szr:stats:analyses', tokens: 'szr:stats:tokens', trades: 'szr:stats:trades', since: 'szr:stats:since' };
 const ADDR = /^0x[0-9a-fA-F]{40}$/;
 const sha = s => crypto.createHash('sha256').update(String(s)).digest('hex');
 
@@ -19,8 +20,8 @@ async function redis(cmds) {
 }
 
 async function counts() {
-  const [v, w, a, t, since] = await redis([['GET', K.visits], ['PFCOUNT', K.wallets], ['GET', K.analyses], ['PFCOUNT', K.tokens], ['GET', K.since]]);
-  return { visits: Number(v || 0), wallets: Number(w || 0), analyses: Number(a || 0), tokens: Number(t || 0), since: since || null };
+  const [v, w, a, t, since, tr] = await redis([['GET', K.visits], ['PFCOUNT', K.wallets], ['GET', K.analyses], ['PFCOUNT', K.tokens], ['GET', K.since], ['GET', K.trades]]);
+  return { visits: Number(v || 0), wallets: Number(w || 0), analyses: Number(a || 0), tokens: Number(t || 0), trades: Number(tr || 0), since: since || null };
 }
 
 module.exports = async (req, res) => {
@@ -34,7 +35,7 @@ module.exports = async (req, res) => {
       if (String(req.query?.view || '') === 'json') return res.status(200).json(c);
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
       const row = (n, v) => '<div style="padding:18px 22px;border:1px solid #2a2238;border-radius:12px;background:#120c1f"><div style="font:600 34px monospace;color:#fff">' + Number(v).toLocaleString('ro-RO') + '</div><div style="color:#b9b0c9;margin-top:4px">' + n + '</div></div>';
-      return res.status(200).send('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>SCHIZORA statistici</title><body style="margin:0;background:#07040d;color:#f4f1fa;font-family:system-ui,sans-serif;padding:32px 20px"><h1 style="margin:0 0 6px;font-size:24px">SCHIZORA · statistici private</h1><p style="color:#9d93ad;margin:0 0 22px">Numărate de la ' + (c.since || 'azi') + '. Doar tu vezi această pagină.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;max-width:900px">' + row('Vizite pe site', c.visits) + row('Portofele conectate', c.wallets) + row('Analize de tokenuri', c.analyses) + row('Tokenuri diferite verificate', c.tokens) + '</div></body>');
+      return res.status(200).send('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>SCHIZORA statistici</title><body style="margin:0;background:#07040d;color:#f4f1fa;font-family:system-ui,sans-serif;padding:32px 20px"><h1 style="margin:0 0 6px;font-size:24px">SCHIZORA · statistici private</h1><p style="color:#9d93ad;margin:0 0 22px">Numărate de la ' + (c.since || 'azi') + '. Doar tu vezi această pagină.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;max-width:900px">' + row('Vizite pe site', c.visits) + row('Portofele conectate', c.wallets) + row('Analize de tokenuri', c.analyses) + row('Tokenuri diferite verificate', c.tokens) + row('Tranzacții deschise prin site', c.trades) + '</div></body>');
     }
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -42,7 +43,7 @@ module.exports = async (req, res) => {
     if (typeof body === 'string') { try { body = JSON.parse(body); } catch (e) { body = {}; } }
     body = body || {};
     const e = String(body.e || '');
-    if (!['visit', 'wallet', 'analysis'].includes(e)) return res.status(400).json({ error: 'Unknown event' });
+    if (!['visit', 'wallet', 'analysis', 'trade'].includes(e)) return res.status(400).json({ error: 'Unknown event' });
 
     // Light anti-spam: one event of each kind per IP per minute.
     const ip = String(req.headers['x-forwarded-for'] || req.socket?.remoteAddress || '').split(',')[0].trim();
@@ -53,6 +54,7 @@ module.exports = async (req, res) => {
       if (e === 'visit') cmds.push(['INCR', K.visits]);
       if (e === 'wallet' && ADDR.test(body.a || '')) cmds.push(['PFADD', K.wallets, sha(String(body.a).toLowerCase())]);
       if (e === 'analysis' && ADDR.test(body.t || '')) cmds.push(['INCR', K.analyses], ['PFADD', K.tokens, sha(String(body.t).toLowerCase())]);
+      if (e === 'trade' && ADDR.test(body.t || '')) cmds.push(['INCR', K.trades]);
       await redis(cmds);
     }
     return res.status(200).json(await counts());
