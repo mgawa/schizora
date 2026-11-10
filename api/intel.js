@@ -61,8 +61,14 @@ async function creatorHistory(c) {
     const a = lc(t.contractAddress); if (!ADDR.test(a)) continue;
     if (/cake-lp|-lp$/i.test(t.asset || '')) { if (!lpAdds.has(a)) lpAdds.set(a, ts(t)); continue; }
     const prev = tokens.get(a);
-    if (!prev || ts(t) < prev.t) tokens.set(a, { a, sym: String(t.asset || '').slice(0, 16), t: ts(t) });
+    if (!prev || ts(t) < prev.t) tokens.set(a, { a, sym: String(t.asset || '').slice(0, 16), t: ts(t), hash: t.hash });
   }
+  // Keep only tokens this wallet actually deployed: the mint happened in a contract-creation transaction it sent.
+  // Tokens minted to it by others (spam airdrops, rewards) are not its own launches.
+  const cand = [...tokens.values()].sort((x, y) => y.t - x.t).slice(0, 40);
+  await pool(cand, 6, async tk => { const tx = tk.hash ? await rpc('eth_getTransactionByHash', [tk.hash]) : null; tk.own = !!(tx && tx.to == null && lc(tx.from) === c); });
+  for (const tk of cand) if (!tk.own) tokens.delete(tk.a);
+  for (const tk of [...tokens.values()]) if (!('own' in tk)) tokens.delete(tk.a);
   // Removing liquidity sends the pool tokens from the wallet back to the pool contract itself.
   const removals = new Map();
   for (const t of sent) {
@@ -79,7 +85,7 @@ async function creatorHistory(c) {
     address: c,
     firstSeen: f ? ts(f) : null,
     fundedBy: f ? lc(f.from) : null,
-    tokens: [...tokens.values()].sort((x, y) => y.t - x.t).slice(0, 60),
+    tokens: [...tokens.values()].sort((x, y) => y.t - x.t).map(({ a, sym, t }) => ({ a, sym, t })),
     tokenCount: tokens.size,
     lpAdds: lpAdds.size,
     removals: rem,
@@ -110,7 +116,7 @@ module.exports = async (req, res) => {
   const t = lc(q.t), c = lc(q.c), o = lc(q.o);
   const h = String(q.h || '').split(',').map(lc).filter(a => ADDR.test(a)).slice(0, 8);
   if (!ADDR.test(t)) return res.status(400).json({ error: 'Bad token address' });
-  const ck = 'szr:intel:' + t;
+  const ck = 'szr:intel2:' + t;
   if (!q.fresh) { const [hit] = (await redis([['GET', ck]])) || []; if (hit) { try { return res.status(200).json({ ...JSON.parse(hit), cached: true }); } catch (e) {} } }
   try {
     const insiders = [c, o].filter(a => ADDR.test(a) && a !== ZERO);
